@@ -1,3 +1,6 @@
+#ifndef LOGGER_H
+#define LOGGER_H
+
 #include "spdlog/spdlog.h"
 #include "spdlog/fmt/ostr.h"
 
@@ -23,3 +26,5 @@ namespace BoxScore {
 #define BS_TRACE(...) ::BoxScore::Logger::GetLogger()->trace(__VA_ARGS__)
 #define BS_ERROR(...) ::BoxScore::Logger::GetLogger()->error(__VA_ARGS__)
 }
+
+#endif
