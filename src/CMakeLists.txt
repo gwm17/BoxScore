@@ -18,6 +18,8 @@ target_sources(BoxScore PRIVATE
     Core/Logger.h
     Core/Logger.cpp
     Core/main.cpp
+    Core/Application.h
+    Core/Application.cpp
 )
 
 #Packaged dependencies
