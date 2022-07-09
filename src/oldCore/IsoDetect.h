@@ -1,7 +1,7 @@
 #ifndef ISODETECT
 #define ISODETECT
 
-#include "../Class/GenericPlane.h"
+#include "GenericPlane.h"
 
 class IsoDetect : public GenericPlane{
   RQ_OBJECT("IsoDetect");

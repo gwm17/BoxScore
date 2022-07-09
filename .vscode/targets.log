@@ -1,0 +1,485 @@
+make all --print-data-base --no-builtin-variables --no-builtin-rules --question
+# GNU Make 4.3
+# Built for x86_64-pc-linux-gnu
+# Copyright (C) 1988-2020 Free Software Foundation, Inc.
+# License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+# This is free software: you are free to change and redistribute it.
+# There is NO WARRANTY, to the extent permitted by law.
+
+# Make data base, printed on Sat Jul  9 14:30:59 2022
+
+# Variables
+
+# environment
+GDK_BACKEND = x11
+# environment
+LC_ALL = C
+# environment
+GNOME_SHELL_SESSION_MODE = ubuntu
+# environment
+SSH_AGENT_LAUNCHER = gnome-keyring
+# environment
+CMAKE_PREFIX_PATH = /home/gordon/cern/root-6.26.02/root
+# makefile (from 'Makefile', line 29)
+ROOTLIBS = `root-config --cflags --glibs`
+# environment
+JUPYTER_PATH = /home/gordon/cern/root-6.26.02/root/etc/notebook
+# environment
+GJS_DEBUG_OUTPUT = stderr
+# environment
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1000/vscode-ipc-3a02d996-aa66-4dd3-9bc9-f8b5542547ba.sock
+# environment
+MANDATORY_PATH = /usr/share/gconf/ubuntu.mandatory.path
+# environment
+VSCODE_CWD = /home/gordon
+# environment
+JUPYTER_CONFIG_DIR = /home/gordon/cern/root-6.26.02/root/etc/notebook
+# environment
+WINDOWPATH = 2
+# default
+MAKE_COMMAND := make
+# environment
+QT_ACCESSIBILITY = 1
+# automatic
+@D = $(patsubst %/,%,$(dir $@))
+# environment
+ROOTSYS = /home/gordon/cern/root-6.26.02/root
+# makefile (from 'Makefile', line 18)
+COPTS = -fPIC -DLINUX -w
+# environment
+VSCODE_HANDLES_UNCAUGHT_ERRORS = true
+# default
+.VARIABLES := 
+# environment
+PWD = /home/gordon/BoxScore
+# automatic
+%D = $(patsubst %/,%,$(dir $%))
+# environment
+XDG_DATA_DIRS = /usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop
+# automatic
+^D = $(patsubst %/,%,$(dir $^))
+# environment
+VSCODE_LOG_STACK = false
+# automatic
+%F = $(notdir $%)
+# environment
+CONDA_PROMPT_MODIFIER = 
+# environment
+VSCODE_CODE_CACHE_PATH = /home/gordon/.config/Code/CachedData/30d9c6cd9483b2cc586687151bcbcd635f373630
+# environment
+LANG = C
+# environment
+XAUTHORITY = /run/user/1000/gdm/Xauthority
+# default
+.LOADED := 
+# default
+.INCLUDE_DIRS = /usr/local/include /usr/include /usr/include
+# makefile
+MAKEFLAGS = pqrR
+# makefile
+CURDIR := /home/gordon/BoxScore
+# makefile (from 'Makefile', line 14)
+OUT2 = DetectDigitizer
+# environment
+VSCODE_PIPE_LOGGING = true
+# environment
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
+# environment
+LESSOPEN = | /usr/bin/lesspipe %s
+# automatic
+*D = $(patsubst %/,%,$(dir $*))
+# environment
+MFLAGS = -pqrR
+# environment
+SSH_AUTH_SOCK = /run/user/1000/keyring/ssh
+# default
+.SHELLFLAGS := -c
+# environment
+XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
+# automatic
++D = $(patsubst %/,%,$(dir $+))
+# environment
+XDG_SESSION_DESKTOP = ubuntu
+# makefile (from 'Makefile', line 1)
+MAKEFILE_LIST := Makefile
+# environment
+CONDA_SHLVL = 1
+# automatic
+@F = $(notdir $@)
+# environment
+VSCODE_VERBOSE_LOGGING = true
+# environment
+VSCODE_PID = 29190
+# environment
+XDG_SESSION_TYPE = x11
+# automatic
+?D = $(patsubst %/,%,$(dir $?))
+# environment
+DYLD_LIBRARY_PATH = /home/gordon/cern/root-6.26.02/root/lib
+# environment
+CONDA_PYTHON_EXE = /home/gordon/anaconda3/bin/python
+# makefile (from 'Makefile', line 27)
+INCLUDES = ./include/*
+# environment
+SESSION_MANAGER = local/sylphrena:@/tmp/.ICE-unix/1793,unix/sylphrena:/tmp/.ICE-unix/1793
+# automatic
+*F = $(notdir $*)
+# environment
+MANPATH = /home/gordon/cern/root-6.26.02/root/man:/usr/local/man:/usr/local/share/man:/usr/share/man
+# environment
+CHROME_DESKTOP = code-url-handler.desktop
+# environment
+DBUS_SESSION_BUS_ADDRESS = unix:path=/run/user/1000/bus
+# environment
+LIBPATH = /home/gordon/cern/root-6.26.02/root/lib
+# automatic
+<D = $(patsubst %/,%,$(dir $<))
+# environment
+VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupport":true}
+# default
+MAKE_HOST := x86_64-pc-linux-gnu
+# environment
+GNOME_DESKTOP_SESSION_ID = this-is-deprecated
+# environment
+CONDA_PREFIX = /home/gordon/anaconda3
+# makefile
+SHELL = /bin/sh
+# default
+MAKECMDGOALS := all
+# environment
+XMODIFIERS = @im=ibus
+# environment
+LD_LIBRARY_PATH = /home/gordon/cern/root-6.26.02/root/lib
+# environment
+GJS_DEBUG_TOPICS = JS ERROR;JS LOG
+# environment
+SHLVL = 0
+# environment
+MAKELEVEL := 0
+# default
+MAKE = $(MAKE_COMMAND)
+# environment
+CLING_STANDARD_PCH = none
+# environment
+PATH = /home/gordon/bin:/home/gordon/anaconda3/bin:/home/gordon/anaconda3/condabin:/home/gordon/cern/root-6.26.02/root/bin:/home/gordon/bin:/home/gordon/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/gordon/.dotnet/tools:/home/gordon/.dotnet/tools
+# default
+MAKEFILES := 
+# automatic
+^F = $(notdir $^)
+# environment
+INVOCATION_ID = 2dd894fd286d49ad934353e336be8d7a
+# environment
+VSCODE_LOG_NATIVE = false
+# environment
+USERNAME = gordon
+# makefile (from 'Makefile', line 20)
+DEPLIBS = -lCAENDigitizer
+# environment
+LESSCLOSE = /usr/bin/lesspipe %s %s
+# automatic
+?F = $(notdir $?)
+# environment
+XDG_CURRENT_DESKTOP = Unity
+# makefile (from 'Makefile', line 24)
+OBJS1 = src/keyb.o src/Functions.o 
+# makefile (from 'Makefile', line 22)
+INCLUDEDIR = -I./include
+# environment
+LS_COLORS = 
+# automatic
++F = $(notdir $+)
+# environment
+DESKTOP_SESSION = ubuntu
+# environment
+ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
+# 'override' directive
+GNUMAKEFLAGS := 
+# environment
+CONDA_DEFAULT_ENV = base
+# environment
+LOGNAME = gordon
+# makefile (from 'Makefile', line 25)
+OBJS2 = src/keyb.o src/DetectDigitizer.o 
+# environment
+GIO_LAUNCHED_DESKTOP_FILE = /usr/share/applications/code.desktop
+# makefile
+.DEFAULT_GOAL := all
+# environment
+SYSTEMD_EXEC_PID = 1812
+# makefile (from 'Makefile', line 12)
+ARCH = `uname -m`
+# environment
+DISPLAY = :1
+# environment
+USER = gordon
+# environment
+GTK_MODULES = gail:atk-bridge
+# environment
+DEFAULTS_PATH = /usr/share/gconf/ubuntu.default.path
+# default
+MAKE_VERSION := 4.3
+# environment
+MANAGERPID = 1587
+# environment
+GIO_LAUNCHED_DESKTOP_FILE_PID = 29190
+# environment
+PYTHONPATH = /home/gordon/cern/root-6.26.02/root/lib
+# environment
+_ = /usr/share/code/code
+# environment
+XDG_RUNTIME_DIR = /run/user/1000
+# environment
+GPG_AGENT_INFO = /run/user/1000/gnupg/S.gpg-agent:0:1
+# environment
+_CE_M = 
+# environment
+JOURNAL_STREAM = 8:46232
+# environment
+XDG_SESSION_CLASS = user
+# environment
+VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+# environment
+HOME = /home/gordon
+# environment
+QT_IM_MODULE = ibus
+# environment
+ELECTRON_RUN_AS_NODE = 1
+# environment
+VSCODE_IPC_HOOK = /run/user/1000/vscode-07ee92de-1.68.1-main.sock
+# environment
+IM_CONFIG_PHASE = 1
+# default
+.RECIPEPREFIX := 
+# automatic
+<F = $(notdir $<)
+# default
+SUFFIXES := 
+# environment
+SHLIB_PATH = /home/gordon/cern/root-6.26.02/root/lib
+# default
+.FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell nocomment grouped-target extra-prereqs archives jobserver output-sync check-symlink load
+# makefile (from 'Makefile', line 16)
+CC = g++
+# environment
+XDG_MENU_PREFIX = gnome-
+# environment
+CONDA_EXE = /home/gordon/anaconda3/bin/conda
+# environment
+_CE_CONDA = 
+# environment
+GDMSESSION = ubuntu
+# variable set hash-table stats:
+# Load=129/1024=13%, Rehash=0, Collisions=6/171=4%
+
+# Pattern-specific Variable Values
+
+# No pattern-specific variable values.
+
+# Directories
+
+# include (device 2051, inode 10093182): 4 files, no impossibilities.
+# src (device 2051, inode 10093238): 1 files, no impossibilities so far.
+# . (device 2051, inode 10092816): 14 files, no impossibilities.
+
+# 19 files, no impossibilities in 3 directories.
+
+# Implicit Rules
+
+%.o: %.c
+ 
+#  recipe to execute (from 'Makefile', line 44):
+		$(CC) $(COPTS) $(INCLUDEDIR) -c -o $@ $<
+
+# 1 implicit rules, 0 (0.0%) terminal.
+# Files
+
+BoxScore: src/BoxScore.c Class/DigitizerClass.h Class/FileIO.h Class/GenericPlane.h Class/HelioTarget.h Class/IsoDetect.h Class/HelioArray.h Class/MCPClass.h
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 50):
+		g++ -std=c++17 -pthread src/BoxScore.c -o BoxScore  $(DEPLIBS) $(ROOTLIBS)
+
+# Not a target:
+Class/DigitizerClass.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Class/FileIO.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+src/CutsCreator.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Makefile:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-24 14:08:29.853870562
+#  File has been updated.
+#  Successfully updated.
+
+DetectDigitizer: src/keyb.o src/DetectDigitizer.o
+#  Implicit rule search has not been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
+#  recipe to execute (from 'Makefile', line 39):
+		$(CC) -o $(OUT2) $(OBJS2) $(DEPLIBS)
+
+clean:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 36):
+		/bin/rm -f $(OBJS1) $(OBJS2) $(OUT2) ./CutsCreator ./BoxScore ./BoxScoreReader
+
+# Not a target:
+src/BoxScoreReader.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Class/HelioArray.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Class/HelioTarget.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+include/Functions.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-24 13:35:28.464337694
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+.DEFAULT:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+all: DetectDigitizer CutsCreator BoxScore BoxScoreReader
+#  Command line target.
+#  Implicit rule search has been done.
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# variable set hash-table stats:
+# Load=0/32=0%, Rehash=0, Collisions=0/6=0%
+
+BoxScoreReader: src/BoxScoreReader.c Class/GenericPlane.h Class/HelioTarget.h Class/IsoDetect.h Class/HelioArray.h
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 53):
+		g++ -std=c++17 src/BoxScoreReader.c -o BoxScoreReader $(ROOTLIBS)
+
+CutsCreator: src/CutsCreator.c
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 47):
+		g++ -std=c++17 -pthread src/CutsCreator.c -o CutsCreator $(ROOTLIBS)
+
+# Not a target:
+src/keyb.c:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-24 13:35:28.464337694
+#  File has been updated.
+#  Successfully updated.
+
+# Not a target:
+Class/MCPClass.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+src/keyb.o: src/keyb.c include/Functions.h include/keyb.h Makefile
+#  Implicit rule search has been done.
+#  Implicit/static pattern stem: 'src/keyb'
+#  File does not exist.
+#  File has been updated.
+#  Needs to be updated (-q is set).
+# automatic
+# @ := src/keyb.o
+# automatic
+# * := src/keyb
+# automatic
+# < := src/keyb.c
+# automatic
+# + := src/keyb.c include/Functions.h include/keyb.h Makefile
+# automatic
+# % := 
+# automatic
+# ^ := src/keyb.c include/Functions.h include/keyb.h Makefile
+# automatic
+# ? := src/keyb.c include/Functions.h include/keyb.h Makefile
+# automatic
+# | := 
+# variable set hash-table stats:
+# Load=8/32=25%, Rehash=0, Collisions=5/16=31%
+#  recipe to execute (from 'Makefile', line 44):
+		$(CC) $(COPTS) $(INCLUDEDIR) -c -o $@ $<
+
+# Not a target:
+src/BoxScore.c:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Class/GenericPlane.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+include/keyb.h:
+#  Implicit rule search has been done.
+#  Last modified 2022-06-24 13:35:28.464337694
+#  File has been updated.
+#  Successfully updated.
+
+src/DetectDigitizer.o: include/Functions.h include/keyb.h Makefile
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# Not a target:
+Class/IsoDetect.h:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+
+# files hash-table stats:
+# Load=24/1024=2%, Rehash=0, Collisions=2/67=3%
+# VPATH Search Paths
+
+# No 'vpath' search paths.
+
+# No general ('VPATH' variable) search path.
+
+# strcache buffers: 1 (0) / strings = 45 / storage = 515 B / avg = 11 B
+# current buf: size = 8162 B / used = 515 B / count = 45 / avg = 11 B
+
+# strcache performance: lookups = 74 / hit rate = 39%
+# hash-table stats:
+# Load=45/8192=1%, Rehash=0, Collisions=0/74=0%
+# Finished Make data base on Sat Jul  9 14:30:59 2022
+
+ 

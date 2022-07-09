@@ -9,7 +9,7 @@
    
 *************************************************/
 
-#include "../Class/GenericPlane.h"
+#include "GenericPlane.h"
 
 class HelioArray : public GenericPlane{
   RQ_OBJECT("HelioArray");

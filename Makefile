@@ -19,12 +19,12 @@ COPTS	=	-fPIC -DLINUX -w
 
 DEPLIBS	=	-lCAENDigitizer
 
-INCLUDEDIR =	-I./include
+INCLUDEDIR =	-I./src/oldCore
 
-OBJS1	=	src/keyb.o src/Functions.o 
-OBJS2   =   src/keyb.o src/DetectDigitizer.o 
+OBJS1	=	src/oldCore/keyb.o src/oldCore/Functions.o 
+OBJS2   =   src/oldCore/keyb.o src/oldCore/DetectDigitizer.o 
 
-INCLUDES =	./include/*
+INCLUDES = src/oldCore/keyb.h src/oldCore/Functions.h	
 
 ROOTLIBS = `root-config --cflags --glibs`
 
@@ -43,12 +43,12 @@ $(OBJS2)	:	$(INCLUDES) Makefile
 %.o	:	%.c
 		$(CC) $(COPTS) $(INCLUDEDIR) -c -o $@ $<
 
-CutsCreator:	$(OBJS3) src/CutsCreator.c
-		g++ -std=c++17 -pthread src/CutsCreator.c -o CutsCreator $(ROOTLIBS)
+CutsCreator:	$(OBJS3) src/oldCore/CutsCreator.c
+		g++ -std=c++17 -pthread $^ -o $@ $(ROOTLIBS)
 
-BoxScore	: src/BoxScore.c Class/DigitizerClass.h Class/FileIO.h Class/GenericPlane.h Class/HelioTarget.h Class/IsoDetect.h Class/HelioArray.h Class/MCPClass.h
-		g++ -std=c++17 -pthread src/BoxScore.c -o BoxScore  $(DEPLIBS) $(ROOTLIBS)
+BoxScore	: src/oldCore/BoxScore.c src/oldCore/DigitizerClass.h src/oldCore/FileIO.h src/oldCore/GenericPlane.h src/oldCore/HelioTarget.h src/oldCore/IsoDetect.h src/oldCore/HelioArray.h src/oldCore/MCPClass.h
+		g++ -std=c++17 -pthread $^ -o $@  $(DEPLIBS) $(ROOTLIBS)
 
-BoxScoreReader: src/BoxScoreReader.c Class/GenericPlane.h Class/HelioTarget.h Class/IsoDetect.h Class/HelioArray.h
-		g++ -std=c++17 src/BoxScoreReader.c -o BoxScoreReader $(ROOTLIBS)
+BoxScoreReader: src/oldCore/BoxScoreReader.c src/oldCore/GenericPlane.h src/oldCore/HelioTarget.h src/oldCore/IsoDetect.h src/oldCore/HelioArray.h
+		g++ -std=c++17 $^ -o $@ $(ROOTLIBS)
 

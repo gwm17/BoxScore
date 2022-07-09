@@ -1,7 +1,7 @@
 #ifndef HELIOSTARGET
 #define HELIOSTARGET
 
-#include "../Class/GenericPlane.h"
+#include "GenericPlane.h"
 
 class HeliosTarget : public GenericPlane{
   RQ_OBJECT("HelioTarget");

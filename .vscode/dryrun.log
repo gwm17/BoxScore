@@ -1,0 +1,10 @@
+make --dry-run --always-make --keep-going --print-directory
+make: Entering directory '/home/gordon/BoxScore'
+g++ -fPIC -DLINUX -w -I./include -c -o src/keyb.o src/keyb.c
+g++ -fPIC -DLINUX -w -I./include -c -o src/DetectDigitizer.o src/DetectDigitizer.c
+g++ -o DetectDigitizer src/keyb.o src/DetectDigitizer.o  -lCAENDigitizer
+g++ -std=c++17 -pthread src/CutsCreator.c -o CutsCreator `root-config --cflags --glibs`
+g++ -std=c++17 -pthread src/BoxScore.c -o BoxScore  -lCAENDigitizer `root-config --cflags --glibs`
+g++ -std=c++17 src/BoxScoreReader.c -o BoxScoreReader `root-config --cflags --glibs`
+make: Leaving directory '/home/gordon/BoxScore'
+ 

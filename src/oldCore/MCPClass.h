@@ -1,7 +1,7 @@
 #ifndef MCPCLASS
 #define MCPCLASS
 
-#include "../Class/GenericPlane.h"
+#include "GenericPlane.h"
 
 class MicroChannelPlate : public GenericPlane{
   RQ_OBJECT("MicroChannelPlate");

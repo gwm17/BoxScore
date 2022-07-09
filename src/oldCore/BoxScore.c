@@ -43,13 +43,13 @@
 #include "TMacro.h"
 #include "TRootCanvas.h"
 
-#include "../Class/DigitizerClass.h"
-#include "../Class/FileIO.h"
-#include "../Class/GenericPlane.h"
-#include "../Class/HelioTarget.h"
-//#include "../Class/IsoDetect.h"
-#include "../Class/HelioArray.h"
-#include "../Class/MCPClass.h"
+#include "DigitizerClass.h"
+#include "FileIO.h"
+#include "GenericPlane.h"
+#include "HelioTarget.h"
+//#include "IsoDetect.h"
+#include "HelioArray.h"
+#include "MCPClass.h"
 
 using namespace std;
 
