@@ -7,6 +7,11 @@ target_include_directories(BoxScore
     ./
 )
 
+#For Windows, CAENDigitizer is installed non-globally (we assume default pathing cause why would ever be otherwise)
+if(MSVC)
+    target_include_directories(BoxScore SYSTEM PUBLIC ${CAEN_WIN_INCL_PATH})
+endif()
+
 target_precompile_headers(BoxScore PRIVATE bxscpch.h)
 
 target_sources(BoxScore PRIVATE

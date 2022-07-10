@@ -16,7 +16,14 @@ set(BS_BINARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/bin)
 set(BS_LIBRARY_DIR ${CMAKE_CURRENT_SOURCE_DIR}/lib)
 
 #find the CAEN pre-reqs
+#For Windows, CAENDigitizer is installed non-globally (we assume default pathing cause why would ever be otherwise)
+set(CAEN_WIN_LIB_PATH "C:/Program Files/CAEN/Digitizers/Library/lib/x86_64")
+set(CAEN_WIN_INCL_PATH "C:/Program Files/CAEN/Digitizers/Library/include")
+if(MSVC)
+find_library(CAEN_DGTZ CAENDigitizer.lib HINTS ${CAEN_WIN_LIB_PATH} REQUIRED)
+else()
 find_library(CAEN_DGTZ CAENDigitizer REQUIRED)
+endif()
 
 add_subdirectory(vendor/glfw)
 add_subdirectory(vendor/imgui)
