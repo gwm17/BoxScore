@@ -13,5 +13,7 @@ int main(int argc, char** argv)
 
     BoxScore::Application* app = BoxScore::CreateApplication(args);
 
+    app->Run();
+
     delete app;
 }

@@ -1,6 +1,7 @@
 #include "Application.h"
 #include <filesystem>
 
+
 namespace BoxScore {
 
     Application* Application::s_instance = nullptr;
@@ -8,7 +9,7 @@ namespace BoxScore {
     Application* CreateApplication(const ApplicationArgs& args) { return new Application(args); }
 
     Application::Application(const ApplicationArgs& args) :
-        m_args(args)
+        m_args(args), m_running(true)
     {
         if(s_instance != nullptr)
         {
@@ -27,4 +28,32 @@ namespace BoxScore {
     }
 
     Application::~Application() {}
+
+    void Application::OnEvent(Event& e)
+    {
+        EventDispatcher dispatch(e);
+
+        dispatch.Dispatch<WindowCloseEvent>(BIND_EVENT_FUNCTION(Application::OnWindowCloseEvent));
+    }
+
+    bool Application::OnWindowCloseEvent(WindowCloseEvent& e)
+    {
+        m_running = false;
+        BS_INFO("Window close event recieved. Shutting down.");
+        return true;
+    }
+
+    void Application::Run()
+    {
+        if (!m_running)
+            BS_ERROR("Application attempting to run after having already exited");
+
+        while (m_running)
+        {
+            BS_INFO("Application running...");
+            WindowCloseEvent e;
+            OnEvent(e);
+        }
+
+    }
 }

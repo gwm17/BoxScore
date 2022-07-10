@@ -25,6 +25,11 @@ target_sources(BoxScore PRIVATE
     Core/main.cpp
     Core/Application.h
     Core/Application.cpp
+    Events/Event.h
+    Core/BoxScoreCore.h
+    Events/AppEvent.h
+    Events/MouseEvent.h
+    Events/AcqEvent.h
 )
 
 #Packaged dependencies
@@ -38,13 +43,13 @@ set(THREADS_PREFER_PTHREAD_FLAG On)
 find_package(Threads REQUIRED)
 if(APPLE)
     target_link_libraries(BoxScore PRIVATE "-framework Cocoa" "-framework CoreVideo" "-framework IOKit" "-framework OpenGL" "-framework Carbon" ${CMAKE_DL_LIBS} Threads::Threads)
-    target_compile_definitions(BoxScore PRIVATE SPEC_APPLE)
+    target_compile_definitions(BoxScore PRIVATE BS_APPLE)
 elseif(UNIX)
     target_link_libraries(BoxScore PRIVATE libGL.so libX11.so ${CMAKE_DL_LIBS} Threads::Threads)
-    target_compile_definitions(BoxScore PRIVATE SPEC_LINUX)
+    target_compile_definitions(BoxScore PRIVATE BS_LINUX)
 elseif(MSVC)
     target_link_libraries(BoxScore PRIVATE opengl32.lib Threads::Threads)
-    target_compile_definitions(BoxScore PRIVATE SPEC_WINDOWS)
+    target_compile_definitions(BoxScore PRIVATE BS_WINDOWS)
 endif()
 
 

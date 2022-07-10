@@ -1,6 +1,9 @@
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include "Events/Event.h"
+#include "Events/AppEvent.h"
+
 namespace BoxScore {
 
     struct ApplicationArgs
@@ -17,11 +20,18 @@ namespace BoxScore {
         Application(const ApplicationArgs& args);
         ~Application();
 
-        const ApplicationArgs& GetArgs() { return m_args; }
+        void Run();
+        void Close() { m_running = false; }
+        void OnEvent(Event& e);
 
+        //App Event Callbacks
+        bool OnWindowCloseEvent(WindowCloseEvent& e);
+
+        const ApplicationArgs& GetArgs() { return m_args; }
         static Application& GetInstance() { return *s_instance; }
     private:
         ApplicationArgs m_args;
+        bool m_running;
 
         static Application* s_instance;
     };
