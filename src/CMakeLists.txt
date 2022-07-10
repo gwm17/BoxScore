@@ -30,6 +30,10 @@ target_sources(BoxScore PRIVATE
     Events/AppEvent.h
     Events/MouseEvent.h
     Events/AcqEvent.h
+    Core/Layer.h
+    Core/Layer.cpp
+    Core/LayerStack.h
+    Core/LayerStack.cpp
 )
 
 #Packaged dependencies

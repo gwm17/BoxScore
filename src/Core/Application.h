@@ -3,6 +3,7 @@
 
 #include "Events/Event.h"
 #include "Events/AppEvent.h"
+#include "LayerStack.h"
 
 namespace BoxScore {
 
@@ -23,6 +24,8 @@ namespace BoxScore {
         void Run();
         void Close() { m_running = false; }
         void OnEvent(Event& e);
+        void PushLayer(Layer* layer);
+        void PushOverlay(Layer* layer);
 
         //App Event Callbacks
         bool OnWindowCloseEvent(WindowCloseEvent& e);
@@ -32,6 +35,8 @@ namespace BoxScore {
     private:
         ApplicationArgs m_args;
         bool m_running;
+
+        LayerStack m_layerStack;
 
         static Application* s_instance;
     };

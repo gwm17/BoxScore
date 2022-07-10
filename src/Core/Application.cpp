@@ -25,6 +25,7 @@ namespace BoxScore {
             std::filesystem::current_path(m_args.runtimePath);
 
         BS_INFO("Runtime path set to {0}", std::filesystem::current_path().string());
+
     }
 
     Application::~Application() {}
@@ -32,8 +33,27 @@ namespace BoxScore {
     void Application::OnEvent(Event& e)
     {
         EventDispatcher dispatch(e);
-
         dispatch.Dispatch<WindowCloseEvent>(BIND_EVENT_FUNCTION(Application::OnWindowCloseEvent));
+
+        for (auto iter = m_layerStack.rbegin(); iter != m_layerStack.rend(); iter++)
+        {
+            if (e.handled)
+                break;
+
+            (*iter)->OnEvent(e);
+        }
+    }
+
+    void Application::PushLayer(Layer* layer)
+    {
+        m_layerStack.PushLayer(layer);
+        layer->OnAttach();
+    }
+
+    void Application::PushOverlay(Layer* layer)
+    {
+        m_layerStack.PushOverlay(layer);
+        layer->OnAttach();
     }
 
     bool Application::OnWindowCloseEvent(WindowCloseEvent& e)
