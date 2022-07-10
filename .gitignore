@@ -12,3 +12,4 @@ setting/infl_*
 .vscode/
 build/
 bin/
+out/

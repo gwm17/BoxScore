@@ -4,6 +4,7 @@
 #include "Events/Event.h"
 #include "Events/AppEvent.h"
 #include "LayerStack.h"
+#include "Window.h"
 
 namespace BoxScore {
 
@@ -36,6 +37,7 @@ namespace BoxScore {
         ApplicationArgs m_args;
         bool m_running;
 
+        std::unique_ptr<Window> m_window;
         LayerStack m_layerStack;
 
         static Application* s_instance;

@@ -1,4 +1,5 @@
 #include "Application.h"
+#include "Renderer/RenderCommand.h"
 #include <filesystem>
 
 
@@ -25,6 +26,9 @@ namespace BoxScore {
             std::filesystem::current_path(m_args.runtimePath);
 
         BS_INFO("Runtime path set to {0}", std::filesystem::current_path().string());
+
+        m_window = std::unique_ptr<Window>(Window::Create({ m_args.name, 1280, 720 }));
+        m_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 
     }
 
@@ -68,11 +72,17 @@ namespace BoxScore {
         if (!m_running)
             BS_ERROR("Application attempting to run after having already exited");
 
+        float bckgndColor[4] = { 0.1, 0.1, 0.1, 1.0 };
+
         while (m_running)
         {
-            BS_INFO("Application running...");
-            WindowCloseEvent e;
-            OnEvent(e);
+            RenderCommand::SetClearColor(bckgndColor);
+            RenderCommand::Clear();
+
+            for (auto& layer : m_layerStack)
+                layer->OnUpdate();
+
+            m_window->OnUpdate();
         }
 
     }

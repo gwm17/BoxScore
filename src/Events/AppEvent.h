@@ -18,13 +18,13 @@ namespace BoxScore {
 	class WindowResizeEvent : public Event
 	{
 	public:
-		WindowResizeEvent(int width, int height) :
+		WindowResizeEvent(uint32_t width, uint32_t height) :
 			m_width(width), m_height(height)
 		{
 		}
 
-		int GetWidth() const { return m_width; }
-		int GetHeight() const { return m_height; }
+		uint32_t GetWidth() const { return m_width; }
+		uint32_t GetHeight() const { return m_height; }
 
 		virtual std::string ToString() const override
 		{
@@ -37,7 +37,7 @@ namespace BoxScore {
 		EVENT_TYPE_SETUP(WindowResize);
 
 	private:
-		int m_width, m_height;
+		uint32_t m_width, m_height;
 	};
 
 	class AppUpdateEvent : public Event

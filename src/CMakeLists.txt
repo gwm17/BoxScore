@@ -4,6 +4,7 @@ target_include_directories(BoxScore
     PUBLIC ../vendor/imgui
     ../vendor/glfw/include
     ../vendor/spdlog/include
+    ../vendor/glad/include
     ./
 )
 
@@ -34,10 +35,21 @@ target_sources(BoxScore PRIVATE
     Core/Layer.cpp
     Core/LayerStack.h
     Core/LayerStack.cpp
+    Core/Window.h
+    Platform/OpenGL/OpenGLWindow.h
+    Renderer/GraphicsContext.h
+    Platform/OpenGL/OpenGLContext.h
+    Platform/OpenGL/OpenGLContext.cpp
+    Platform/OpenGL/OpenGLWindow.cpp
+    Renderer/RendererAPI.h
+    Renderer/RendererAPI.cpp
+    Renderer/RenderCommand.h
+    Renderer/RenderCommand.cpp
+    Platform/OpenGL/OpenGLRendererAPI.cpp
 )
 
 #Packaged dependencies
-target_link_libraries(BoxScore PRIVATE imgui glfw)
+target_link_libraries(BoxScore PRIVATE imgui glfw glad)
 
 #CAEN dependencies
 target_link_libraries(BoxScore PRIVATE ${CAEN_DGTZ})
