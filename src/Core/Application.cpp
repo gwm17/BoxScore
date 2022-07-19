@@ -30,6 +30,8 @@ namespace BoxScore {
         m_window = std::unique_ptr<Window>(Window::Create({ m_args.name, 1280, 720 }));
         m_window->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
 
+        m_imguiLayer = new ImGuiLayer();
+        PushOverlay(m_imguiLayer);
     }
 
     Application::~Application() {}
@@ -81,6 +83,11 @@ namespace BoxScore {
 
             for (auto& layer : m_layerStack)
                 layer->OnUpdate();
+
+            m_imguiLayer->Begin();
+            for (auto& layer : m_layerStack)
+                layer->OnImGuiRender();
+            m_imguiLayer->End();
 
             m_window->OnUpdate();
         }

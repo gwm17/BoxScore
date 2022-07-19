@@ -5,6 +5,7 @@
 #include "Events/AppEvent.h"
 #include "LayerStack.h"
 #include "Window.h"
+#include "ImGui/ImGuiLayer.h"
 
 namespace BoxScore {
 
@@ -32,6 +33,7 @@ namespace BoxScore {
         bool OnWindowCloseEvent(WindowCloseEvent& e);
 
         const ApplicationArgs& GetArgs() { return m_args; }
+        Window& GetWindow() { return *m_window; }
         static Application& GetInstance() { return *s_instance; }
     private:
         ApplicationArgs m_args;
@@ -39,6 +41,8 @@ namespace BoxScore {
 
         std::unique_ptr<Window> m_window;
         LayerStack m_layerStack;
+
+        ImGuiLayer* m_imguiLayer;
 
         static Application* s_instance;
     };

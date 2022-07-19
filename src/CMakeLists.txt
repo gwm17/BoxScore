@@ -46,6 +46,9 @@ target_sources(BoxScore PRIVATE
     Renderer/RenderCommand.h
     Renderer/RenderCommand.cpp
     Platform/OpenGL/OpenGLRendererAPI.cpp
+    ImGui/ImGuiLayer.h
+    ImGui/ImGuiLayer.cpp
+    ImGui/ImGuiBuild.cpp
 )
 
 #Packaged dependencies
