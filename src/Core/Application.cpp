@@ -1,5 +1,7 @@
 #include "Application.h"
 #include "Renderer/RenderCommand.h"
+#include "Editor/EditorLayer.h"
+
 #include <filesystem>
 
 
@@ -32,6 +34,10 @@ namespace BoxScore {
 
         m_imguiLayer = new ImGuiLayer();
         PushOverlay(m_imguiLayer);
+
+        EditorLayer* editor = new EditorLayer();
+        editor->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
+        PushLayer(editor);
     }
 
     Application::~Application() {}
@@ -65,7 +71,6 @@ namespace BoxScore {
     bool Application::OnWindowCloseEvent(WindowCloseEvent& e)
     {
         m_running = false;
-        BS_INFO("Window close event recieved. Shutting down.");
         return true;
     }
 

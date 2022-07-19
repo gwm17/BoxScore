@@ -1,4 +1,4 @@
 #include "backends/imgui_impl_opengl3.cpp"
 #include "backends/imgui_impl_glfw.cpp"
 
-#include "misc/cpp/imgui_stdlib.h" //Enable cpp stl enhancements
+#include "misc/cpp/imgui_stdlib.cpp" //Enable cpp stl enhancements

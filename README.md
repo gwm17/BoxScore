@@ -11,6 +11,10 @@ The general idea are that
 - Minimization for editing the BoxScore.c
 - Objectization makes the program more easy to maintain, debug, and develop.
 
+## ImGui Version
+
+This is a developmental version of BoxScore exploring use of the DearImGui library for UI, as well as advanced digitizer features. You've been warned.
+
 ## Class
 
 - DigitizerClass.h

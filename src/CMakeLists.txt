@@ -49,6 +49,10 @@ target_sources(BoxScore PRIVATE
     ImGui/ImGuiLayer.h
     ImGui/ImGuiLayer.cpp
     ImGui/ImGuiBuild.cpp
+    Editor/EditorLayer.h
+    Editor/EditorLayer.cpp
+    Editor/FileDialog.h
+    Editor/FileDialog.cpp
 )
 
 #Packaged dependencies

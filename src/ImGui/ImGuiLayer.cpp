@@ -87,8 +87,8 @@ namespace BoxScore {
 		//Demo's used to figure out how to do things.
 		//Should not be on for actual NavProject for 
 		//real use
-		static bool show = true;
-		ImGui::ShowDemoWindow(&show);
+		//static bool show = true;
+		//ImGui::ShowDemoWindow(&show);
 	}
 
 }
