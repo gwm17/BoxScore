@@ -33,6 +33,15 @@ namespace BoxScore {
 		EVENT_CATEGORY_SETUP(EventCategoryAcq);
 		EVENT_TYPE_SETUP(AcqUpdate);
 	};
+
+	class AcqDetectBoardsEvent : Event
+	{
+	public:
+		AcqDetectBoardsEvent() = default;
+
+		EVENT_CATEGORY_SETUP(EventCategoryAcq);
+		EVENT_TYPE_SETUP(AcqDetectBoards);
+	};
 }
 
 #endif

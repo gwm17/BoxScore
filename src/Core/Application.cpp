@@ -1,6 +1,7 @@
 #include "Application.h"
 #include "Renderer/RenderCommand.h"
 #include "Editor/EditorLayer.h"
+#include "DAQ/AcquisitionLayer.h"
 
 #include <filesystem>
 
@@ -38,6 +39,7 @@ namespace BoxScore {
         EditorLayer* editor = new EditorLayer();
         editor->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
         PushLayer(editor);
+        PushLayer(new AcquisitionLayer());
     }
 
     Application::~Application() {}

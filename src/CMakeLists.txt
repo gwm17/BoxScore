@@ -16,11 +16,11 @@ endif()
 target_precompile_headers(BoxScore PRIVATE bxscpch.h)
 
 target_sources(BoxScore PRIVATE
-    Core/Digitizer.h
-    Core/Digitizer.cpp
-    Core/DigitizerDefs.h
-    Core/Synchronize.h
-    Core/Synchronize.cpp
+    DAQ/Digitizer.h
+    DAQ/Digitizer.cpp
+    DAQ/DigitizerDefs.h
+    DAQ/Synchronize.h
+    DAQ/Synchronize.cpp
     Core/Logger.h
     Core/Logger.cpp
     Core/main.cpp
@@ -53,6 +53,8 @@ target_sources(BoxScore PRIVATE
     Editor/EditorLayer.cpp
     Editor/FileDialog.h
     Editor/FileDialog.cpp
+    DAQ/AcquisitionLayer.h
+    DAQ/AcquisitionLayer.cpp
 )
 
 #Packaged dependencies

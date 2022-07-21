@@ -15,6 +15,9 @@ namespace BoxScore {
     class Digitizer
     {
     public:
+
+        using Ref = std::shared_ptr<Digitizer>;
+
         Digitizer() :
             m_isActive(false), m_isConnected(false), m_lowBuffer(nullptr)
         {
