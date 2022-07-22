@@ -7,7 +7,7 @@ namespace BoxScore {
 
 	//For now all pure message, not sure what exactly needed yet
 
-	class AcqStartEvent : Event
+	class AcqStartEvent : public Event
 	{
 	public:
 		AcqStartEvent() = default;
@@ -16,7 +16,7 @@ namespace BoxScore {
 		EVENT_TYPE_SETUP(AcqStart);
 	};
 
-	class AcqStopEvent : Event
+	class AcqStopEvent : public Event
 	{
 	public:
 		AcqStopEvent() = default;
@@ -25,7 +25,7 @@ namespace BoxScore {
 		EVENT_TYPE_SETUP(AcqStop);
 	};
 
-	class AcqUpdateEvent : Event
+	class AcqUpdateEvent : public Event
 	{
 	public:
 		AcqUpdateEvent() = default;
@@ -34,7 +34,7 @@ namespace BoxScore {
 		EVENT_TYPE_SETUP(AcqUpdate);
 	};
 
-	class AcqDetectBoardsEvent : Event
+	class AcqDetectBoardsEvent : public Event
 	{
 	public:
 		AcqDetectBoardsEvent() = default;

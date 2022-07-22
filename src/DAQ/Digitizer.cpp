@@ -7,7 +7,7 @@
 namespace BoxScore {
 
     /////////////////////// Open Function ///////////////////////
-    Digitizer* OpenDigitizer(DigitizerArgs& args)
+    Digitizer::Ref OpenDigitizer(DigitizerArgs& args)
     {
         int code = CAEN_DGTZ_OpenDigitizer(args.type, args.linkNumber, args.conetNode, args.vmeAddress, &args.handle);
         if(code != CAEN_DGTZ_ErrorCode::CAEN_DGTZ_Success)
@@ -27,8 +27,8 @@ namespace BoxScore {
 
         switch(firmware)
         {
-            case CAEN_DGTZ_DPPFirmware_PHA: return new DigitizerPHA(args, info, code);
-            case CAEN_DGTZ_DPPFirmware_PSD: return new DigitizerPSD(args, info, code);
+            case CAEN_DGTZ_DPPFirmware_PHA: return std::make_shared<DigitizerPHA>(args, info, code);
+            case CAEN_DGTZ_DPPFirmware_PSD: return std::make_shared<DigitizerPSD>(args, info, code);
             case CAEN_DGTZ_DPPFirmware_DAW: return nullptr;
             case CAEN_DGTZ_DPPFirmware_CI: return nullptr;
 	        case CAEN_DGTZ_DPPFirmware_ZLE: return nullptr;

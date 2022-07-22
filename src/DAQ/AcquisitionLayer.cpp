@@ -90,6 +90,34 @@ namespace BoxScore {
 	//TODO: Need to handle board detection
 	bool AcquisitionLayer::OnAcqDetectBoardsEvent(AcqDetectBoardsEvent& e)
 	{
+		BS_INFO("Querying the system for digitizers. WARNING: BoxScore currently only supports OpticalLink connections");
+
+		m_digitizerChain.clear();
+
+		static int nNodes = 4;
+		static int nLinks = 8;
+
+		DigitizerArgs args;
+		for(int node=0; node<nNodes; node++)
+		{
+			for(int link=0; link<nLinks; link++)
+			{
+				args = DigitizerArgs();
+				args.conetNode = node;
+				args.linkNumber = link;
+				Digitizer::Ref digi = OpenDigitizer(args);
+				if(digi != nullptr)
+				{
+					args = digi->GetDigitizerArgs();
+					m_digitizerChain.push_back(digi);
+					BS_INFO("Found digitizer named {0} at link {1} on node {2}", args.name, args.linkNumber, args.conetNode);
+				}
+			}
+		}
+
+		if(m_digitizerChain.size() == 0)
+			BS_WARN("No digitizers found... check to see that they are on and connected to the system via optical link");
+
 		return true;
 	}
 

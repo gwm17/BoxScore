@@ -55,7 +55,7 @@ namespace BoxScore {
     };
 
     //Creation function
-    Digitizer* OpenDigitizer(DigitizerArgs& args);
+    Digitizer::Ref OpenDigitizer(DigitizerArgs& args);
 
     //Digitizers are better sliced by Firmware than by model. A lot of boards support multpile firmwares.
 
