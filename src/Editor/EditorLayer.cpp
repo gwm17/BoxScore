@@ -1,5 +1,7 @@
 #include "EditorLayer.h"
 #include "Core/Application.h"
+#include "Events/AcqEvent.h"
+#include "misc/cpp/imgui_stdlib.h"
 
 namespace BoxScore {
 
@@ -20,6 +22,11 @@ namespace BoxScore {
 
 	void EditorLayer::OnImGuiRender()
 	{
+        static std::string projectPath = "";
+        static uint32_t runNumber = 0;
+        static uint32_t stepSize = 1;
+        static uint32_t fastStepSize = 5;
+        static bool autoIncrFlag = true;
         // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
        // because it would be confusing to have two docking targets within each others.
         if (opt_fullscreen)
@@ -63,6 +70,7 @@ namespace BoxScore {
 
         style.WindowMinSize.x = minWinSizeX;
 
+        //Menu bar
         if (ImGui::BeginMenuBar())
         {
             if (ImGui::BeginMenu("File"))
@@ -82,10 +90,17 @@ namespace BoxScore {
                 }
                 ImGui::EndMenu();
             }
-            if (ImGui::BeginMenu("Add"))
+            if (ImGui::BeginMenu("Digitizer"))
             {
-                if (ImGui::MenuItem("Digitizer"))
+                if (ImGui::MenuItem("Scan for boards..."))
                 {
+                    AcqDetectBoardsEvent db_event;
+                    m_eventCallback(db_event);
+                }
+                if (ImGui::MenuItem("Disconnect boards..."))
+                {
+                    AcqDisconnectBoardsEvent db_event;
+                    m_eventCallback(db_event);
                 }
                 ImGui::EndMenu();
             }
@@ -102,6 +117,33 @@ namespace BoxScore {
             }
             ImGui::EndMenuBar();
         }
+        //End of menu bar
+
+        //Begin main ImGui window
+        if (ImGui::Begin("Controls"))
+        {
+            //Begin internal tab bar
+            if (ImGui::BeginTabBar("BS_TabBar", ImGuiTabBarFlags_None))
+            {
+                if (ImGui::BeginTabItem("Project"))
+                {
+                    ImGui::Text("Project Path: ");
+                    ImGui::SameLine();
+                    ImGui::Text(projectPath.c_str());
+
+                    ImGui::InputScalar("Run Number", ImGuiDataType_U32, &runNumber, &stepSize, &fastStepSize);
+                    ImGui::SameLine();
+                    ImGui::Checkbox("Auto-increment", &autoIncrFlag);
+
+
+                    ImGui::EndTabItem();
+                }
+                ImGui::EndTabBar();
+            }
+            //End internal tab bar
+        }
+        ImGui::End();
+        
 
         auto fd_result = m_fileDialog.RenderFileDialog();
 

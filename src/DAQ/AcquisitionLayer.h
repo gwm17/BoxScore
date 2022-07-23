@@ -24,19 +24,23 @@ namespace BoxScore {
 		bool IsRunning() { return m_running; }
 	
 	private:
+		//Event handlers
 		bool OnAcqStartEvent(AcqStartEvent& e);
 		bool OnAcqStopEvent(AcqStopEvent& e);
 		bool OnAcqDetectBoardsEvent(AcqDetectBoardsEvent& e);
 		bool OnAcqPHAParametersEvent(AcqPHAParametersEvent& e);
 		bool OnAcqPSDParametersEvent(AcqPSDParametersEvent& e);
 		bool OnAcqSyncArgsEvent(AcqSyncArgsEvent& e);
+		bool OnAcqDisconnectBoardsEvent(AcqDisconnectBoardsEvent& e);
 
+		//Functionality
 		void CreateAcqThread();
 		void DestroyAcqThread();
 		void SetSynchronization(const SyncArgs& args);
 		bool StartDigitizers();
 		bool StopDigitizers();
 
+		//Acquistion loop
 		void Run();
 
 		std::vector<Digitizer::Ref> m_digitizerChain;

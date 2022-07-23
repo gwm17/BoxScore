@@ -31,6 +31,7 @@ namespace BoxScore {
 		dispatch.Dispatch<AcqPSDParametersEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqPSDParametersEvent));
 		dispatch.Dispatch<AcqSyncArgsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqSyncArgsEvent));
 		dispatch.Dispatch<AcqDetectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDetectBoardsEvent));
+		dispatch.Dispatch<AcqDisconnectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDisconnectBoardsEvent));
 	}
 	
 	void AcquisitionLayer::CreateAcqThread()
@@ -175,6 +176,22 @@ namespace BoxScore {
 		if(m_digitizerChain.size() == 0)
 			BS_WARN("No digitizers found... check to see that they are on and connected to the system via optical link");
 
+		return true;
+	}
+
+	bool AcquisitionLayer::OnAcqDisconnectBoardsEvent(AcqDisconnectBoardsEvent& e)
+	{
+		if (m_running)
+		{
+			BS_WARN("Cannot disconnect digitizers while the acquisition is running!");
+			return true;
+		}
+
+		BS_INFO("Disconnecting digitizers...");
+
+		m_digitizerChain.clear();
+
+		BS_INFO("Digitizers disconnected.");
 		return true;
 	}
 
