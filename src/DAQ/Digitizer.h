@@ -44,6 +44,7 @@ namespace BoxScore {
         DigitizerArgs m_args;
         DigitizerParameters m_digitizerParams;
         std::vector<BSData> m_outputData;
+        std::vector<BSData> m_emptyResult;
 
         bool m_isActive;
         bool m_isConnected;

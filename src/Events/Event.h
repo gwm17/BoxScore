@@ -12,7 +12,7 @@ namespace BoxScore {
 		KeyPressed, KeyReleased, KeyTyped,
 		MouseButtonPressed, MouseButtonReleased, MouseScrolled, MouseMoved,
 		AppUpdate,
-		AcqStart, AcqStop, AcqUpdate, AcqDetectBoards
+		AcqStart, AcqStop, AcqPHAParameters, AcqPSDParameters, AcqSyncArgs, AcqDetectBoards
 	};
 
 	enum EventCategory

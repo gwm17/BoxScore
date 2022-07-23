@@ -103,39 +103,27 @@ namespace BoxScore {
 
     void DigitizerPHA::SetDigitizerParameters(const DigitizerParameters& params)
     {
-        if(!m_isConnected)
+        if(!m_isConnected || m_isActive)
             return;
 
-        if(m_isActive)
-        {
-            StopAquisition();
-        }
         m_digitizerParams = params;
         LoadDigitizerParameters();
     }
 
     void DigitizerPHA::SetChannelParameters(const PHAParameters& params, int channel)
     {
-        if(!m_isConnected)
+        if(!m_isConnected || m_isActive)
             return;
 
-        if(m_isActive)
-        {
-            StopAquisition();
-        }
         m_channelParams[channel] = params;
         LoadChannelParameters();
     }
 
     void DigitizerPHA::SetWaveformParameters(const PHAWaveParameters& params)
     {
-        if(!m_isConnected)
+        if(!m_isConnected || m_isActive)
             return;
 
-        if(m_isActive)
-        {
-            StopAquisition();
-        }
         m_waveParams = params;
         LoadWaveformParameters();
     }
@@ -244,6 +232,11 @@ namespace BoxScore {
             return m_outputData;
 
         m_args.status |= CAEN_DGTZ_ReadData(m_args.handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, m_lowBuffer, &m_lowBufferSize);
+        if (m_lowBufferSize == 0)
+        {
+            return m_emptyResult;
+        }
+
         m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventSize);
 
         for(int i=0; i<m_internalData.Channels; i++)
@@ -338,39 +331,27 @@ namespace BoxScore {
 
     void DigitizerPSD::SetDigitizerParameters(const DigitizerParameters& params)
     {
-        if(!m_isConnected)
+        if(!m_isConnected || m_isActive)
             return;
 
-        if(m_isActive)
-        {
-            StopAquisition();
-        }
         m_digitizerParams = params;
         LoadDigitizerParameters();
     }
 
     void DigitizerPSD::SetChannelParameters(const PSDParameters& params, int channel)
     {
-        if(!m_isConnected)
+        if(!m_isConnected || m_isActive)
             return;
 
-        if(m_isActive)
-        {
-            StopAquisition();
-        }
         m_channelParams[channel] = params;
         LoadChannelParameters();
     }
 
     void DigitizerPSD::SetWaveformParameters(const PSDWaveParameters& params)
     {
-        if(!m_isConnected)
+        if(!m_isConnected || m_isActive)
             return;
 
-        if(m_isActive)
-        {
-            StopAquisition();
-        }
         m_waveParams = params;
         LoadWaveformParameters();
     }
@@ -472,6 +453,11 @@ namespace BoxScore {
             return m_outputData;
 
         m_args.status |= CAEN_DGTZ_ReadData(m_args.handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, m_lowBuffer, &m_lowBufferSize);
+        if (m_lowBufferSize == 0)
+        {
+            return m_emptyResult;
+        }
+
         m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventSize);
 
         for(int i=0; i<m_internalData.Channels; i++)

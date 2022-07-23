@@ -29,7 +29,7 @@ namespace BoxScore {
             //report unsupported method
             return 0;
         }
-        int error_code;
+        int error_code = 0;
         int current_handle;
 
         std::vector<double> samplingPeriods;

@@ -4,6 +4,7 @@
 #include "Core/Layer.h"
 #include "Events/AcqEvent.h"
 #include "Digitizer.h"
+#include "Synchronize.h"
 
 #include <thread>
 #include <mutex>
@@ -26,14 +27,20 @@ namespace BoxScore {
 		bool OnAcqStartEvent(AcqStartEvent& e);
 		bool OnAcqStopEvent(AcqStopEvent& e);
 		bool OnAcqDetectBoardsEvent(AcqDetectBoardsEvent& e);
-		bool OnAcqUpdateEvent(AcqUpdateEvent& e);
+		bool OnAcqPHAParametersEvent(AcqPHAParametersEvent& e);
+		bool OnAcqPSDParametersEvent(AcqPSDParametersEvent& e);
+		bool OnAcqSyncArgsEvent(AcqSyncArgsEvent& e);
 
 		void CreateAcqThread();
 		void DestroyAcqThread();
+		void SetSynchronization(const SyncArgs& args);
+		bool StartDigitizers();
+		bool StopDigitizers();
 
 		void Run();
 
 		std::vector<Digitizer::Ref> m_digitizerChain;
+		SyncArgs m_syncStatus;
 		
 		std::thread* m_acqThread;
 		std::mutex m_acqMutex;

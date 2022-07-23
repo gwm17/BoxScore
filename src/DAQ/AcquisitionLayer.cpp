@@ -27,7 +27,9 @@ namespace BoxScore {
 
 		dispatch.Dispatch<AcqStartEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqStartEvent));
 		dispatch.Dispatch<AcqStopEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqStopEvent));
-		dispatch.Dispatch<AcqUpdateEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqUpdateEvent));
+		dispatch.Dispatch<AcqPHAParametersEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqPHAParametersEvent));
+		dispatch.Dispatch<AcqPSDParametersEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqPSDParametersEvent));
+		dispatch.Dispatch<AcqSyncArgsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqSyncArgsEvent));
 		dispatch.Dispatch<AcqDetectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDetectBoardsEvent));
 	}
 	
@@ -82,8 +84,63 @@ namespace BoxScore {
 	}
 
 	//TODO: Need to handle modifications to the acquisition.
-	bool AcquisitionLayer::OnAcqUpdateEvent(AcqUpdateEvent& e)
+	bool AcquisitionLayer::OnAcqPHAParametersEvent(AcqPHAParametersEvent& e)
 	{
+		if (m_running)
+		{
+			BS_WARN("Cannot update digitizer parameters while acquisition is running!");
+			return true;
+		}
+
+		std::shared_ptr<DigitizerPHA> digitizerHandle = std::static_pointer_cast<DigitizerPHA>(m_digitizerChain[e.GetBoard()]);
+		if (digitizerHandle == nullptr)
+		{
+			BS_ERROR("Unable to cast board {0} as DigitizerPHA! PHA event not associated with correct board!");
+			return true;
+		}
+
+		//apply parameters
+		std::vector<PHAParameters> channels = e.GetChannelParams();
+		digitizerHandle->SetDigitizerParameters(e.GetDigitizerParams());
+		for(size_t i=0; i<channels.size(); i++)
+			digitizerHandle->SetChannelParameters(channels[i], i);
+		digitizerHandle->SetWaveformParameters(e.GetWaveformParams());
+		return true;
+	}
+
+	bool AcquisitionLayer::OnAcqPSDParametersEvent(AcqPSDParametersEvent& e)
+	{
+		if (m_running)
+		{
+			BS_WARN("Cannot update digitizer parameters while acquisition is running!");
+			return true;
+		}
+
+		std::shared_ptr<DigitizerPSD> digitizerHandle = std::static_pointer_cast<DigitizerPSD>(m_digitizerChain[e.GetBoard()]);
+		if (digitizerHandle == nullptr)
+		{
+			BS_ERROR("Unable to cast board {0} as DigitizerPHA! PHA event not associated with correct board!");
+			return true;
+		}
+
+		//apply parameters
+		std::vector<PSDParameters> channels = e.GetChannelParams();
+		digitizerHandle->SetDigitizerParameters(e.GetDigitizerParams());
+		for (size_t i = 0; i < channels.size(); i++)
+			digitizerHandle->SetChannelParameters(channels[i], i);
+		digitizerHandle->SetWaveformParameters(e.GetWaveformParams());
+		return true;
+	}
+
+	bool AcquisitionLayer::OnAcqSyncArgsEvent(AcqSyncArgsEvent& e)
+	{
+		if (m_running)
+		{
+			BS_WARN("Cannot update synchronization settings while acquisition is running!");
+			return true;
+		}
+
+		SetSynchronization(e.GetArgs());
 		return true;
 	}
 
@@ -121,13 +178,104 @@ namespace BoxScore {
 		return true;
 	}
 
-	void AcquisitionLayer::Run()
+	void AcquisitionLayer::SetSynchronization(const SyncArgs& args)
 	{
-		
-		while (m_running)
+		if (m_digitizerChain.size() <= 1)
 		{
-			//Do the acq stuff hahaha
+			BS_WARN("Cannot synchronize digitizer chain of size {0}", m_digitizerChain.size());
+			return;
 		}
 
+		int error_code = SetChainSynchronize(args, m_digitizerChain);
+		if (error_code != CAEN_DGTZ_Success)
+		{
+			BS_ERROR("Unable to synchronize digitizers, CAEN reports error {0}", error_code);
+			return;
+		}
+
+		m_syncStatus = args;
+	}
+
+	bool AcquisitionLayer::StartDigitizers()
+	{
+		//Start digitizers
+		if (m_digitizerChain.size() == 0)
+		{
+			BS_ERROR("Cannot run data aquisition without any digitizers!");
+			return false;
+		}
+		else if (m_digitizerChain.size() == 1)
+		{
+			m_digitizerChain[0]->StartAquisition();
+			if (!m_digitizerChain[0]->IsActive())
+			{
+				BS_ERROR("Unable to start single digitizer config!");
+				return false;
+			}
+		}
+		else
+		{
+			int ec = StartSynchronizedRun(m_syncStatus, m_digitizerChain);
+			if (ec != CAEN_DGTZ_Success)
+			{
+				BS_ERROR("Unable to start synchronized digitizer chain");
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	bool AcquisitionLayer::StopDigitizers()
+	{
+		//Stop digitizers
+		if (m_digitizerChain.size() == 0)
+		{
+			BS_ERROR("How the hell did you get here?");
+			return false;
+		}
+		else if (m_digitizerChain.size() == 1)
+		{
+			m_digitizerChain[0]->StopAquisition();
+			if (m_digitizerChain[0]->IsActive())
+			{
+				BS_ERROR("Single digitizer stop failed...");
+				return false;
+			}
+		}
+		else
+		{
+			int ec = StopSynchronizedRun(m_syncStatus, m_digitizerChain);
+			if (ec != CAEN_DGTZ_Success)
+			{
+				BS_ERROR("Failed to stop digitizer chain...");
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	void AcquisitionLayer::Run()
+	{
+		if (!StartDigitizers())
+			return;
+
+		std::vector<BSData> recievedData;
+		
+		//Run aquisition loop
+		while (m_running)
+		{
+			for (auto& digitizer : m_digitizerChain)
+			{
+				recievedData = digitizer->ReadData();
+				if (recievedData.empty())
+					continue;
+
+				//Do some stuff with data...
+			}
+		}
+
+		StopDigitizers();
 	}
 }
