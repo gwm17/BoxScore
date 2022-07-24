@@ -6,6 +6,7 @@
 #include "LayerStack.h"
 #include "Window.h"
 #include "ImGui/ImGuiLayer.h"
+#include "BSProject.h"
 
 namespace BoxScore {
 
@@ -43,6 +44,8 @@ namespace BoxScore {
         LayerStack m_layerStack;
 
         ImGuiLayer* m_imguiLayer;
+
+        BSProject::Ref m_project;
 
         static Application* s_instance;
     };

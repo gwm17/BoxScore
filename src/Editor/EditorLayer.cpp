@@ -5,9 +5,12 @@
 
 namespace BoxScore {
 
-	EditorLayer::EditorLayer() :
-		Layer("EditorLayer")
+    EditorLayer::EditorLayer(const BSProject::Ref& project) :
+        Layer("EditorLayer"), m_project(project)
 	{
+        m_projectPath = m_project->GetProjectPath().string();
+        m_runNumber = m_project->GetRunNumber();
+        m_digitizerArgList = m_project->GetDigitizerArgsList();
 	}
 
 	EditorLayer::~EditorLayer() {}
@@ -18,15 +21,27 @@ namespace BoxScore {
 
 	void EditorLayer::OnUpdate() {}
 
-	void EditorLayer::OnEvent(Event& e) {}
+	void EditorLayer::OnEvent(Event& e)
+    {
+        EventDispatcher dispatch(e);
+        dispatch.Dispatch<AcqBoardsFoundEvent>(BIND_EVENT_FUNCTION(EditorLayer::OnAcqBoardsFoundEvent));
+    }
+
+    bool EditorLayer::OnAcqBoardsFoundEvent(AcqBoardsFoundEvent& e)
+    {
+        BS_INFO("Found event {0}", e);
+        m_digitizerArgList = m_project->GetDigitizerArgsList();
+        BS_INFO("Arg list size {0}", m_digitizerArgList.size());
+        return true;
+    }
 
 	void EditorLayer::OnImGuiRender()
 	{
-        static std::string projectPath = "";
-        static uint32_t runNumber = 0;
         static uint32_t stepSize = 1;
         static uint32_t fastStepSize = 5;
         static bool autoIncrFlag = true;
+        static std::string projectFilePath = "";
+
         // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
        // because it would be confusing to have two docking targets within each others.
         if (opt_fullscreen)
@@ -75,13 +90,13 @@ namespace BoxScore {
         {
             if (ImGui::BeginMenu("File"))
             {
-                if (ImGui::MenuItem("Open"))
+                if (ImGui::MenuItem("Open Project..."))
                 {
                     m_fileDialog.OpenDialog(FileDialog::Type::OpenFile);
                 }
-                if (ImGui::MenuItem("Save"))
+                if (ImGui::MenuItem("Save Project"))
                 {
-                    m_fileDialog.OpenDialog(FileDialog::Type::SaveFile);
+                    //m_fileDialog.OpenDialog(FileDialog::Type::SaveFile);
                 }
                 if (ImGui::MenuItem("Exit"))
                 {
@@ -127,11 +142,14 @@ namespace BoxScore {
             {
                 if (ImGui::BeginTabItem("Project"))
                 {
-                    ImGui::Text("Project Path: ");
+                    ImGui::Text("Project File: ");
                     ImGui::SameLine();
-                    ImGui::Text(projectPath.c_str());
+                    ImGui::Text(projectFilePath.c_str());
+                    ImGui::Text("Project Directory: ");
+                    ImGui::SameLine();
+                    ImGui::Text(m_projectPath.c_str());
 
-                    ImGui::InputScalar("Run Number", ImGuiDataType_U32, &runNumber, &stepSize, &fastStepSize);
+                    ImGui::InputScalar("Run Number", ImGuiDataType_U32, &m_runNumber, &stepSize, &fastStepSize);
                     ImGui::SameLine();
                     ImGui::Checkbox("Auto-increment", &autoIncrFlag);
 
@@ -145,7 +163,14 @@ namespace BoxScore {
         ImGui::End();
         
 
-        auto fd_result = m_fileDialog.RenderFileDialog();
+        auto fd_result = m_fileDialog.RenderFileDialog(".bsproj");
+        if (!fd_result.first.empty() && fd_result.second == FileDialog::Type::OpenFile)
+        {
+            projectFilePath = fd_result.first;
+            //Read project file, load in saved data....
+            m_project->SetProjectPath("");
+            m_projectPath = m_project->GetProjectPath().string();
+        }
 
         ImGui::End();
 	}

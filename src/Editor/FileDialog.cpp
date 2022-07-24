@@ -96,12 +96,20 @@ namespace BoxScore {
 			}
 			ImGui::TableNextColumn();
 			ImGui::Text("N/A");
-			for (auto& entry : std::filesystem::directory_iterator(m_currentPath))
+			for (auto& entry : std::filesystem::directory_iterator(m_currentPath, std::filesystem::directory_options::skip_permission_denied))
 			{
 				if (entry.is_directory())
 				{
+					try //Windows C:/ errors can only be try caught.
+					{
+						text = std::filesystem::relative(entry.path(), m_currentPath).string();
+					}
+					catch (std::exception& e)
+					{
+						continue;
+					}
 					ImGui::TableNextRow();
-					text = std::filesystem::relative(entry.path(), m_currentPath).string();
+					
 					ImGui::TableNextColumn();
 					if (ImGui::Selectable(text.c_str(), false, select_flags))
 					{
@@ -160,12 +168,19 @@ namespace BoxScore {
 			}
 			ImGui::TableNextColumn();
 			ImGui::Text("N/A");
-			for (auto& entry : std::filesystem::directory_iterator(m_currentPath))
+			for (auto& entry : std::filesystem::directory_iterator(m_currentPath, std::filesystem::directory_options::skip_permission_denied))
 			{
 				if (entry.is_directory())
 				{
+					try //Windows C:/ errors can only be try caught.
+					{
+						text = std::filesystem::relative(entry.path(), m_currentPath).string();
+					}
+					catch (std::exception& e)
+					{
+						continue;
+					}
 					ImGui::TableNextRow();
-					text = std::filesystem::relative(entry.path(), m_currentPath).string();
 					ImGui::TableNextColumn();
 					if (ImGui::Selectable(text.c_str(), false, select_flags))
 					{
@@ -221,12 +236,19 @@ namespace BoxScore {
 			}
 			ImGui::TableNextColumn();
 			ImGui::Text("N/A");
-			for (auto& entry : std::filesystem::directory_iterator(m_currentPath))
+			for (auto& entry : std::filesystem::directory_iterator(m_currentPath, std::filesystem::directory_options::skip_permission_denied))
 			{
 				ImGui::TableNextRow();
 				if (entry.is_directory())
 				{
-					text =  std::filesystem::relative(entry.path(), m_currentPath).string();
+					try //Windows C:/ errors can only be try caught.
+					{
+						text = std::filesystem::relative(entry.path(), m_currentPath).string();
+					}
+					catch (std::exception& e)
+					{
+						continue;
+					}
 					ImGui::TableNextColumn();
 					if (ImGui::Selectable(text.c_str(), false, select_flags))
 					{

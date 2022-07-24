@@ -3,8 +3,8 @@
 
 namespace BoxScore {
 
-	AcquisitionLayer::AcquisitionLayer() :
-		m_acqThread(nullptr), m_running(false)
+	AcquisitionLayer::AcquisitionLayer(const BSProject::Ref& project) :
+		m_project(project), m_acqThread(nullptr), m_running(false)
 	{
 	}
 
@@ -176,6 +176,12 @@ namespace BoxScore {
 		if(m_digitizerChain.size() == 0)
 			BS_WARN("No digitizers found... check to see that they are on and connected to the system via optical link");
 
+		m_project->SetDigitizerArgsList(GetArgList());
+
+		//Emit back out the argument list so that the editor gets updated
+		AcqBoardsFoundEvent bf_event;
+		m_callbackFunction(bf_event);
+
 		return true;
 	}
 
@@ -192,7 +198,23 @@ namespace BoxScore {
 		m_digitizerChain.clear();
 
 		BS_INFO("Digitizers disconnected.");
+
+		m_project->SetDigitizerArgsList(GetArgList());
+
+		//Emit back out the argument list so that the editor gets updated
+		AcqBoardsFoundEvent bf_event;
+		m_callbackFunction(bf_event);
+		
 		return true;
+	}
+
+	std::vector<DigitizerArgs> AcquisitionLayer::GetArgList()
+	{
+		std::vector<DigitizerArgs> list;
+		list.reserve(m_digitizerChain.size());
+		for (auto& digitizer : m_digitizerChain)
+			list.push_back(digitizer->GetDigitizerArgs());
+		return list;
 	}
 
 	void AcquisitionLayer::SetSynchronization(const SyncArgs& args)
@@ -290,6 +312,7 @@ namespace BoxScore {
 					continue;
 
 				//Do some stuff with data...
+				m_project->PipeData(recievedData);
 			}
 		}
 

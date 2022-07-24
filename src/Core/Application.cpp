@@ -36,10 +36,16 @@ namespace BoxScore {
         m_imguiLayer = new ImGuiLayer();
         PushOverlay(m_imguiLayer);
 
-        EditorLayer* editor = new EditorLayer();
+        m_project = std::make_shared<BSProject>();
+
+        EditorLayer* editor = new EditorLayer(m_project);
         editor->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
         PushLayer(editor);
-        PushLayer(new AcquisitionLayer());
+
+        AcquisitionLayer* acq = new AcquisitionLayer(m_project);
+        acq->SetEventCallback(BIND_EVENT_FUNCTION(Application::OnEvent));
+        PushLayer(acq);
+
     }
 
     Application::~Application() {}

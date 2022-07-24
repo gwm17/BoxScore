@@ -5,6 +5,7 @@
 #include "Events/AcqEvent.h"
 #include "Digitizer.h"
 #include "Synchronize.h"
+#include "Core/BSProject.h"
 
 #include <thread>
 #include <mutex>
@@ -15,14 +16,18 @@ namespace BoxScore {
 	class AcquisitionLayer : public Layer
 	{
 	public:
-		AcquisitionLayer();
+		using EventCallbackFunc = std::function<void(Event&)>;
+
+		AcquisitionLayer(const BSProject::Ref& project);
 		~AcquisitionLayer();
+
+		void SetEventCallback(const EventCallbackFunc& func) { m_callbackFunction = func; }
 
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Event& e) override;
 
 		bool IsRunning() { return m_running; }
-	
+
 	private:
 		//Event handlers
 		bool OnAcqStartEvent(AcqStartEvent& e);
@@ -39,9 +44,14 @@ namespace BoxScore {
 		void SetSynchronization(const SyncArgs& args);
 		bool StartDigitizers();
 		bool StopDigitizers();
+		std::vector<DigitizerArgs> GetArgList();
 
 		//Acquistion loop
 		void Run();
+
+		EventCallbackFunc m_callbackFunction;
+
+		BSProject::Ref m_project;
 
 		std::vector<Digitizer::Ref> m_digitizerChain;
 		SyncArgs m_syncStatus;
