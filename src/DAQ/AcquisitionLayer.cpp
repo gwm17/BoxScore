@@ -3,6 +3,11 @@
 
 namespace BoxScore {
 
+	static bool SortByHandle(const Digitizer::Ref& digi1, const Digitizer::Ref& digi2)
+	{
+		return digi1->GetDigitizerArgs().handle < digi2->GetDigitizerArgs().handle;
+	}
+
 	AcquisitionLayer::AcquisitionLayer(const BSProject::Ref& project) :
 		m_project(project), m_acqThread(nullptr), m_running(false)
 	{
@@ -173,8 +178,10 @@ namespace BoxScore {
 			}
 		}
 
-		if(m_digitizerChain.size() == 0)
+		if (m_digitizerChain.size() == 0)
 			BS_WARN("No digitizers found... check to see that they are on and connected to the system via optical link");
+		else
+			std::sort(m_digitizerChain.begin(), m_digitizerChain.end(), SortByHandle);
 
 		m_project->SetDigitizerArgsList(GetArgList());
 
