@@ -111,6 +111,7 @@ namespace BoxScore {
         CAEN_DGTZ_BoardModel_t model = CAEN_DGTZ_V1730; //Find way for default?
         CAEN_DGTZ_DPPFirmware_t firmware = CAEN_DGTZ_NotDPPFirmware;
         std::string name = "None";
+        int channels = 0; //number of channels in board
         int status = CAEN_DGTZ_NotYetImplemented;
     };
 

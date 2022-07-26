@@ -11,6 +11,9 @@ namespace BoxScore {
         m_projectPath = m_project->GetProjectPath().string();
         m_runNumber = m_project->GetRunNumber();
         m_digitizerArgList = m_project->GetDigitizerArgsList();
+
+        //temp
+        m_digiPanels.emplace_back(DigitizerArgs());
 	}
 
 	EditorLayer::~EditorLayer() {}
@@ -32,6 +35,10 @@ namespace BoxScore {
         BS_INFO("Found event {0}", e);
         m_digitizerArgList = m_project->GetDigitizerArgsList();
         BS_INFO("Arg list size {0}", m_digitizerArgList.size());
+
+        m_digiPanels.clear();
+        for (auto& args : m_digitizerArgList)
+            m_digiPanels.emplace_back(args);
         return true;
     }
 
@@ -96,7 +103,7 @@ namespace BoxScore {
                 }
                 if (ImGui::MenuItem("Save Project"))
                 {
-                    //m_fileDialog.OpenDialog(FileDialog::Type::SaveFile);
+                    m_fileDialog.OpenDialog(FileDialog::Type::SaveFile);
                 }
                 if (ImGui::MenuItem("Exit"))
                 {
@@ -117,17 +124,6 @@ namespace BoxScore {
                     AcqDisconnectBoardsEvent db_event;
                     m_eventCallback(db_event);
                 }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Remove"))
-            {
-                if (ImGui::MenuItem("Digitizer"))
-                {
-                }
-                ImGui::EndMenu();
-            }
-            if (ImGui::BeginMenu("Export"))
-            {
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -156,6 +152,9 @@ namespace BoxScore {
 
                     ImGui::EndTabItem();
                 }
+
+                for (auto& panel : m_digiPanels)
+                    panel.OnImGuiRender();
                 ImGui::EndTabBar();
             }
             //End internal tab bar
@@ -164,12 +163,27 @@ namespace BoxScore {
         
 
         auto fd_result = m_fileDialog.RenderFileDialog(".bsproj");
-        if (!fd_result.first.empty() && fd_result.second == FileDialog::Type::OpenFile)
+        if (!fd_result.first.empty())
         {
-            projectFilePath = fd_result.first;
-            //Read project file, load in saved data....
-            m_project->SetProjectPath("");
-            m_projectPath = m_project->GetProjectPath().string();
+            switch (fd_result.second)
+            {
+                case FileDialog::Type::OpenFile:
+                {
+                    projectFilePath = fd_result.first;
+                    //Read project file, load in saved data....
+                    m_project->SetProjectPath("");
+                    m_projectPath = m_project->GetProjectPath().string();
+                    break;
+                }
+                case FileDialog::Type::SaveFile:
+                {
+                    //Do some stuff...
+                    break;
+                }
+                case FileDialog::Type::OpenDir: break; //Unused
+                case FileDialog::Type::None: break; //Null result
+            }
+            
         }
 
         ImGui::End();

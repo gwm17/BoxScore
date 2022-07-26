@@ -65,6 +65,7 @@ namespace BoxScore {
             m_args.model = CAEN_DGTZ_BoardModel_t::CAEN_DGTZ_DT5720;
         m_args.name = info.ModelName + std::to_string(info.SerialNumber);
         m_args.firmware = CAEN_DGTZ_DPPFirmware_PHA;
+        m_args.channels = info.Channels;
 
         m_channelParams.resize(info.Channels);
         m_outputData.resize(info.Channels);
@@ -293,6 +294,7 @@ namespace BoxScore {
             m_args.model = CAEN_DGTZ_BoardModel_t::CAEN_DGTZ_DT5720;
         m_args.name = info.ModelName + std::to_string(info.SerialNumber);
         m_args.firmware = CAEN_DGTZ_DPPFirmware_PSD;
+        m_args.channels = info.Channels;
 
         m_channelParams.resize(info.Channels);
         m_outputData.resize(info.Channels);

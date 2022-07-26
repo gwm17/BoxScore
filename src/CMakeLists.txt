@@ -55,7 +55,9 @@ target_sources(BoxScore PRIVATE
     Editor/FileDialog.cpp
     DAQ/AcquisitionLayer.h
     DAQ/AcquisitionLayer.cpp
- "Core/BSProject.h" "Core/BSProject.cpp")
+    Core/BSProject.h
+    Core/BSProject.cpp
+ "Editor/DigitizerPanel.h" "Editor/DigitizerPanel.cpp")
 
 #Packaged dependencies
 target_link_libraries(BoxScore PRIVATE imgui glfw glad)

@@ -6,6 +6,7 @@
 #include "FileDialog.h"
 #include "Events/AcqEvent.h"
 #include "Core/BSProject.h"
+#include "DigitizerPanel.h"
 
 #include "imgui.h"
 
@@ -38,6 +39,7 @@ namespace BoxScore {
 		std::vector<DigitizerArgs> m_digitizerArgList;
 
 		FileDialog m_fileDialog;
+		std::vector<DigitizerPanel> m_digiPanels;
 
 		//ImGui Settings
 		bool dockspaceOpen = true;
