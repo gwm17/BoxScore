@@ -157,13 +157,13 @@ namespace BoxScore {
 
 		m_digitizerChain.clear();
 
-		static int nNodes = 4;
-		static int nLinks = 8;
+		static int nLinks = 4;
+		static int nNodes = 8;
 
 		DigitizerArgs args;
-		for(int node=0; node<nNodes; node++)
+		for(int link=0; link<nLinks; link++)
 		{
-			for(int link=0; link<nLinks; link++)
+			for(int node=0; node<nNodes; node++)
 			{
 				args = DigitizerArgs();
 				args.conetNode = node;

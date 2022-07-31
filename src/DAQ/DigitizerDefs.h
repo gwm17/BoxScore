@@ -118,7 +118,7 @@ namespace BoxScore {
     //Parameters that are applied to digitizer as a whole
     struct DigitizerParameters
     {
-        uint32_t recordLength = 4096;
+        uint32_t recordLength = 150;
         uint32_t channelMask = 0xffff;
         int eventAggr = 0; //Allow CAEN to optimize
         CAEN_DGTZ_AcqMode_t acqMode = CAEN_DGTZ_SW_CONTROLLED;
@@ -132,7 +132,7 @@ namespace BoxScore {
     struct PHAParameters
     {
         bool isEnabled = true;
-        uint32_t preTriggerSamples = 1000;
+        uint32_t preTriggerSamples = 30;
         float dcOffset = 0.2f;
         CAEN_DGTZ_PulsePolarity_t pulsePolarity = CAEN_DGTZ_PulsePolarityPositive;
         DynamicRange dynamicRange = DynamicRange::Volt_2;

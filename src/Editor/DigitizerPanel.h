@@ -2,6 +2,7 @@
 #define DIGITIZER_PANEL_H
 
 #include "DAQ/DigitizerDefs.h"
+#include "imgui.h"
 
 namespace BoxScore {
 
@@ -32,6 +33,11 @@ namespace BoxScore {
 
 	private:
 		void Init();
+		bool RenderDigitizerParams();
+		bool RenderPHAParameters();
+		bool RenderPSDParameters();
+		bool RenderPHAWaveParameters();
+		bool RenderPSDWaveParameters();
 
 		DigitizerArgs m_args;
 		DigitizerParameters m_params;
@@ -43,6 +49,8 @@ namespace BoxScore {
 
 		std::string m_panelName;
 		std::string m_settingsFile;
+
+		const ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersInner | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Hideable;
 	};
 
 }
