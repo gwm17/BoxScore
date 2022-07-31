@@ -12,56 +12,6 @@ namespace BoxScore {
 		}
 	}
 
-	static std::string BoardIOToString(int value)
-	{
-		switch (value)
-		{
-		case CAEN_DGTZ_IOLevel_NIM: return "NIM";
-		case CAEN_DGTZ_IOLevel_TTL: return "TTL";
-		}
-		return "None";
-	}
-
-	static std::string PolarityToString(int value)
-	{
-		switch (value)
-		{
-		case CAEN_DGTZ_PulsePolarityPositive: return "Positive";
-		case CAEN_DGTZ_PulsePolarityNegative: return "Negative";
-		}
-
-		return "None";
-	}
-
-	static std::string DynamicRangeToString(DynamicRange range)
-	{
-		switch (range)
-		{
-		case DynamicRange::MilliVolt_500: return "0.5V";
-		case DynamicRange::Volt_2: return "2.0V";
-		}
-		return "None";
-	}
-
-	//Simple integer power calc
-	static int Power(int base, int order)
-	{
-		int value = 1;
-		for (int i = 1; i <= order; i++)
-			value = value * base;
-		return value;
-	}
-
-	static std::string IntSwitchToString(int value)
-	{
-		switch (value)
-		{
-		case 0: return "Off";
-		case 1: return "On";
-		}
-		return "None";
-	}
-
 	DigitizerPanel::DigitizerPanel(const DigitizerArgs& args) :
 		m_args(args)
 	{
@@ -138,9 +88,30 @@ namespace BoxScore {
 			ImGui::Text("Board Global Settings");
 			changed |= RenderDigitizerParams();
 
-			ImGui::NewLine();
-			ImGui::Text("PHA Channel Settings");
-			changed |= RenderPHAParameters();
+			switch (m_panelType)
+			{
+				case Type::PHA:
+				{
+					ImGui::NewLine();
+					ImGui::Text("PHA Channel Settings");
+					changed |= RenderPHAParameters();
+					ImGui::NewLine();
+					ImGui::Text("PHA Waves Settings");
+					changed |= RenderPHAWaveParameters();
+					break;
+				}
+				case Type::PSD:
+				{
+					ImGui::NewLine();
+					ImGui::Text("PSD Channel Settings");
+					changed |= RenderPSDParameters();
+					ImGui::NewLine();
+					ImGui::Text("PSD Waves Settings");
+					changed |= RenderPSDWaveParameters();
+					break;
+				}
+				case Type::None: break;
+			}
 
 			ImGui::EndTabItem();
 		}
@@ -249,6 +220,8 @@ namespace BoxScore {
 			for (int i = 0; i < m_phaChannels.size(); i++)
 			{
 				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				ImGui::Text("%d", i);
 				ImGui::TableNextColumn();
 				auto& channel = m_phaChannels[i];
 				if (ImGui::RadioButton(fmt::format("##channelEnable_{0}", i).c_str(), channel.isEnabled))
@@ -387,7 +360,7 @@ namespace BoxScore {
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##baseHold_{0}", i).c_str(), &channel.triggerHoldOff, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff, stepSlow_Int, stepFast_Int))
 				{
 					changed = true;
 				}
@@ -448,6 +421,547 @@ namespace BoxScore {
 			ImGui::EndTable();
 		}
 
+		return changed;
+	}
+
+	bool DigitizerPanel::RenderPSDParameters()
+	{
+		bool changed = false;
+		static uint32_t stepFast = 100;
+		static uint32_t stepSlow = 10;
+		static uint32_t stepFast_Int = 100;
+		static uint32_t stepSlow_Int = 10;
+		static float stepFast_Float = 100.0f;
+		static float stepSlow_Float = 10.0f;
+		static std::string tempString; //useful for comps in widgets
+
+		if (ImGui::BeginTable("PSD Channel Parameters", 22, tableFlags | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY, ImVec2(0, 300)))
+		{
+			ImGui::TableSetupColumn("Channel");
+			ImGui::TableSetupColumn("Enable/Disable");
+			ImGui::TableSetupColumn("Pre-Trigger Samples");
+			ImGui::TableSetupColumn("DC Offset (%)");
+			ImGui::TableSetupColumn("Polarity");
+			ImGui::TableSetupColumn("Dynamic Range");
+			ImGui::TableSetupColumn("Baseline Threshold");
+			ImGui::TableSetupColumn("Trigger Threshold");
+			ImGui::TableSetupColumn("Trigger Hold-Off");
+			ImGui::TableSetupColumn("Self-Trigger");
+			ImGui::TableSetupColumn("Charge Sensitivity");
+			ImGui::TableSetupColumn("Short Gate");
+			ImGui::TableSetupColumn("Long Gate");
+			ImGui::TableSetupColumn("Pre-Gate");
+			ImGui::TableSetupColumn("Validation Window");
+			ImGui::TableSetupColumn("Baseline Samples");
+			ImGui::TableSetupColumn("Discrimintaor Mode");
+			ImGui::TableSetupColumn("CFD Fraction");
+			ImGui::TableSetupColumn("CFD Delay");
+			ImGui::TableSetupColumn("Trigger Config.");
+			ImGui::TableSetupColumn("PileUp Reject.");
+			ImGui::TableSetupColumn("Purity Gap");
+			ImGui::TableHeadersRow();
+
+			for (size_t i = 0; i < m_psdChannels.size(); i++)
+			{
+				ImGui::TableNextRow();
+				ImGui::TableNextColumn();
+				ImGui::Text("%d", i);
+				ImGui::TableNextColumn();
+				auto& channel = m_psdChannels[i];
+				if (ImGui::RadioButton(fmt::format("##channelEnable_{0}", i).c_str(), channel.isEnabled))
+				{
+					changed |= true;
+					channel.isEnabled = !channel.isEnabled;
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples, &stepSlow, &stepFast))
+				{
+					changed |= true;
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputFloat(fmt::format("##dcoff_{0}", i).c_str(), &channel.dcOffset, stepSlow_Float, stepFast_Float))
+				{
+					changed |= true;
+				}
+				ImGui::TableNextColumn();
+				tempString = PolarityToString(channel.pulsePolarity);
+				if (ImGui::BeginCombo(fmt::format("##polarity_{0}", i).c_str(), tempString.c_str()))
+				{
+					if (ImGui::Selectable("Positive", "Positive" == tempString))
+					{
+						changed |= true;
+						channel.pulsePolarity = CAEN_DGTZ_PulsePolarityPositive;
+					}
+					if (ImGui::Selectable("Negative", "Negative" == tempString))
+					{
+						changed |= true;
+						channel.pulsePolarity = CAEN_DGTZ_PulsePolarityNegative;
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				tempString = DynamicRangeToString(channel.dynamicRange);
+				if (ImGui::BeginCombo(fmt::format("##dynamicRange_{0}", i).c_str(), tempString.c_str()))
+				{
+					if (ImGui::Selectable("0.5V", "0.5V" == tempString))
+					{
+						changed |= true;
+						channel.dynamicRange = DynamicRange::MilliVolt_500;
+					}
+					if (ImGui::Selectable("2.0V", "2.0V" == tempString))
+					{
+						changed |= true;
+						channel.dynamicRange = DynamicRange::Volt_2;
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##baseThresh_{0}", i).c_str(), &channel.baselineThreshold, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				tempString = IntSwitchToString(channel.selfTrigger);
+				if (ImGui::BeginCombo(fmt::format("##selfTrig_{0}", i).c_str(), tempString.c_str()))
+				{
+					if (ImGui::Selectable("On", "On" == tempString))
+					{
+						changed = true;
+						channel.selfTrigger = 1;
+					}
+					if (ImGui::Selectable("Off", "Off" == tempString))
+					{
+						changed = true;
+						channel.selfTrigger = 0;
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				tempString = ChargeSensToString(channel.chargeSensitivity, channel.dynamicRange);
+				if (ImGui::BeginCombo(fmt::format("##charge_sens{0}", i).c_str(), tempString.c_str()))
+				{
+					for (int val = 0; val < 6; val++)
+					{
+						if (ImGui::Selectable(ChargeSensToString(val, channel.dynamicRange).c_str(), val == channel.chargeSensitivity))
+						{
+							changed = true;
+							channel.chargeSensitivity = val;
+						}
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##shortGate_{0}", i).c_str(), &channel.shortGate, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##longGate_{0}", i).c_str(), &channel.longGate, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##preGate_{0}", i).c_str(), &channel.preGate, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##trigValidWindow_{0}", i).c_str(), &channel.triggerValidationWindow, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				tempString = channel.samplesBasline == 0 ? "Absolute" : std::to_string(Power(4, 1 + channel.samplesBasline));
+				if (ImGui::BeginCombo(fmt::format("##samplesBase_{0}", i).c_str(), tempString.c_str()))
+				{
+					int val;
+					if (ImGui::Selectable("Absolute", channel.samplesBasline == 0))
+					{
+						changed = true;
+						channel.samplesBasline = 0;
+					}
+					for (int pow = 1; pow < 5; pow++)
+					{
+						val = Power(4, pow + 1);
+						if (ImGui::Selectable(std::to_string(val).c_str(), pow == channel.samplesBasline))
+						{
+							changed = true;
+							channel.samplesBasline = pow;
+						}
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				tempString = DiscriminatorModeToString(channel.discrminatorType);
+				if (ImGui::BeginCombo(fmt::format("##discrMode_{0}", i).c_str(), tempString.c_str()))
+				{
+					if (ImGui::Selectable("CFD", CAEN_DGTZ_DPP_DISCR_MODE_CFD == channel.discrminatorType))
+					{
+						changed = true;
+						channel.discrminatorType = CAEN_DGTZ_DPP_DISCR_MODE_CFD;
+					}
+					if (ImGui::Selectable("Leading-Edge", CAEN_DGTZ_DPP_DISCR_MODE_LED == channel.discrminatorType))
+					{
+						changed = true;
+						channel.discrminatorType = CAEN_DGTZ_DPP_DISCR_MODE_LED;
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				tempString = CFDFractionToString(channel.cfdFraction);
+				if (ImGui::BeginCombo(fmt::format("##cfdFrac_{0}", i).c_str(), tempString.c_str()))
+				{
+					for (int val = 0; val < 4; val++)
+					{
+						if (ImGui::Selectable(CFDFractionToString(val).c_str(), val = channel.cfdFraction))
+						{
+							changed = true;
+							channel.cfdFraction = val;
+						}
+					}
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##cfdDelay_{0}", i).c_str(), &channel.cfdDelay, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+				ImGui::TableNextColumn();
+				tempString = TriggerConfigToString(channel.triggerConfig);
+				if (ImGui::BeginCombo(fmt::format("##trigConfig_{0}", i).c_str(), tempString.c_str()))
+				{
+					if (ImGui::Selectable("Normal", CAEN_DGTZ_DPP_TriggerMode_Normal == channel.triggerConfig))
+					{
+						changed = true;
+						channel.discrminatorType = CAEN_DGTZ_DPP_TriggerMode_Normal;
+					}
+					if (ImGui::Selectable("Leading-Edge", CAEN_DGTZ_DPP_TriggerMode_Coincidence == channel.discrminatorType))
+					{
+						changed = true;
+						channel.discrminatorType = CAEN_DGTZ_DPP_TriggerMode_Coincidence;
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				tempString = PileUpModeToString(channel.pileUpRejection);
+				if (ImGui::BeginCombo(fmt::format("##purSwitch_{0}", i).c_str(), tempString.c_str()))
+				{
+					if (ImGui::Selectable("On", CAEN_DGTZ_DPP_PSD_PUR_Enabled == channel.pileUpRejection))
+					{
+						changed = true;
+						channel.discrminatorType = CAEN_DGTZ_DPP_PSD_PUR_Enabled;
+					}
+					if (ImGui::Selectable("Off", CAEN_DGTZ_DPP_PSD_PUR_DetectOnly == channel.pileUpRejection))
+					{
+						changed = true;
+						channel.discrminatorType = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly;
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::TableNextColumn();
+				if (ImGui::InputInt(fmt::format("##purityGap_{0}", i).c_str(), &channel.purgap, stepSlow_Int, stepFast_Int))
+				{
+					changed = true;
+				}
+			}
+			ImGui::EndTable();
+		}
+
+		return changed;
+	}
+
+	bool DigitizerPanel::RenderPHAWaveParameters()
+	{
+		bool changed = false;
+		static std::string tempString;
+
+		if (ImGui::BeginTable("PHAWaveParams", 3, tableFlags))
+		{
+			ImGui::TableSetupColumn("VirtualProbe1");
+			ImGui::TableSetupColumn("VirtualProbe2");
+			ImGui::TableSetupColumn("DigitalProbe");
+			ImGui::TableHeadersRow();
+
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+			tempString = PHAVirtualProbe1ToString(m_phaWaves.analogProbe1);
+			if (ImGui::BeginCombo("##Vprobe1", tempString.c_str()))
+			{
+				if (ImGui::Selectable("Input", m_phaWaves.analogProbe1 == PHAVP1_Input))
+				{
+					changed = true;
+					m_phaWaves.analogProbe1 = PHAVP1_Input;
+				}
+				if (ImGui::Selectable("Trapezoid", m_phaWaves.analogProbe1 == PHAVP1_Trapezoid))
+				{
+					changed = true;
+					m_phaWaves.analogProbe1 = PHAVP1_Trapezoid;
+				}
+				if (ImGui::Selectable("Delta", m_phaWaves.analogProbe1 == PHAVP1_Delta))
+				{
+					changed = true;
+					m_phaWaves.analogProbe1 = PHAVP1_Delta;
+				}
+				if (ImGui::Selectable("Delta2", m_phaWaves.analogProbe1 == PHAVP1_Delta2))
+				{
+					changed = true;
+					m_phaWaves.analogProbe1 = PHAVP1_Delta2;
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::TableNextColumn();
+			tempString = PHAVirtualProbe2ToString(m_phaWaves.analogProbe2);
+			if (ImGui::BeginCombo("##Vprobe2", tempString.c_str()))
+			{
+				if (ImGui::Selectable("Input", m_phaWaves.analogProbe2 == PHAVP2_Input))
+				{
+					changed = true;
+					m_phaWaves.analogProbe2 = PHAVP2_Input;
+				}
+				if (ImGui::Selectable("Baseline", m_phaWaves.analogProbe2 == PHAVP2_Baseline))
+				{
+					changed = true;
+					m_phaWaves.analogProbe2 = PHAVP2_Baseline;
+				}
+				if (ImGui::Selectable("Threshold", m_phaWaves.analogProbe2 == PHAVP2_Threshold))
+				{
+					changed = true;
+					m_phaWaves.analogProbe2 = PHAVP2_Threshold;
+				}
+				if (ImGui::Selectable("Trap. Reduced", m_phaWaves.analogProbe2 == PHAVP2_TrapezoidReduced))
+				{
+					changed = true;
+					m_phaWaves.analogProbe2 = PHAVP2_TrapezoidReduced;
+				}
+				if (ImGui::Selectable("None", m_phaWaves.analogProbe2 == PHAVP2_None))
+				{
+					changed = true;
+					m_phaWaves.analogProbe2 = PHAVP2_None;
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::TableNextColumn();
+			tempString = PHADigitalProbeToString(m_phaWaves.digitalProbe1);
+			if (ImGui::BeginCombo("##Dprobe1", tempString.c_str()))
+			{
+				if (ImGui::Selectable("Acq. Veto", m_phaWaves.digitalProbe1 == PHADP_ACQVeto))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_ACQVeto;
+				}
+				if (ImGui::Selectable("Armed", m_phaWaves.digitalProbe1 == PHADP_Armed))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_Armed;
+				}
+				if (ImGui::Selectable("Baseline Freeze", m_phaWaves.digitalProbe1 == PHADP_BaselineFreeze))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_BaselineFreeze;
+				}
+				if (ImGui::Selectable("BFM Veto", m_phaWaves.digitalProbe1 == PHADP_BFMVeto))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_BFMVeto;
+				}
+				if (ImGui::Selectable("Busy", m_phaWaves.digitalProbe1 == PHADP_Busy))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_Busy;
+				}
+				if (ImGui::Selectable("Coincidence Window", m_phaWaves.digitalProbe1 == PHADP_CoincidenceWindow))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_CoincidenceWindow;
+				}
+				if (ImGui::Selectable("Ext. Trigger", m_phaWaves.digitalProbe1 == PHADP_ExternalTrig))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_ExternalTrig;
+				}
+				if (ImGui::Selectable("Peaking", m_phaWaves.digitalProbe1 == PHADP_Peaking))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_Peaking;
+				}
+				if (ImGui::Selectable("PileUp", m_phaWaves.digitalProbe1 == PHADP_PileUp))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_PileUp;
+				}
+				if (ImGui::Selectable("PrgVeto", m_phaWaves.digitalProbe1 == PHADP_PrgVeto))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_PrgVeto;
+				}
+				if (ImGui::Selectable("Trig. Hold-Off", m_phaWaves.digitalProbe1 == PHADP_TriggerHoldoff))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_TriggerHoldoff;
+				}
+				if (ImGui::Selectable("Trig. Value", m_phaWaves.digitalProbe1 == PHADP_TriggerValue))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_TriggerValue;
+				}
+				if (ImGui::Selectable("Trig. Window", m_phaWaves.digitalProbe1 == PHADP_TriggerWindow))
+				{
+					changed = true;
+					m_phaWaves.digitalProbe1 = PHADP_TriggerWindow;
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::EndTable();
+		}
+
+		return changed;
+	}
+
+	bool DigitizerPanel::RenderPSDWaveParameters()
+	{
+		bool changed = false;
+		static std::string tempString;
+		if (ImGui::BeginTable("PSDWaveParams", 4, tableFlags))
+		{
+			ImGui::TableSetupColumn("VirtualProbe1");
+			ImGui::TableSetupColumn("VirtualProbe2");
+			ImGui::TableSetupColumn("DigitalProbe1");
+			ImGui::TableSetupColumn("DigitalProbe2");
+			ImGui::TableHeadersRow();
+
+			ImGui::TableNextRow();
+			ImGui::TableNextColumn();
+			tempString = PSDVirtualProbe1ToString(m_psdWaves.analogProbe1);
+			if (ImGui::BeginCombo("##virtprobe1", tempString.c_str()))
+			{
+				if (ImGui::Selectable("Input", m_psdWaves.analogProbe1 == PSDVP1_Input))
+				{
+					changed = true;
+					m_psdWaves.analogProbe1 = PSDVP1_Input;
+				}
+				if (ImGui::Selectable("CFD", m_psdWaves.analogProbe1 == PSDVP1_CFD))
+				{
+					changed = true;
+					m_psdWaves.analogProbe1 = PSDVP1_CFD;
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::TableNextColumn();
+			tempString = PSDVirtualProbe2ToString(m_psdWaves.analogProbe2);
+			if (ImGui::BeginCombo("##virtprobe2", tempString.c_str()))
+			{
+				if (ImGui::Selectable("Baseline", m_psdWaves.analogProbe2 == PSDVP2_Baseline))
+				{
+					changed = true;
+					m_psdWaves.analogProbe2 = PSDVP2_Baseline;
+				}
+				if (ImGui::Selectable("CFD", m_psdWaves.analogProbe2 == PSDVP2_CFD))
+				{
+					changed = true;
+					m_psdWaves.analogProbe2 = PSDVP2_CFD;
+				}
+				if (ImGui::Selectable("None", m_psdWaves.analogProbe2 == PSDVP2_None))
+				{
+					changed = true;
+					m_psdWaves.analogProbe2 = PSDVP2_None;
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::TableNextColumn();
+			tempString = PSDDigitalProbe1ToString(m_psdWaves.digitalProbe1);
+			if (ImGui::BeginCombo("##digiprobe1", tempString.c_str()))
+			{
+				if (ImGui::Selectable("Coincidence", m_psdWaves.digitalProbe1 == PSDDP1_Coincidence))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe1 = PSDDP1_Coincidence;
+				}
+				if (ImGui::Selectable("Coincidence Window", m_psdWaves.digitalProbe1 == PSDDP1_CoincidenceWindow))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe1 = PSDDP1_CoincidenceWindow;
+				}
+				if (ImGui::Selectable("Gate", m_psdWaves.digitalProbe1 == PSDDP1_Gate))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe1 = PSDDP1_Gate;
+				}
+				if (ImGui::Selectable("Over Threshold", m_psdWaves.digitalProbe1 == PSDDP1_OverThreshold))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe1 = PSDDP1_OverThreshold;
+				}
+				if (ImGui::Selectable("PileUp", m_psdWaves.digitalProbe1 == PSDDP1_PileUp))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe1 = PSDDP1_PileUp;
+				}
+				if (ImGui::Selectable("Trigger", m_psdWaves.digitalProbe1 == PSDDP1_Trigger))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe1 = PSDDP1_Trigger;
+				}
+				if (ImGui::Selectable("TriggerOut", m_psdWaves.digitalProbe1 == PSDDP1_TriggerOut))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe1 = PSDDP1_TriggerOut;
+				}
+				ImGui::EndCombo();
+			}
+			ImGui::TableNextColumn();
+			tempString = PSDDigitalProbe2ToString(m_psdWaves.digitalProbe2);
+			if (ImGui::BeginCombo("##digiprobe2", tempString.c_str()))
+			{
+				if (ImGui::Selectable("Coincidence", m_psdWaves.digitalProbe2 == PSDDP2_Coincidence))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe2 = PSDDP2_Coincidence;
+				}
+				if (ImGui::Selectable("Short Gate", m_psdWaves.digitalProbe2 == PSDDP2_GateShort))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe2 = PSDDP2_GateShort;
+				}
+				if (ImGui::Selectable("Over Threshold", m_psdWaves.digitalProbe2 == PSDDP2_OverThreshold))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe2 = PSDDP2_OverThreshold;
+				}
+				if (ImGui::Selectable("PileUp", m_psdWaves.digitalProbe2 == PSDDP2_PileUp))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe2 = PSDDP2_PileUp;
+				}
+				if (ImGui::Selectable("Trigger", m_psdWaves.digitalProbe2 == PSDDP2_Trigger))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe2 = PSDDP2_Trigger;
+				}
+				if (ImGui::Selectable("Trig. Hold-Off", m_psdWaves.digitalProbe2 == PSDDP2_TriggerHoldoff))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe2 = PSDDP2_TriggerHoldoff;
+				}
+				if (ImGui::Selectable("Trig. Value", m_psdWaves.digitalProbe2 == PSDDP2_TriggerVal))
+				{
+					changed = true;
+					m_psdWaves.digitalProbe2 = PSDDP2_TriggerVal;
+				}
+				ImGui::EndCombo();
+			}
+
+			ImGui::EndTable();
+		}
 		return changed;
 	}
 }

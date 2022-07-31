@@ -200,6 +200,28 @@ namespace BoxScore {
         PSDDigitalProbe1Options digitalProbe1 = PSDDigitalProbe1Options::PSDDP1_Gate; //Defaults to long gate
         PSDDigitalProbe2Options digitalProbe2 = PSDDigitalProbe2Options::PSDDP2_GateShort; //Defaults to short gate
     };
+
+    //String conversion helper functions//
+    std::string BoardIOToString(int value);
+    std::string PolarityToString(int value);
+    std::string DynamicRangeToString(DynamicRange range);
+    std::string IntSwitchToString(int value);
+    std::string DiscriminatorModeToString(int mode);
+    std::string CFDFractionToString(int val);
+    std::string TriggerConfigToString(int val);
+    std::string PileUpModeToString(int val);
+    //Requires both dynamic range and charge sens. value (different ranges = different values)
+    std::string ChargeSensToString(int cs_val, DynamicRange range);
+    std::string PHAVirtualProbe1ToString(int val);
+    std::string PHAVirtualProbe2ToString(int val);
+    std::string PHADigitalProbeToString(int val);
+    std::string PSDVirtualProbe1ToString(int val);
+    std::string PSDVirtualProbe2ToString(int val);
+    std::string PSDDigitalProbe1ToString(int val);
+    std::string PSDDigitalProbe2ToString(int val);
+
+    //Simple integer power calc
+    int Power(int base, int order);
 }
 
 #endif
