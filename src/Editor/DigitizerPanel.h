@@ -50,6 +50,8 @@ namespace BoxScore {
 		std::string m_panelName;
 		std::string m_settingsFile;
 
+		bool m_digitizerEnabled;
+
 		const ImGuiTableFlags tableFlags = ImGuiTableFlags_BordersInner | ImGuiTableFlags_BordersOuter | ImGuiTableFlags_Hideable;
 	};
 

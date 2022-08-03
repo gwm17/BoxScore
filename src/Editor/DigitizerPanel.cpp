@@ -27,17 +27,20 @@ namespace BoxScore {
 			m_panelType = Type::PHA;
 			m_panelName = m_args.name + "_PHA";
 			m_phaChannels.resize(m_args.channels);
+			m_digitizerEnabled = true;
 		}
 		else if (m_args.firmware == CAEN_DGTZ_DPPFirmware_PSD)
 		{
 			m_panelType = Type::PSD;
 			m_panelName = m_args.name + "_PSD";
 			m_psdChannels.resize(m_args.channels);
+			m_digitizerEnabled = true;
 		}
 		else
 		{
 			m_panelType = Type::None;
 			m_panelName = m_args.name + "_None";
+			m_digitizerEnabled = false;
 		}
 	}
 
@@ -122,7 +125,6 @@ namespace BoxScore {
 	bool DigitizerPanel::RenderDigitizerParams()
 	{
 		bool changed = false;
-		static bool globalEnable = true;
 		static uint32_t stepFast = 100;
 		static uint32_t stepSlow = 10;
 		if (ImGui::BeginTable("Digitizer Parameters", 4, tableFlags))
@@ -139,15 +141,17 @@ namespace BoxScore {
 
 			ImGui::TableNextRow();
 			ImGui::TableNextColumn();
-			if (ImGui::RadioButton("##globalenable", globalEnable))
+			if (ImGui::RadioButton("##globalenable", m_digitizerEnabled))
 			{
 				changed |= true;
-				globalEnable = !globalEnable;
-				if (globalEnable)
+				m_digitizerEnabled = !m_digitizerEnabled;
+				if (m_digitizerEnabled)
 					m_params.channelMask = 0xffff;
 				else
 					m_params.channelMask = 0;
 			}
+			if (!m_digitizerEnabled)
+				ImGui::BeginDisabled();
 			ImGui::TableNextColumn();
 			if (ImGui::InputScalar("##recordlength", ImGuiDataType_U32, &m_params.recordLength, &stepSlow, &stepFast))
 			{
@@ -173,7 +177,8 @@ namespace BoxScore {
 				}
 				ImGui::EndCombo();
 			}
-
+			if (!m_digitizerEnabled)
+				ImGui::EndDisabled();
 			ImGui::EndTable();
 		}
 
@@ -191,6 +196,8 @@ namespace BoxScore {
 		static float stepFast_Float = 100.0f;
 		static float stepSlow_Float = 10.0f;
 		static std::string tempString; //useful for comps in widgets
+		if (!m_digitizerEnabled)
+			ImGui::BeginDisabled();
 		if (ImGui::BeginTable("PHA Channel Parameters", 22, tableFlags | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY, ImVec2(0, 300)))
 		{
 			ImGui::TableSetupColumn("Channel");
@@ -229,6 +236,9 @@ namespace BoxScore {
 					changed |= true;
 					channel.isEnabled = !channel.isEnabled;
 				}
+				if (!channel.isEnabled)
+					ImGui::BeginDisabled();
+
 				ImGui::TableNextColumn();
 				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples, &stepSlow, &stepFast))
 				{
@@ -417,10 +427,14 @@ namespace BoxScore {
 					}
 					ImGui::EndCombo();
 				}
+
+				if (!channel.isEnabled)
+					ImGui::EndDisabled();
 			}
 			ImGui::EndTable();
 		}
-
+		if (!m_digitizerEnabled)
+			ImGui::EndDisabled();
 		return changed;
 	}
 
@@ -434,7 +448,8 @@ namespace BoxScore {
 		static float stepFast_Float = 100.0f;
 		static float stepSlow_Float = 10.0f;
 		static std::string tempString; //useful for comps in widgets
-
+		if (!m_digitizerEnabled)
+			ImGui::BeginDisabled();
 		if (ImGui::BeginTable("PSD Channel Parameters", 22, tableFlags | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY, ImVec2(0, 300)))
 		{
 			ImGui::TableSetupColumn("Channel");
@@ -473,6 +488,9 @@ namespace BoxScore {
 					changed |= true;
 					channel.isEnabled = !channel.isEnabled;
 				}
+				if (!channel.isEnabled)
+					ImGui::BeginDisabled();
+
 				ImGui::TableNextColumn();
 				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples, &stepSlow, &stepFast))
 				{
@@ -672,10 +690,14 @@ namespace BoxScore {
 				{
 					changed = true;
 				}
+
+				if (!channel.isEnabled)
+					ImGui::EndDisabled();
 			}
 			ImGui::EndTable();
 		}
-
+		if (!m_digitizerEnabled)
+			ImGui::EndDisabled();
 		return changed;
 	}
 
@@ -683,7 +705,8 @@ namespace BoxScore {
 	{
 		bool changed = false;
 		static std::string tempString;
-
+		if (!m_digitizerEnabled)
+			ImGui::BeginDisabled();
 		if (ImGui::BeginTable("PHAWaveParams", 3, tableFlags))
 		{
 			ImGui::TableSetupColumn("VirtualProbe1");
@@ -823,7 +846,8 @@ namespace BoxScore {
 
 			ImGui::EndTable();
 		}
-
+		if (!m_digitizerEnabled)
+			ImGui::EndDisabled();
 		return changed;
 	}
 
@@ -831,6 +855,8 @@ namespace BoxScore {
 	{
 		bool changed = false;
 		static std::string tempString;
+		if (!m_digitizerEnabled)
+			ImGui::BeginDisabled();
 		if (ImGui::BeginTable("PSDWaveParams", 4, tableFlags))
 		{
 			ImGui::TableSetupColumn("VirtualProbe1");
@@ -962,6 +988,8 @@ namespace BoxScore {
 
 			ImGui::EndTable();
 		}
+		if (!m_digitizerEnabled)
+			ImGui::EndDisabled();
 		return changed;
 	}
 }
