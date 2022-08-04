@@ -19,7 +19,7 @@ namespace BoxScore {
         return 4.0; //Idk?
     }
 
-    int SetChainSynchronize(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain)
+    int SyncTest_SetChainSynchronize(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain)
     {
         static uint32_t runStartOnSIN = 0xD;
         static uint32_t runDelayAddress = 0x8170;
@@ -61,6 +61,23 @@ namespace BoxScore {
         return error_code;
     }
 
+    int SetChainSynchronize(const SyncArgs& args, const std::vector<Digitizer::Ref>& chain)
+    {
+        CAEN_DGTZ_RunSyncMode_t value = CAEN_DGTZ_RUN_SYNC_Disabled;
+        switch (args.syncMethod)
+        {
+        case SyncMethod::SIn_TrigOut: value = CAEN_DGTZ_RUN_SYNC_TrgOutSinDaisyChain; break;
+        case SyncMethod::None: value = CAEN_DGTZ_RUN_SYNC_Disabled; break;
+        }
+
+        int ec = 0;
+        for (auto& digitizer : chain)
+        {
+            ec |= CAEN_DGTZ_SetRunSynchronizationMode(digitizer->GetDigitizerArgs().handle, value);
+        }
+        return ec;
+    }
+
     int StartSynchronizedRun(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain)
     {
         static uint32_t softwareTrigger = 0x4;
@@ -90,7 +107,7 @@ namespace BoxScore {
         return error_code;
     }
 
-    int StopSynchronizedRun(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain)
+    int StopSynchronizedRun(const SyncArgs& args, const std::vector<Digitizer::Ref>& chain)
     {
         if(args.syncMethod != SyncMethod::SIn_TrigOut)
         {
@@ -98,6 +115,6 @@ namespace BoxScore {
             return 0;
         }
 
-        return CAEN_DGTZ_WriteRegister(chain[0]->GetDigitizerArgs().handle, CAEN_DGTZ_ACQ_CONTROL_ADD, 0); //Seems pretty universal, for all methods 0 indicates stop
+        return CAEN_DGTZ_SWStopAcquisition(chain[0]->GetDigitizerArgs().handle); //Seems pretty universal, for all methods 0 indicates stop
     }
 }

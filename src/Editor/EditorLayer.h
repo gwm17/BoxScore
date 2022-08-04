@@ -7,6 +7,7 @@
 #include "Events/AcqEvent.h"
 #include "Core/BSProject.h"
 #include "DigitizerPanel.h"
+#include "SyncDialog.h"
 
 #include "imgui.h"
 
@@ -30,6 +31,7 @@ namespace BoxScore {
 
 	private:
 		bool OnAcqBoardsFoundEvent(AcqBoardsFoundEvent& e);
+		void UpdateDigitizerPanels();
 
 		EventCallbackFunc m_eventCallback;
 
@@ -40,6 +42,7 @@ namespace BoxScore {
 
 		FileDialog m_fileDialog;
 		std::vector<DigitizerPanel> m_digiPanels;
+		SyncDialog m_syncDialog;
 
 		//ImGui Settings
 		bool dockspaceOpen = true;

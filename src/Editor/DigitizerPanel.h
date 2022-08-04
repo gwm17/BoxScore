@@ -28,6 +28,7 @@ namespace BoxScore {
 		const PHAWaveParameters& GetPHAWaveParameters() const { return m_phaWaves; }
 		const PSDWaveParameters& GetPSDWaveParameters() const { return m_psdWaves; }
 		Type GetPanelType() const { return m_panelType; }
+		int GetDigitizerHandle() { return m_args.handle; }
 
 		bool OnImGuiRender();
 

@@ -15,13 +15,15 @@ namespace BoxScore {
     enum class SyncStartType
     {
         HardwareControlled,
-        SoftwareControlled
+        SoftwareControlled,
+        None
     };
 
     //Add more later, right now only accept SPS standard
     enum class SyncMethod
     {
-        SIn_TrigOut
+        SIn_TrigOut,
+        None
     };
 
     struct SyncArgs
@@ -30,11 +32,15 @@ namespace BoxScore {
         SyncMethod syncMethod = SyncMethod::SIn_TrigOut;
     };
 
-    int SetChainSynchronize(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain);
+    int SyncTest_SetChainSynchronize(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain);
 
-    int StartSynchronizedRun(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain);
+    int SetChainSynchronize(const SyncArgs& args, const std::vector<Digitizer::Ref>& chain);
 
-    int StopSynchronizedRun(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain);
+    int SyncTest_StartSynchronizedRun(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain);
+
+    int StartSynchronizedRun(const SyncArgs& args, const std::vector<Digitizer::Ref>& chain);
+
+    int StopSynchronizedRun(const SyncArgs& args, const std::vector<Digitizer::Ref>& chain);
 
 }
 

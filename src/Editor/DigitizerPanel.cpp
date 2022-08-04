@@ -127,16 +127,16 @@ namespace BoxScore {
 		bool changed = false;
 		static uint32_t stepFast = 100;
 		static uint32_t stepSlow = 10;
-		if (ImGui::BeginTable("Digitizer Parameters", 4, tableFlags))
+		if (ImGui::BeginTable("Digitizer Parameters", 6, tableFlags))
 		{
 			ImGui::TableSetupColumn("Enable/Disable");
 			ImGui::TableSetupColumn("Record Length");
 			ImGui::TableSetupColumn("Event Aggregation");
-			//ImGui::TableSetupColumn("Acq. Mode");
+			ImGui::TableSetupColumn("Acq. Mode");
 			//ImGui::TableSetupColumn("DPP Acq. Mode");
 			ImGui::TableSetupColumn("Board IO Level");
 			//ImGui::TableSetupColumn("Trigger Mode");
-			//ImGui::TableSetupColumn("Sync Mode");
+			ImGui::TableSetupColumn("Sync Mode");
 			ImGui::TableHeadersRow();
 
 			ImGui::TableNextRow();
@@ -163,6 +163,8 @@ namespace BoxScore {
 				changed |= true;
 			}
 			ImGui::TableNextColumn();
+			ImGui::Text(AcqModeToString(m_params.acqMode).c_str());
+			ImGui::TableNextColumn();
 			if (ImGui::BeginCombo("##boardIO", BoardIOToString(m_params.IOlevel).c_str()))
 			{
 				if (ImGui::Selectable("NIM", "NIM" == BoardIOToString(m_params.IOlevel)))
@@ -177,6 +179,8 @@ namespace BoxScore {
 				}
 				ImGui::EndCombo();
 			}
+			ImGui::TableNextColumn();
+			ImGui::Text(SyncModeToString(m_params.syncMode).c_str());
 			if (!m_digitizerEnabled)
 				ImGui::EndDisabled();
 			ImGui::EndTable();

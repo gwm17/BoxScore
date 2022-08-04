@@ -42,6 +42,25 @@ namespace BoxScore {
         return true;
     }
 
+    void EditorLayer::UpdateDigitizerPanels()
+    {
+        std::vector<DigitizerParameters> boardParams = m_project->GetDigitizerParameterList();
+        int handle;
+        for (auto& panel : m_digiPanels)
+        {
+            handle = panel.GetDigitizerHandle();
+            if (handle == -1)
+                continue;
+            panel.SetDigitizerParameters(boardParams[handle]);
+            switch (panel.GetPanelType())
+            {
+            case DigitizerPanel::Type::PHA: panel.SetPHAParameters(m_project->GetPHAParameters(handle), m_project->GetPHAWaveParameters(handle)); break;
+            case DigitizerPanel::Type::PSD: panel.SetPSDParameters(m_project->GetPSDParameters(handle), m_project->GetPSDWaveParameters(handle)); break;
+            case DigitizerPanel::Type::None: break;
+            }
+        }
+    }
+
 	void EditorLayer::OnImGuiRender()
 	{
         static uint32_t stepSize = 1;
@@ -124,6 +143,10 @@ namespace BoxScore {
                     AcqDisconnectBoardsEvent db_event;
                     m_eventCallback(db_event);
                 }
+                if (ImGui::MenuItem("Synchronize boards..."))
+                {
+                    m_syncDialog.OpenDialog();
+                }
                 ImGui::EndMenu();
             }
             ImGui::EndMenuBar();
@@ -184,6 +207,14 @@ namespace BoxScore {
                 case FileDialog::Type::None: break; //Null result
             }
             
+        }
+
+        bool test = m_syncDialog.OnImGuiRender();
+        if (test)
+        {
+            AcqSyncArgsEvent e = m_syncDialog.GetSyncEvent();
+            m_eventCallback(e);
+            UpdateDigitizerPanels();
         }
 
         ImGui::End();

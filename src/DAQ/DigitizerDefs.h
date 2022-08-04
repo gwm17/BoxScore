@@ -107,7 +107,7 @@ namespace BoxScore {
         int linkNumber = -1;
         int conetNode = -1;
         uint32_t vmeAddress = 0;
-        int handle;
+        int handle = -1;
         CAEN_DGTZ_BoardModel_t model = CAEN_DGTZ_V1730; //Find way for default?
         CAEN_DGTZ_DPPFirmware_t firmware = CAEN_DGTZ_NotDPPFirmware;
         std::string name = "None";
@@ -219,6 +219,8 @@ namespace BoxScore {
     std::string PSDVirtualProbe2ToString(int val);
     std::string PSDDigitalProbe1ToString(int val);
     std::string PSDDigitalProbe2ToString(int val);
+    std::string SyncModeToString(int val);
+    std::string AcqModeToString(int val);
 
     //Simple integer power calc
     int Power(int base, int order);

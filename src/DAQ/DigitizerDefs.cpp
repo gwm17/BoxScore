@@ -221,4 +221,31 @@ namespace BoxScore {
 
 		return "None";
 	}
+
+	std::string SyncModeToString(int val)
+	{
+		switch (val)
+		{
+		case CAEN_DGTZ_RunSyncMode_t::CAEN_DGTZ_RUN_SYNC_Disabled: return "Disabled";
+		case CAEN_DGTZ_RunSyncMode_t::CAEN_DGTZ_RUN_SYNC_TrgOutSinDaisyChain: return "TrigOut-S In";
+		case CAEN_DGTZ_RunSyncMode_t::CAEN_DGTZ_RUN_SYNC_SinFanout: return "S In Fanout";
+		case CAEN_DGTZ_RunSyncMode_t::CAEN_DGTZ_RUN_SYNC_TrgOutTrgInDaisyChain: return "TrigOut-TrigIn";
+		case CAEN_DGTZ_RunSyncMode_t::CAEN_DGTZ_RUN_SYNC_GpioGpioDaisyChain: return "Broken";
+		}
+
+		return "None";
+	}
+
+	std::string AcqModeToString(int val)
+	{
+		switch (val)
+		{
+		case CAEN_DGTZ_AcqMode_t::CAEN_DGTZ_FIRST_TRG_CONTROLLED: return "FirstTrg";
+		case CAEN_DGTZ_AcqMode_t::CAEN_DGTZ_LVDS_CONTROLLED: return "LVDS";
+		case CAEN_DGTZ_AcqMode_t::CAEN_DGTZ_SW_CONTROLLED: return "Software";
+		case CAEN_DGTZ_AcqMode_t::CAEN_DGTZ_S_IN_CONTROLLED: return "S In";
+		}
+
+		return "None";
+	}
 }
