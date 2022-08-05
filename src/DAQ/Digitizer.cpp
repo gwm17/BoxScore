@@ -230,7 +230,7 @@ namespace BoxScore {
     {
         m_args.status |= CAEN_DGTZ_MallocReadoutBuffer(m_args.handle, &m_lowBuffer, &m_lowBufferSize);
         //void casts are soooo bad .... but required by CAEN API
-        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(&m_eventData), &m_eventBufferSize); 
+        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(m_eventData), &m_eventBufferSize); 
         for(int channel=0; channel<m_internalData.Channels; channel++)
             m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData[channel]), &m_waveBufferSize);
     }
@@ -458,7 +458,7 @@ namespace BoxScore {
     {
         m_args.status |= CAEN_DGTZ_MallocReadoutBuffer(m_args.handle, &m_lowBuffer, &m_lowBufferSize);
         //void casts are soooo bad .... but required by CAEN API
-        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(&m_eventData), &m_eventBufferSize); 
+        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(m_eventData), &m_eventBufferSize); 
         for(int channel=0; channel<m_internalData.Channels; channel++)
             m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData[channel]), &m_waveBufferSize);
     }
