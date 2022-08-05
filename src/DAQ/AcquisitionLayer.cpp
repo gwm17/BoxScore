@@ -239,6 +239,7 @@ namespace BoxScore {
 			return;
 		}
 
+		m_project->SetDigitizerData(m_digitizerChain);
 		m_syncStatus = args;
 	}
 

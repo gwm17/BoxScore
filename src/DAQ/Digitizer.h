@@ -19,7 +19,7 @@ namespace BoxScore {
         using Ref = std::shared_ptr<Digitizer>;
 
         Digitizer() :
-            m_isActive(false), m_isConnected(false), m_lowBuffer(nullptr)
+            m_isActive(false), m_isConnected(false), m_lowBuffer(NULL) //CAEN requires this to be NULL
         {
         }
 
