@@ -42,7 +42,7 @@ namespace BoxScore {
 
     /////////////////////// DigitizerPHA ///////////////////////
     DigitizerPHA::DigitizerPHA(const DigitizerArgs& args, const CAEN_DGTZ_BoardInfo_t& info, int ec) :
-        Digitizer(), m_eventData(nullptr), m_eventSize(nullptr), m_waveData(nullptr)
+        Digitizer(), m_eventData(nullptr), m_eventCountsPerChannel(nullptr), m_waveData(nullptr)
     {
         Init(args, info, ec);
     }
@@ -72,8 +72,9 @@ namespace BoxScore {
         for(auto& hit : m_outputData)
             hit.board = m_args.handle;
 
-        m_eventSize = new uint32_t[info.Channels];
+        m_eventCountsPerChannel = new uint32_t[info.Channels];
         m_eventData = new CAEN_DGTZ_DPP_PHA_Event_t*[info.Channels];
+        m_waveData = new CAEN_DGTZ_DPP_PHA_Waveforms_t*[info.Channels];
 
         LoadDigitizerParameters();
         LoadChannelParameters();
@@ -90,13 +91,14 @@ namespace BoxScore {
         m_args.status |= CAEN_DGTZ_CloseDigitizer(m_args.handle);
         m_args.status |= CAEN_DGTZ_FreeReadoutBuffer(&m_lowBuffer);
         m_args.status |= CAEN_DGTZ_FreeDPPEvents(m_args.handle, (void**)(m_eventData));
-        m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData));
+        for(int i=0; i<m_internalData.Channels; i++)
+            m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData[i]));
 
-        delete[] m_eventSize;
+        delete[] m_eventCountsPerChannel;
 
         m_lowBuffer = nullptr;
         m_eventData = nullptr;
-        m_eventSize = nullptr;
+        m_eventCountsPerChannel = nullptr;
         m_waveData = nullptr;
 
         m_isConnected = false;
@@ -220,11 +222,17 @@ namespace BoxScore {
         m_args.status |= CAEN_DGTZ_SetDPP_VirtualProbe(m_args.handle, DIGITAL_TRACE_1, m_waveParams.digitalProbe1);
     }
 
+    //Note: Even though function signatures of MallocDPPEvents and MallocDPPWaveforms are identical
+    //they behave quite differently. MallocDPPEvents allocates the entire channel-buffer matrix in one call,
+    //while MallocDPPWaveforms allocates only a single buffer for a single channel at a time.
+    //This is why void* are dangerous!
     void DigitizerPHA::AllocateMemory()
     {
         m_args.status |= CAEN_DGTZ_MallocReadoutBuffer(m_args.handle, &m_lowBuffer, &m_lowBufferSize);
-        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(&m_eventData), m_eventSize); //void casts are soooo bad .... but required by CAEN API
-        m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData), &m_waveSize);
+        //void casts are soooo bad .... but required by CAEN API
+        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(&m_eventData), &m_eventBufferSize); 
+        for(int channel=0; channel<m_internalData.Channels; channel++)
+            m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData[channel]), &m_waveBufferSize);
     }
 
     const std::vector<BSData>& DigitizerPHA::ReadData()
@@ -238,12 +246,12 @@ namespace BoxScore {
             return m_emptyResult;
         }
 
-        m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventSize);
-
+        m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventCountsPerChannel);
+        size_t waveSize;
         for(int i=0; i<m_internalData.Channels; i++)
         {
             m_outputData[i].channel = i;
-            for(int j=0; j<m_eventSize[i]; j++)
+            for(int j=0; j<m_eventCountsPerChannel[i]; j++)
             {
                 m_outputData[i].energy = m_eventData[i][j].Energy;
                 m_outputData[i].timestamp = m_eventData[i][j].TimeTag;
@@ -252,15 +260,15 @@ namespace BoxScore {
                 if(m_digitizerParams.dppAcqMode != CAEN_DGTZ_DPP_ACQ_MODE_List)
                 {
                     CAEN_DGTZ_DecodeDPPWaveforms(m_args.handle, (void*)&(m_eventData[i][j]), m_waveData);
-                    m_outputData[i].waveSize = m_waveData->Ns;
-                    m_waveSize = m_waveData->Ns;
-                    if(m_outputData[i].waveSize != 0)
+                    m_outputData[i].waveSize = m_waveData[i]->Ns;
+                    waveSize = m_waveData[i]->Ns;
+                    if(waveSize != 0)
                     {
                         //Copy the data to our vectors PHA supports 2 analog traces and 2 digital traces
-                        m_outputData[i].trace1Samples.assign(m_waveData->Trace1, m_waveData->Trace1 + m_waveSize);
-                        m_outputData[i].trace2Samples.assign(m_waveData->Trace2, m_waveData->Trace2 + m_waveSize); //This is all zero if in single analog trace mode
-                        m_outputData[i].digitalTrace1Samples.assign(m_waveData->DTrace1, m_waveData->DTrace1 + m_waveSize);
-                        m_outputData[i].digitalTrace2Samples.assign(m_waveData->DTrace2, m_waveData->DTrace2 + m_waveSize);
+                        m_outputData[i].trace1Samples.assign(m_waveData[i]->Trace1, m_waveData[i]->Trace1 + waveSize);
+                        m_outputData[i].trace2Samples.assign(m_waveData[i]->Trace2, m_waveData[i]->Trace2 + waveSize); //This is all zero if in single analog trace mode
+                        m_outputData[i].digitalTrace1Samples.assign(m_waveData[i]->DTrace1, m_waveData[i]->DTrace1 + waveSize);
+                        m_outputData[i].digitalTrace2Samples.assign(m_waveData[i]->DTrace2, m_waveData[i]->DTrace2 + waveSize);
                     }
                 }
             }
@@ -271,7 +279,7 @@ namespace BoxScore {
 
     /////////////////////// DigitizerPSD ///////////////////////
     DigitizerPSD::DigitizerPSD(const DigitizerArgs& args, const CAEN_DGTZ_BoardInfo_t& info, int code) :
-        Digitizer(), m_eventData(nullptr), m_eventSize(nullptr), m_waveData(nullptr)
+        Digitizer(), m_eventData(nullptr), m_eventCountsPerChannel(nullptr), m_waveData(nullptr)
     {
         Init(args, info, code);
     }
@@ -301,9 +309,9 @@ namespace BoxScore {
         for(auto& hit : m_outputData)
             hit.board = m_args.handle;
 
-        m_eventSize = new uint32_t[info.Channels];
+        m_eventCountsPerChannel = new uint32_t[info.Channels];
         m_eventData = new CAEN_DGTZ_DPP_PSD_Event_t*[info.Channels];
-
+        m_waveData = new CAEN_DGTZ_DPP_PSD_Waveforms_t*[info.Channels];
         LoadDigitizerParameters();
         LoadChannelParameters();
         //Must load default parameters here to generate a buffer 
@@ -321,11 +329,11 @@ namespace BoxScore {
         m_args.status |= CAEN_DGTZ_FreeDPPEvents(m_args.handle, (void**)(m_eventData));
         m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData));
 
-        delete[] m_eventSize;
+        delete[] m_eventCountsPerChannel;
 
         m_lowBuffer = nullptr;
         m_eventData = nullptr;
-        m_eventSize = nullptr;
+        m_eventCountsPerChannel = nullptr;
         m_waveData = nullptr;
 
         m_isConnected = false;
@@ -442,11 +450,17 @@ namespace BoxScore {
         m_args.status |= CAEN_DGTZ_SetDPP_VirtualProbe(m_args.handle, DIGITAL_TRACE_2, m_waveParams.digitalProbe2);
     }
 
+    //Note: Even though function signatures of MallocDPPEvents and MallocDPPWaveforms are identical
+    //they behave quite differently. MallocDPPEvents allocates the entire channel-buffer matrix in one call,
+    //while MallocDPPWaveforms allocates only a single buffer for a single channel at a time.
+    //This is why void* are dangerous!
     void DigitizerPSD::AllocateMemory()
     {
         m_args.status |= CAEN_DGTZ_MallocReadoutBuffer(m_args.handle, &m_lowBuffer, &m_lowBufferSize);
-        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(&m_eventData), m_eventSize); //void casts are soooo bad .... but required by CAEN API
-        m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData), &m_waveSize);
+        //void casts are soooo bad .... but required by CAEN API
+        m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(&m_eventData), &m_eventBufferSize); 
+        for(int channel=0; channel<m_internalData.Channels; channel++)
+            m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData[channel]), &m_waveBufferSize);
     }
 
     const std::vector<BSData>& DigitizerPSD::ReadData()
@@ -460,12 +474,12 @@ namespace BoxScore {
             return m_emptyResult;
         }
 
-        m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventSize);
-
+        m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventCountsPerChannel);
+        size_t waveSize;
         for(int i=0; i<m_internalData.Channels; i++)
         {
             m_outputData[i].channel = i;
-            for(int j=0; j<m_eventSize[i]; j++)
+            for(int j=0; j<m_eventCountsPerChannel[i]; j++)
             {
                 m_outputData[i].energy = m_eventData[i][j].ChargeLong;
                 m_outputData[i].energyShort = m_eventData[i][j].ChargeShort;
@@ -475,15 +489,15 @@ namespace BoxScore {
                 if(m_digitizerParams.dppAcqMode != CAEN_DGTZ_DPP_ACQ_MODE_List)
                 {
                     CAEN_DGTZ_DecodeDPPWaveforms(m_args.handle, (void*)&(m_eventData[i][j]), m_waveData);
-                    m_outputData[i].waveSize = m_waveData->Ns;
-                    m_waveSize = m_waveData->Ns;
+                    m_outputData[i].waveSize = m_waveData[i]->Ns;
+                    waveSize = m_waveData[i]->Ns;
                     if(m_outputData[i].waveSize != 0)
                     {
                         //Copy the data to our vectors PHA supports 2 analog traces and 2 digital traces
-                        m_outputData[i].trace1Samples.assign(m_waveData->Trace1, m_waveData->Trace1 + m_waveSize);
-                        m_outputData[i].trace2Samples.assign(m_waveData->Trace2, m_waveData->Trace2 + m_waveSize); //This is all zero if in single analog trace mode
-                        m_outputData[i].digitalTrace1Samples.assign(m_waveData->DTrace1, m_waveData->DTrace1 + m_waveSize);
-                        m_outputData[i].digitalTrace2Samples.assign(m_waveData->DTrace2, m_waveData->DTrace2 + m_waveSize);
+                        m_outputData[i].trace1Samples.assign(m_waveData[i]->Trace1, m_waveData[i]->Trace1 + waveSize);
+                        m_outputData[i].trace2Samples.assign(m_waveData[i]->Trace2, m_waveData[i]->Trace2 + waveSize); //This is all zero if in single analog trace mode
+                        m_outputData[i].digitalTrace1Samples.assign(m_waveData[i]->DTrace1, m_waveData[i]->DTrace1 + waveSize);
+                        m_outputData[i].digitalTrace2Samples.assign(m_waveData[i]->DTrace2, m_waveData[i]->DTrace2 + waveSize);
                     }
                 }
             }

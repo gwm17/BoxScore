@@ -204,6 +204,8 @@ namespace BoxScore {
 		case PSDDigitalProbe1Options::PSDDP1_Trigger: return "Trigger";
 		case PSDDigitalProbe1Options::PSDDP1_TriggerOut: return "TriggerOut";
 		}
+
+		return "None";
 	}
 
 	std::string PSDDigitalProbe2ToString(int val)

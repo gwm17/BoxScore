@@ -87,9 +87,10 @@ namespace BoxScore {
         void AllocateMemory();
 
         CAEN_DGTZ_DPP_PHA_Event_t** m_eventData; //middle man CAEN data types, required raw
-        uint32_t* m_eventSize;
-        CAEN_DGTZ_DPP_PHA_Waveforms_t* m_waveData;
-        uint32_t m_waveSize;
+        uint32_t m_eventBufferSize;
+        uint32_t* m_eventCountsPerChannel;
+        CAEN_DGTZ_DPP_PHA_Waveforms_t** m_waveData;
+        uint32_t m_waveBufferSize;
 
         std::vector<PHAParameters> m_channelParams;
         PHAWaveParameters m_waveParams;
@@ -123,9 +124,10 @@ namespace BoxScore {
         void AllocateMemory();
 
         CAEN_DGTZ_DPP_PSD_Event_t** m_eventData; //middle man CAEN data types
-        uint32_t* m_eventSize;
-        CAEN_DGTZ_DPP_PSD_Waveforms_t* m_waveData;
-        uint32_t m_waveSize;
+        uint32_t m_eventBufferSize;
+        uint32_t* m_eventCountsPerChannel;
+        CAEN_DGTZ_DPP_PSD_Waveforms_t** m_waveData;
+        uint32_t m_waveBufferSize;
 
         std::vector<PSDParameters> m_channelParams;
         PSDWaveParameters m_waveParams;

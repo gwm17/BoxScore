@@ -10,6 +10,8 @@ namespace BoxScore {
 		case DigitizerPanel::Type::PSD: return "DPP PSD";
 		case DigitizerPanel::Type::None: return "Invalid firmware";
 		}
+
+		return "Invalid firmware";
 	}
 
 	DigitizerPanel::DigitizerPanel(const DigitizerArgs& args) :
@@ -78,11 +80,11 @@ namespace BoxScore {
 		bool changed = false;
 		if (ImGui::BeginTabItem(m_panelName.c_str()))
 		{
-			ImGui::Text(PanelTypeToString(m_panelType).c_str());
-			ImGui::Text(fmt::format("Optical Link: {0} CONET Node: {1}", m_args.linkNumber, m_args.conetNode).c_str());
+			ImGui::Text("%s", PanelTypeToString(m_panelType).c_str());
+			ImGui::Text("%s", fmt::format("Optical Link: {0} CONET Node: {1}", m_args.linkNumber, m_args.conetNode).c_str());
 			ImGui::Text("Settings file: ");
 			ImGui::SameLine();
-			ImGui::Text(m_settingsFile.c_str());
+			ImGui::Text("%s", m_settingsFile.c_str());
 			ImGui::Button("Open...");
 			ImGui::SameLine();
 			ImGui::Button("Save...");
@@ -163,7 +165,7 @@ namespace BoxScore {
 				changed |= true;
 			}
 			ImGui::TableNextColumn();
-			ImGui::Text(AcqModeToString(m_params.acqMode).c_str());
+			ImGui::Text("%s", AcqModeToString(m_params.acqMode).c_str());
 			ImGui::TableNextColumn();
 			if (ImGui::BeginCombo("##boardIO", BoardIOToString(m_params.IOlevel).c_str()))
 			{
@@ -180,7 +182,7 @@ namespace BoxScore {
 				ImGui::EndCombo();
 			}
 			ImGui::TableNextColumn();
-			ImGui::Text(SyncModeToString(m_params.syncMode).c_str());
+			ImGui::Text("%s", SyncModeToString(m_params.syncMode).c_str());
 			if (!m_digitizerEnabled)
 				ImGui::EndDisabled();
 			ImGui::EndTable();
@@ -228,11 +230,11 @@ namespace BoxScore {
 			ImGui::TableSetupColumn("Input Samples");
 			ImGui::TableHeadersRow();
 
-			for (int i = 0; i < m_phaChannels.size(); i++)
+			for (size_t i = 0; i < m_phaChannels.size(); i++)
 			{
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImGui::Text("%d", i);
+				ImGui::Text("%ld", i);
 				ImGui::TableNextColumn();
 				auto& channel = m_phaChannels[i];
 				if (ImGui::RadioButton(fmt::format("##channelEnable_{0}", i).c_str(), channel.isEnabled))
@@ -484,7 +486,7 @@ namespace BoxScore {
 			{
 				ImGui::TableNextRow();
 				ImGui::TableNextColumn();
-				ImGui::Text("%d", i);
+				ImGui::Text("%ld", i);
 				ImGui::TableNextColumn();
 				auto& channel = m_psdChannels[i];
 				if (ImGui::RadioButton(fmt::format("##channelEnable_{0}", i).c_str(), channel.isEnabled))

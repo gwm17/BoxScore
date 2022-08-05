@@ -163,10 +163,10 @@ namespace BoxScore {
                 {
                     ImGui::Text("Project File: ");
                     ImGui::SameLine();
-                    ImGui::Text(projectFilePath.c_str());
+                    ImGui::Text("%s", projectFilePath.c_str());
                     ImGui::Text("Project Directory: ");
                     ImGui::SameLine();
-                    ImGui::Text(m_projectPath.c_str());
+                    ImGui::Text("%s", m_projectPath.c_str());
 
                     ImGui::InputScalar("Run Number", ImGuiDataType_U32, &m_runNumber, &stepSize, &fastStepSize);
                     ImGui::SameLine();
