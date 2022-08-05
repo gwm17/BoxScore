@@ -281,22 +281,22 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##decayTC_{0}", i).c_str(), &channel.decayTimeConst))
+				if (ImGui::InputInt(fmt::format("##decayTC_{0}", i).c_str(), &channel.decayTimeConst), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trapFlatTop_{0}", i).c_str(), &channel.trapFlatTop))
+				if (ImGui::InputInt(fmt::format("##trapFlatTop_{0}", i).c_str(), &channel.trapFlatTop), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trapRiseT_{0}", i).c_str(), &channel.trapRiseTime))
+				if (ImGui::InputInt(fmt::format("##trapRiseT_{0}", i).c_str(), &channel.trapRiseTime), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##flatTopDelay_{0}", i).c_str(), &channel.decayTimeConst))
+				if (ImGui::InputInt(fmt::format("##flatTopDelay_{0}", i).c_str(), &channel.decayTimeConst), 0, 0)
 				{
 					changed = true;
 				}
@@ -317,12 +317,12 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##inputRiseTime_{0}", i).c_str(), &channel.inputRiseTime))
+				if (ImGui::InputInt(fmt::format("##inputRiseTime_{0}", i).c_str(), &channel.inputRiseTime), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold))
+				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold), 0, 0)
 				{
 					changed = true;
 				}
@@ -359,22 +359,22 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##peakHold_{0}", i).c_str(), &channel.peakHoldOff))
+				if (ImGui::InputInt(fmt::format("##peakHold_{0}", i).c_str(), &channel.peakHoldOff), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##baseHold_{0}", i).c_str(), &channel.baseLineHoldOff))
+				if (ImGui::InputInt(fmt::format("##baseHold_{0}", i).c_str(), &channel.baseLineHoldOff), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff))
+				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##validWin_{0}", i).c_str(), &channel.riseTimeValidationWindow))
+				if (ImGui::InputInt(fmt::format("##validWin_{0}", i).c_str(), &channel.riseTimeValidationWindow), 0, 0)
 				{
 					changed = true;
 				}
@@ -528,17 +528,17 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##baseThresh_{0}", i).c_str(), &channel.baselineThreshold))
+				if (ImGui::InputInt(fmt::format("##baseThresh_{0}", i).c_str(), &channel.baselineThreshold), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold))
+				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff))
+				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff), 0, 0)
 				{
 					changed = true;
 				}
@@ -573,17 +573,17 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##shortGate_{0}", i).c_str(), &channel.shortGate))
+				if (ImGui::InputInt(fmt::format("##shortGate_{0}", i).c_str(), &channel.shortGate), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##longGate_{0}", i).c_str(), &channel.longGate))
+				if (ImGui::InputInt(fmt::format("##longGate_{0}", i).c_str(), &channel.longGate), 0, 0)
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##preGate_{0}", i).c_str(), &channel.preGate))
+				if (ImGui::InputInt(fmt::format("##preGate_{0}", i).c_str(), &channel.preGate), 0, 0)
 				{
 					changed = true;
 				}
@@ -643,7 +643,7 @@ namespace BoxScore {
 					}
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##cfdDelay_{0}", i).c_str(), &channel.cfdDelay))
+				if (ImGui::InputInt(fmt::format("##cfdDelay_{0}", i).c_str(), &channel.cfdDelay), 0, 0)
 				{
 					changed = true;
 				}
@@ -680,7 +680,7 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##purityGap_{0}", i).c_str(), &channel.purgap))
+				if (ImGui::InputInt(fmt::format("##purityGap_{0}", i).c_str(), &channel.purgap), 0, 0)
 				{
 					changed = true;
 				}
