@@ -127,8 +127,6 @@ namespace BoxScore {
 	bool DigitizerPanel::RenderDigitizerParams()
 	{
 		bool changed = false;
-		static uint32_t stepFast = 100;
-		static uint32_t stepSlow = 10;
 		if (ImGui::BeginTable("Digitizer Parameters", 6, tableFlags))
 		{
 			ImGui::TableSetupColumn("Enable/Disable");
@@ -155,12 +153,12 @@ namespace BoxScore {
 			if (!m_digitizerEnabled)
 				ImGui::BeginDisabled();
 			ImGui::TableNextColumn();
-			if (ImGui::InputScalar("##recordlength", ImGuiDataType_U32, &m_params.recordLength, &stepSlow, &stepFast))
+			if (ImGui::InputScalar("##recordlength", ImGuiDataType_U32, &m_params.recordLength))
 			{
 				changed |= true;
 			}
 			ImGui::TableNextColumn();
-			if (ImGui::InputScalar("##eventAggregate", ImGuiDataType_U32, &m_params.eventAggr, &stepSlow, &stepFast))
+			if (ImGui::InputScalar("##eventAggregate", ImGuiDataType_U32, &m_params.eventAggr))
 			{
 				changed |= true;
 			}
@@ -195,12 +193,7 @@ namespace BoxScore {
 	bool DigitizerPanel::RenderPHAParameters()
 	{
 		bool changed = false;
-		static uint32_t stepFast = 100;
-		static uint32_t stepSlow = 10;
-		static uint32_t stepFast_Int = 100;
-		static uint32_t stepSlow_Int = 10;
-		static float stepFast_Float = 100.0f;
-		static float stepSlow_Float = 10.0f;
+		
 		static std::string tempString; //useful for comps in widgets
 		if (!m_digitizerEnabled)
 			ImGui::BeginDisabled();
@@ -246,12 +239,12 @@ namespace BoxScore {
 					ImGui::BeginDisabled();
 
 				ImGui::TableNextColumn();
-				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples, &stepSlow, &stepFast))
+				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples))
 				{
 					changed |= true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputFloat(fmt::format("##dcoff_{0}", i).c_str(), &channel.dcOffset, stepSlow_Float, stepFast_Float))
+				if (ImGui::InputFloat(fmt::format("##dcoff_{0}", i).c_str(), &channel.dcOffset))
 				{
 					changed |= true;
 				}
@@ -288,22 +281,22 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##decayTC_{0}", i).c_str(), &channel.decayTimeConst, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##decayTC_{0}", i).c_str(), &channel.decayTimeConst))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trapFlatTop_{0}", i).c_str(), &channel.trapFlatTop, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##trapFlatTop_{0}", i).c_str(), &channel.trapFlatTop))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trapRiseT_{0}", i).c_str(), &channel.trapRiseTime, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##trapRiseT_{0}", i).c_str(), &channel.trapRiseTime))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##flatTopDelay_{0}", i).c_str(), &channel.decayTimeConst, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##flatTopDelay_{0}", i).c_str(), &channel.decayTimeConst))
 				{
 					changed = true;
 				}
@@ -324,12 +317,12 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##inputRiseTime_{0}", i).c_str(), &channel.inputRiseTime, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##inputRiseTime_{0}", i).c_str(), &channel.inputRiseTime))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold))
 				{
 					changed = true;
 				}
@@ -366,22 +359,22 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##peakHold_{0}", i).c_str(), &channel.peakHoldOff, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##peakHold_{0}", i).c_str(), &channel.peakHoldOff))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##baseHold_{0}", i).c_str(), &channel.baseLineHoldOff, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##baseHold_{0}", i).c_str(), &channel.baseLineHoldOff))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##validWin_{0}", i).c_str(), &channel.riseTimeValidationWindow, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##validWin_{0}", i).c_str(), &channel.riseTimeValidationWindow))
 				{
 					changed = true;
 				}
@@ -447,12 +440,7 @@ namespace BoxScore {
 	bool DigitizerPanel::RenderPSDParameters()
 	{
 		bool changed = false;
-		static uint32_t stepFast = 100;
-		static uint32_t stepSlow = 10;
-		static uint32_t stepFast_Int = 100;
-		static uint32_t stepSlow_Int = 10;
-		static float stepFast_Float = 100.0f;
-		static float stepSlow_Float = 10.0f;
+		
 		static std::string tempString; //useful for comps in widgets
 		if (!m_digitizerEnabled)
 			ImGui::BeginDisabled();
@@ -498,12 +486,12 @@ namespace BoxScore {
 					ImGui::BeginDisabled();
 
 				ImGui::TableNextColumn();
-				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples, &stepSlow, &stepFast))
+				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples))
 				{
 					changed |= true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputFloat(fmt::format("##dcoff_{0}", i).c_str(), &channel.dcOffset, stepSlow_Float, stepFast_Float))
+				if (ImGui::InputFloat(fmt::format("##dcoff_{0}", i).c_str(), &channel.dcOffset))
 				{
 					changed |= true;
 				}
@@ -540,17 +528,17 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##baseThresh_{0}", i).c_str(), &channel.baselineThreshold, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##baseThresh_{0}", i).c_str(), &channel.baselineThreshold))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##triggerThresh_{0}", i).c_str(), &channel.triggerThreshold))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##trigHold_{0}", i).c_str(), &channel.triggerHoldOff))
 				{
 					changed = true;
 				}
@@ -585,22 +573,22 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##shortGate_{0}", i).c_str(), &channel.shortGate, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##shortGate_{0}", i).c_str(), &channel.shortGate))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##longGate_{0}", i).c_str(), &channel.longGate, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##longGate_{0}", i).c_str(), &channel.longGate))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##preGate_{0}", i).c_str(), &channel.preGate, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##preGate_{0}", i).c_str(), &channel.preGate))
 				{
 					changed = true;
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##trigValidWindow_{0}", i).c_str(), &channel.triggerValidationWindow, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##trigValidWindow_{0}", i).c_str(), &channel.triggerValidationWindow))
 				{
 					changed = true;
 				}
@@ -655,7 +643,7 @@ namespace BoxScore {
 					}
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##cfdDelay_{0}", i).c_str(), &channel.cfdDelay, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##cfdDelay_{0}", i).c_str(), &channel.cfdDelay))
 				{
 					changed = true;
 				}
@@ -692,7 +680,7 @@ namespace BoxScore {
 					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
-				if (ImGui::InputInt(fmt::format("##purityGap_{0}", i).c_str(), &channel.purgap, stepSlow_Int, stepFast_Int))
+				if (ImGui::InputInt(fmt::format("##purityGap_{0}", i).c_str(), &channel.purgap))
 				{
 					changed = true;
 				}
