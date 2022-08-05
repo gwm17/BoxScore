@@ -31,6 +31,7 @@ namespace BoxScore {
         virtual void StopAquisition() = 0;
 
         virtual void SetDigitizerParameters(const DigitizerParameters& params) = 0;
+        virtual void LoadSettings() = 0;
         virtual const std::vector<BSData>& ReadData() = 0;
 
         const DigitizerParameters& GetDigitzerParameters() const { return m_digitizerParams; }
@@ -71,6 +72,8 @@ namespace BoxScore {
         virtual void StartAquisition() override;
         virtual void StopAquisition() override;
 
+        virtual void LoadSettings() override;
+
         virtual void SetDigitizerParameters(const DigitizerParameters& params) override;
         void SetChannelParameters(const PHAParameters& params, int chan);
         void SetWaveformParameters(const PHAWaveParameters& params);
@@ -107,6 +110,8 @@ namespace BoxScore {
 
         virtual void StartAquisition() override;
         virtual void StopAquisition() override;
+
+        virtual void LoadSettings() override;
 
         virtual void SetDigitizerParameters(const DigitizerParameters& params) override;
         void SetChannelParameters(const PSDParameters& params, int chan);

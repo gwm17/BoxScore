@@ -110,7 +110,6 @@ namespace BoxScore {
             return;
 
         m_digitizerParams = params;
-        LoadDigitizerParameters();
     }
 
     void DigitizerPHA::SetChannelParameters(const PHAParameters& params, int channel)
@@ -119,7 +118,6 @@ namespace BoxScore {
             return;
 
         m_channelParams[channel] = params;
-        LoadChannelParameters();
     }
 
     void DigitizerPHA::SetWaveformParameters(const PHAWaveParameters& params)
@@ -128,7 +126,6 @@ namespace BoxScore {
             return;
 
         m_waveParams = params;
-        LoadWaveformParameters();
     }
 
     //This cannot possibly be the correct method for cases where digitizers are chained.
@@ -151,6 +148,13 @@ namespace BoxScore {
             m_args.status |= CAEN_DGTZ_SWStopAcquisition(m_args.handle);
             m_isActive = false;
         }
+    }
+
+    void DigitizerPHA::LoadSettings()
+    {
+        LoadDigitizerParameters();
+        LoadChannelParameters();
+        LoadWaveformParameters();
     }
 
     //Set digitizer wide parameters
@@ -345,7 +349,6 @@ namespace BoxScore {
             return;
 
         m_digitizerParams = params;
-        LoadDigitizerParameters();
     }
 
     void DigitizerPSD::SetChannelParameters(const PSDParameters& params, int channel)
@@ -354,7 +357,6 @@ namespace BoxScore {
             return;
 
         m_channelParams[channel] = params;
-        LoadChannelParameters();
     }
 
     void DigitizerPSD::SetWaveformParameters(const PSDWaveParameters& params)
@@ -363,7 +365,6 @@ namespace BoxScore {
             return;
 
         m_waveParams = params;
-        LoadWaveformParameters();
     }
 
     //This cannot possibly be the correct method for cases where digitizers are chained.
@@ -386,6 +387,13 @@ namespace BoxScore {
             m_args.status |= CAEN_DGTZ_SWStopAcquisition(m_args.handle);
             m_isActive = false;
         }
+    }
+
+    void DigitizerPSD::LoadSettings()
+    {
+        LoadDigitizerParameters();
+        LoadChannelParameters();
+        LoadWaveformParameters();
     }
 
     //Set digitizer wide parameters

@@ -64,6 +64,9 @@ namespace BoxScore {
     int SetChainSynchronize(const SyncArgs& args, const std::vector<Digitizer::Ref>& chain)
     {
         CAEN_DGTZ_RunSyncMode_t value = CAEN_DGTZ_RUN_SYNC_Disabled;
+        CAEN_DGTZ_RunSyncMode_t setSyncValue;
+        CAEN_DGTZ_AcqMode_t setAcqMode;
+
         switch (args.syncMethod)
         {
         case SyncMethod::SIn_TrigOut: value = CAEN_DGTZ_RUN_SYNC_TrgOutSinDaisyChain; break;
@@ -74,6 +77,12 @@ namespace BoxScore {
         for (auto& digitizer : chain)
         {
             ec |= CAEN_DGTZ_SetRunSynchronizationMode(digitizer->GetDigitizerArgs().handle, value);
+            ec |= CAEN_DGTZ_GetRunSynchronizationMode(digitizer->GetDigitizerArgs().handle, &setSyncValue);
+            ec |= CAEN_DGTZ_GetAcquisitionMode(digitizer->GetDigitizerArgs().handle, &setAcqMode);
+            auto params = digitizer->GetDigitzerParameters();
+            params.syncMode = setSyncValue;
+            params.acqMode = setAcqMode;
+            digitizer->SetDigitizerParameters(params);
         }
         return ec;
     }
