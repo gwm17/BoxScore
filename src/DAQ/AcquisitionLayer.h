@@ -33,8 +33,7 @@ namespace BoxScore {
 		bool OnAcqStartEvent(AcqStartEvent& e);
 		bool OnAcqStopEvent(AcqStopEvent& e);
 		bool OnAcqDetectBoardsEvent(AcqDetectBoardsEvent& e);
-		bool OnAcqPHAParametersEvent(AcqPHAParametersEvent& e);
-		bool OnAcqPSDParametersEvent(AcqPSDParametersEvent& e);
+		bool OnAcqParametersEvent(AcqParametersEvent& e);
 		bool OnAcqSyncArgsEvent(AcqSyncArgsEvent& e);
 		bool OnAcqDisconnectBoardsEvent(AcqDisconnectBoardsEvent& e);
 

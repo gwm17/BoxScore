@@ -32,8 +32,7 @@ namespace BoxScore {
 
 		dispatch.Dispatch<AcqStartEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqStartEvent));
 		dispatch.Dispatch<AcqStopEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqStopEvent));
-		dispatch.Dispatch<AcqPHAParametersEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqPHAParametersEvent));
-		dispatch.Dispatch<AcqPSDParametersEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqPSDParametersEvent));
+		dispatch.Dispatch<AcqParametersEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqParametersEvent));
 		dispatch.Dispatch<AcqSyncArgsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqSyncArgsEvent));
 		dispatch.Dispatch<AcqDetectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDetectBoardsEvent));
 		dispatch.Dispatch<AcqDisconnectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDisconnectBoardsEvent));
@@ -89,52 +88,45 @@ namespace BoxScore {
 		return true;
 	}
 
-	//TODO: Need to handle modifications to the acquisition.
-	bool AcquisitionLayer::OnAcqPHAParametersEvent(AcqPHAParametersEvent& e)
+	bool AcquisitionLayer::OnAcqParametersEvent(AcqParametersEvent& e)
 	{
-		if (m_running)
+		if(m_running)
 		{
-			BS_WARN("Cannot update digitizer parameters while acquisition is running!");
+			BS_WARN("Cannot change digitizer parameters while aquisition is running!");
 			return true;
 		}
 
-		std::shared_ptr<DigitizerPHA> digitizerHandle = std::static_pointer_cast<DigitizerPHA>(m_digitizerChain[e.GetBoard()]);
-		if (digitizerHandle == nullptr)
+		int handle = e.GetBoardHandle();
+		Digitizer::Ref& digitizer = m_digitizerChain[handle];
+		if(digitizer->GetDigitizerArgs().firmware == CAEN_DGTZ_DPPFirmware_PHA)
 		{
-			BS_ERROR("Unable to cast board {0} as DigitizerPHA! PHA event not associated with correct board!");
-			return true;
+			std::shared_ptr<DigitizerPHA> phaDigitizer = std::static_pointer_cast<DigitizerPHA>(digitizer);
+			if(phaDigitizer == nullptr)
+			{
+				BS_ERROR("Digitizer data indicates PHA, but digitizer is not of type PHA in AcquisitionLayer::OnAcqParametersEvent!");
+				return true;
+			}
+			phaDigitizer->SetDigitizerParameters(m_project->GetDigitizerParameterList()[handle]);
+			phaDigitizer->SetChannelParameters(m_project->GetPHAParameters(handle));
+			phaDigitizer->SetWaveformParameters(m_project->GetPHAWaveParameters(handle));
+
+			phaDigitizer->LoadSettings();
+		}
+		else if(digitizer->GetDigitizerArgs().firmware == CAEN_DGTZ_DPPFirmware_PSD)
+		{
+			std::shared_ptr<DigitizerPSD> psdDigitizer = std::static_pointer_cast<DigitizerPSD>(digitizer);
+			if(psdDigitizer == nullptr)
+			{
+				BS_ERROR("Digitizer data indicates PSD, but digitizer is not of type PSD in AcquisitionLayer::OnAcqParametersEvent!");
+				return true;
+			}
+			psdDigitizer->SetDigitizerParameters(m_project->GetDigitizerParameterList()[handle]);
+			psdDigitizer->SetChannelParameters(m_project->GetPSDParameters(handle));
+			psdDigitizer->SetWaveformParameters(m_project->GetPSDWaveParameters(handle));
+
+			psdDigitizer->LoadSettings();
 		}
 
-		//apply parameters
-		std::vector<PHAParameters> channels = e.GetChannelParams();
-		digitizerHandle->SetDigitizerParameters(e.GetDigitizerParams());
-		for(size_t i=0; i<channels.size(); i++)
-			digitizerHandle->SetChannelParameters(channels[i], i);
-		digitizerHandle->SetWaveformParameters(e.GetWaveformParams());
-		return true;
-	}
-
-	bool AcquisitionLayer::OnAcqPSDParametersEvent(AcqPSDParametersEvent& e)
-	{
-		if (m_running)
-		{
-			BS_WARN("Cannot update digitizer parameters while acquisition is running!");
-			return true;
-		}
-
-		std::shared_ptr<DigitizerPSD> digitizerHandle = std::static_pointer_cast<DigitizerPSD>(m_digitizerChain[e.GetBoard()]);
-		if (digitizerHandle == nullptr)
-		{
-			BS_ERROR("Unable to cast board {0} as DigitizerPHA! PHA event not associated with correct board!");
-			return true;
-		}
-
-		//apply parameters
-		std::vector<PSDParameters> channels = e.GetChannelParams();
-		digitizerHandle->SetDigitizerParameters(e.GetDigitizerParams());
-		for (size_t i = 0; i < channels.size(); i++)
-			digitizerHandle->SetChannelParameters(channels[i], i);
-		digitizerHandle->SetWaveformParameters(e.GetWaveformParams());
 		return true;
 	}
 
@@ -150,7 +142,6 @@ namespace BoxScore {
 		return true;
 	}
 
-	//TODO: Need to handle board detection
 	bool AcquisitionLayer::OnAcqDetectBoardsEvent(AcqDetectBoardsEvent& e)
 	{
 		BS_INFO("Querying the system for digitizers. WARNING: BoxScore currently only supports OpticalLink connections");

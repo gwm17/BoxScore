@@ -75,7 +75,7 @@ namespace BoxScore {
         virtual void LoadSettings() override;
 
         virtual void SetDigitizerParameters(const DigitizerParameters& params) override;
-        void SetChannelParameters(const PHAParameters& params, int chan);
+        void SetChannelParameters(const std::vector<PHAParameters>& params);
         void SetWaveformParameters(const PHAWaveParameters& params);
         virtual const std::vector<BSData>& ReadData() override;
 
@@ -114,7 +114,7 @@ namespace BoxScore {
         virtual void LoadSettings() override;
 
         virtual void SetDigitizerParameters(const DigitizerParameters& params) override;
-        void SetChannelParameters(const PSDParameters& params, int chan);
+        void SetChannelParameters(const std::vector<PSDParameters>& params);
         void SetWaveformParameters(const PSDWaveParameters& params);
         virtual const std::vector<BSData>& ReadData() override;
 

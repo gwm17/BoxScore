@@ -27,64 +27,28 @@ namespace BoxScore {
 		EVENT_TYPE_SETUP(AcqStop);
 	};
 
-	class AcqPHAParametersEvent : public Event
+	class AcqParametersEvent : public Event
 	{
 	public:
-		AcqPHAParametersEvent(int board, const DigitizerParameters& boardParams, const std::vector<PHAParameters>& channelParams, const PHAWaveParameters& waveParams) :
-			m_board(board), m_wholeBoardParams(boardParams), m_channelParams(channelParams), m_waveParams(waveParams)
+		AcqParametersEvent(int boardHandle) :
+			m_boardHandle(boardHandle)
 		{
 		}
 
-		int GetBoard() const { return m_board; }
-		const DigitizerParameters& GetDigitizerParams() const { return m_wholeBoardParams; }
-		const std::vector<PHAParameters>& GetChannelParams() const { return m_channelParams; }
-		const PHAWaveParameters& GetWaveformParams() const { return m_waveParams; }
+		int GetBoardHandle() { return m_boardHandle; }
 
 		virtual std::string ToString() const override
 		{
 			std::stringstream stream;
-			stream << GetName() << " board: " << m_board;
+			stream << GetName() << " board handle: " << m_boardHandle;
 			return stream.str();
 		}
 
 		EVENT_CATEGORY_SETUP(EventCategoryAcq);
-		EVENT_TYPE_SETUP(AcqPHAParameters);
+		EVENT_TYPE_SETUP(AcqParameters);
 
 	private:
-		int m_board;
-		DigitizerParameters m_wholeBoardParams;
-		std::vector<PHAParameters> m_channelParams;
-		PHAWaveParameters m_waveParams;
-	};
-
-	class AcqPSDParametersEvent : public Event
-	{
-	public:
-		AcqPSDParametersEvent(int board, const DigitizerParameters& boardParams, const std::vector<PSDParameters>& channelParams, const PSDWaveParameters& waveParams) :
-			m_board(board), m_wholeBoardParams(boardParams), m_channelParams(channelParams), m_waveParams(waveParams)
-		{
-		}
-
-		int GetBoard() const { return m_board; }
-		const DigitizerParameters& GetDigitizerParams() const { return m_wholeBoardParams; }
-		const std::vector<PSDParameters>& GetChannelParams() const { return m_channelParams; }
-		const PSDWaveParameters& GetWaveformParams() const { return m_waveParams; }
-
-		virtual std::string ToString() const override
-		{
-			std::stringstream stream;
-			stream << GetName() << " board: " << m_board;
-			return stream.str();
-		}
-
-		EVENT_CATEGORY_SETUP(EventCategoryAcq);
-		EVENT_TYPE_SETUP(AcqPHAParameters);
-
-	private:
-		int m_board;
-		DigitizerParameters m_wholeBoardParams;
-		std::vector<PSDParameters> m_channelParams;
-		PSDWaveParameters m_waveParams;
+		int m_boardHandle;
 	};
 
 	class AcqSyncArgsEvent : public Event

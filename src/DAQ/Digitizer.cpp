@@ -112,12 +112,12 @@ namespace BoxScore {
         m_digitizerParams = params;
     }
 
-    void DigitizerPHA::SetChannelParameters(const PHAParameters& params, int channel)
+    void DigitizerPHA::SetChannelParameters(const std::vector<PHAParameters>& params)
     {
         if(!m_isConnected || m_isActive)
             return;
 
-        m_channelParams[channel] = params;
+        m_channelParams = params;
     }
 
     void DigitizerPHA::SetWaveformParameters(const PHAWaveParameters& params)
@@ -351,12 +351,12 @@ namespace BoxScore {
         m_digitizerParams = params;
     }
 
-    void DigitizerPSD::SetChannelParameters(const PSDParameters& params, int channel)
+    void DigitizerPSD::SetChannelParameters(const std::vector<PSDParameters>& params)
     {
         if(!m_isConnected || m_isActive)
             return;
 
-        m_channelParams[channel] = params;
+        m_channelParams = params;
     }
 
     void DigitizerPSD::SetWaveformParameters(const PSDWaveParameters& params)
