@@ -60,7 +60,7 @@ target_sources(BoxScore PRIVATE
  "Editor/DigitizerPanel.h" "Editor/DigitizerPanel.cpp" "DAQ/DigitizerDefs.cpp" "Editor/SyncDialog.cpp")
 
 #Packaged dependencies
-target_link_libraries(BoxScore PRIVATE imgui glfw glad)
+target_link_libraries(BoxScore PRIVATE imgui glfw glad yaml-cpp)
 
 #CAEN dependencies
 target_link_libraries(BoxScore PRIVATE ${CAEN_DGTZ})
@@ -87,8 +87,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 #Some extra defs
-#once we get there
-#target_compile_definitions(BoxScore PRIVATE GLFW_INCLUDE_NONE YAML_CPP_STATIC_DEFINE IMGUI_IMPL_OPENGL_LOADER_GLAD)
-target_compile_definitions(BoxScore PRIVATE GLFW_INCLUDE_NONE IMGUI_IMPL_OPENGL_LOADER_GLAD)
+target_compile_definitions(BoxScore PRIVATE GLFW_INCLUDE_NONE YAML_CPP_STATIC_DEFINE IMGUI_IMPL_OPENGL_LOADER_GLAD)
 
 set_target_properties(BoxScore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BS_BINARY_DIR})
