@@ -21,6 +21,7 @@ namespace BoxScore {
 		void SetDigitizerData(const std::vector<Digitizer::Ref>& chain);
 		void SetDigitizerArgsList(const std::vector<DigitizerArgs>& args);
 		void SetDigitizerParameterList(const std::vector<DigitizerParameters>& params);
+		void SetDigitizerParameters(int handle, const DigitizerParameters& params);
 		void SetPHAParameters(int handle, const std::vector<PHAParameters>& params);
 		void SetPSDParameters(int handle, const std::vector<PSDParameters>& params);
 		void SetPHAWaveParameters(int handle, const PHAWaveParameters& params);

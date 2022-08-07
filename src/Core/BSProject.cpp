@@ -64,6 +64,18 @@ namespace BoxScore {
 		m_boardParamList = params;
 	}
 
+	void BSProject::SetDigitizerParameters(int handle, const DigitizerParameters& params)
+	{
+		std::scoped_lock<std::mutex> guard(m_projectMutex);
+		if (handle >= m_boardParamList.size() || handle == -1)
+		{
+			BS_ERROR("Attempting to set digitizer parameters for non-extant board: given handle {0}, number of boards {1}", handle, m_boardParamList.size());
+			return;
+		}
+
+		m_boardParamList[handle] = params;
+	}
+
 	void BSProject::SetPHAParameters(int handle, const std::vector<PHAParameters>& params)
 	{
 		std::scoped_lock<std::mutex> guard(m_projectMutex);

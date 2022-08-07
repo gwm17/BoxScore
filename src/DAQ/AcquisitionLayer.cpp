@@ -97,6 +97,9 @@ namespace BoxScore {
 		}
 
 		int handle = e.GetBoardHandle();
+		if (handle == -1)
+			return true;
+
 		Digitizer::Ref& digitizer = m_digitizerChain[handle];
 		if(digitizer->GetDigitizerArgs().firmware == CAEN_DGTZ_DPPFirmware_PHA)
 		{

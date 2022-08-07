@@ -23,10 +23,13 @@ namespace BoxScore {
 		void SetPHAParameters(const std::vector<PHAParameters>& ch_params, const PHAWaveParameters& wv_params);
 		void SetPSDParameters(const std::vector<PSDParameters>& ch_params, const PSDWaveParameters& wv_params);
 
+		//Retrieve settings
+		const DigitizerParameters& GetDigitizerParameters() const { return m_params; }
 		const std::vector<PHAParameters>& GetPHAChannelParameters() const { return m_phaChannels; }
 		const std::vector<PSDParameters>& GetPSDChannelParameters() const { return m_psdChannels; }
 		const PHAWaveParameters& GetPHAWaveParameters() const { return m_phaWaves; }
 		const PSDWaveParameters& GetPSDWaveParameters() const { return m_psdWaves; }
+
 		Type GetPanelType() const { return m_panelType; }
 		int GetDigitizerHandle() { return m_args.handle; }
 

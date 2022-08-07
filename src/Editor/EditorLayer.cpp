@@ -176,8 +176,35 @@ namespace BoxScore {
                     ImGui::EndTabItem();
                 }
 
+                bool panel_status;
                 for (auto& panel : m_digiPanels)
-                    panel.OnImGuiRender();
+                {
+                    panel_status = panel.OnImGuiRender();
+                    //handle state change
+                    if (panel_status)
+                    {
+                        //Update project
+                        m_project->SetDigitizerParameters(panel.GetDigitizerHandle(), panel.GetDigitizerParameters());
+                        if (panel.GetPanelType() == DigitizerPanel::Type::PHA)
+                        {
+                            m_project->SetPHAParameters(panel.GetDigitizerHandle(), panel.GetPHAChannelParameters());
+                            m_project->SetPHAWaveParameters(panel.GetDigitizerHandle(), panel.GetPHAWaveParameters());
+                        }
+                        else if (panel.GetPanelType() == DigitizerPanel::Type::PSD)
+                        {
+                            m_project->SetPSDParameters(panel.GetDigitizerHandle(), panel.GetPSDChannelParameters());
+                            m_project->SetPSDWaveParameters(panel.GetDigitizerHandle(), panel.GetPSDWaveParameters());
+                        }
+                        else
+                        {
+                            BS_WARN("Unidentified digitizer type attempting to communicate with project");
+                        }
+                        //Emit event to update aquisition side
+                        AcqParametersEvent e(panel.GetDigitizerHandle());
+                        m_eventCallback(e);
+                    }
+
+                }
                 ImGui::EndTabBar();
             }
             //End internal tab bar
