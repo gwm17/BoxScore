@@ -124,10 +124,32 @@ namespace BoxScore {
 		return m_argList;
 	}
 
+	DigitizerArgs BSProject::GetDigitizerArgs(int handle)
+	{
+		std::scoped_lock<std::mutex> guard(m_projectMutex);
+		if (handle >= m_argList.size() || handle == -1)
+		{
+			BS_ERROR("Attempting to get digitizer args for non-extant board: given handle {0}, number of boards {1}", handle, m_argList.size());
+			return DigitizerArgs();
+		}
+		return m_argList[handle];
+	}
+
 	const std::vector<DigitizerParameters>& BSProject::GetDigitizerParameterList()
 	{
 		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_boardParamList;
+	}
+
+	DigitizerParameters BSProject::GetDigitizerParameters(int handle)
+	{
+		std::scoped_lock<std::mutex> guard(m_projectMutex);
+		if (handle >= m_boardParamList.size() || handle == -1)
+		{
+			BS_ERROR("Attempting to get digitizer parameters for non-extant board: given handle {0}, number of boards {1}", handle, m_boardParamList.size());
+			return DigitizerParameters();
+		}
+		return m_boardParamList[handle];
 	}
 
 	const std::vector<PHAParameters>& BSProject::GetPHAParameters(int handle)

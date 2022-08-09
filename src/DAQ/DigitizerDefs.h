@@ -113,6 +113,22 @@ namespace BoxScore {
         std::string name = "None";
         int channels = 0; //number of channels in board
         int status = CAEN_DGTZ_NotYetImplemented;
+
+        bool operator==(const DigitizerArgs& rhs)
+        {
+            if (this->type == rhs.type && this->linkNumber == rhs.linkNumber && this->conetNode == rhs.conetNode && this->vmeAddress == rhs.vmeAddress
+                && this->handle == rhs.handle && this->model == rhs.model && this->firmware == rhs.firmware && this->name == rhs.name && this->channels == rhs.channels)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        bool operator!=(const DigitizerArgs& rhs)
+        {
+            return !(*this == rhs);
+        }
     };
 
     //Parameters that are applied to digitizer as a whole

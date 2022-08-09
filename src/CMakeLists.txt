@@ -5,6 +5,7 @@ target_include_directories(BoxScore
     ../vendor/glfw/include
     ../vendor/spdlog/include
     ../vendor/glad/include
+    ../vendor/yaml-cpp/include
     ./
 )
 
@@ -57,7 +58,13 @@ target_sources(BoxScore PRIVATE
     DAQ/AcquisitionLayer.cpp
     Core/BSProject.h
     Core/BSProject.cpp
- "Editor/DigitizerPanel.h" "Editor/DigitizerPanel.cpp" "DAQ/DigitizerDefs.cpp" "Editor/SyncDialog.cpp")
+    Editor/DigitizerPanel.h
+    Editor/DigitizerPanel.cpp
+    DAQ/DigitizerDefs.cpp
+    Editor/SyncDialog.cpp
+    Core/ProjectSerializer.h
+    Core/ProjectSerializer.cpp
+)
 
 #Packaged dependencies
 target_link_libraries(BoxScore PRIVATE imgui glfw glad yaml-cpp)

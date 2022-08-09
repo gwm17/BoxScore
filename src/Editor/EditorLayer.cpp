@@ -2,6 +2,7 @@
 #include "Core/Application.h"
 #include "Events/AcqEvent.h"
 #include "misc/cpp/imgui_stdlib.h"
+#include "Core/ProjectSerializer.h"
 
 namespace BoxScore {
 
@@ -212,7 +213,7 @@ namespace BoxScore {
         ImGui::End();
         
 
-        auto fd_result = m_fileDialog.RenderFileDialog(".bsproj");
+        auto fd_result = m_fileDialog.RenderFileDialog(".yaml");
         if (!fd_result.first.empty())
         {
             switch (fd_result.second)
@@ -220,14 +221,16 @@ namespace BoxScore {
                 case FileDialog::Type::OpenFile:
                 {
                     projectFilePath = fd_result.first;
-                    //Read project file, load in saved data....
+                    ProjectSerializer serializer(projectFilePath);
+                    serializer.DeserializeData(m_project);
                     m_project->SetProjectPath("");
                     m_projectPath = m_project->GetProjectPath().string();
                     break;
                 }
                 case FileDialog::Type::SaveFile:
                 {
-                    //Do some stuff...
+                    ProjectSerializer serializer("./test.yaml");
+                    serializer.SerializeData(m_project);
                     break;
                 }
                 case FileDialog::Type::OpenDir: break; //Unused

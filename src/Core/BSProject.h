@@ -33,7 +33,9 @@ namespace BoxScore {
 
 		const std::filesystem::path& GetProjectPath();
 		const std::vector<DigitizerArgs>& GetDigitizerArgsList();
+		DigitizerArgs GetDigitizerArgs(int handle);
 		const std::vector<DigitizerParameters>& GetDigitizerParameterList();
+		DigitizerParameters GetDigitizerParameters(int handle);
 		const std::vector<PHAParameters>& GetPHAParameters(int handle);
 		const std::vector<PSDParameters>& GetPSDParameters(int handle);
 		PHAWaveParameters GetPHAWaveParameters(int handle);
