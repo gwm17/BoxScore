@@ -401,265 +401,6 @@ namespace YAML {
 
 namespace BoxScore {
 
-	/*
-	//Serialize funcs
-	static void SerializeDigitizerArgs(YAML::Emitter& stream, const DigitizerArgs& args)
-	{
-		stream << YAML::Key << "DigitizerArgs" << YAML::Value << YAML::BeginMap;
-		stream << YAML::Key << "ConnectionType" << YAML::Value << args.type;
-		stream << YAML::Key << "LinkNumber" << YAML::Value << args.linkNumber;
-		stream << YAML::Key << "CONETNode" << YAML::Value << args.conetNode;
-		stream << YAML::Key << "VMEAddress" << YAML::Value << args.vmeAddress;
-		stream << YAML::Key << "Handle" << YAML::Value << args.handle;
-		stream << YAML::Key << "Model" << YAML::Value << args.model;
-		stream << YAML::Key << "Firmware" << YAML::Value << args.firmware;
-		stream << YAML::Key << "Channels" << YAML::Value << args.channels;
-		stream << YAML::EndMap;
-	}
-
-	static void SerializeDigitizerParameters(YAML::Emitter& stream, const DigitizerParameters& params)
-	{
-		stream << YAML::Key << "DigitizerParameters" << YAML::Value << YAML::BeginMap;
-		stream << YAML::Key << "RecordLength" << YAML::Value << params.recordLength;
-		stream << YAML::Key << "ChannelMask" << YAML::Value << params.channelMask;
-		stream << YAML::Key << "EventAggr" << YAML::Value << params.eventAggr;
-		stream << YAML::Key << "AcqMode" << YAML::Value << params.acqMode;
-		stream << YAML::Key << "DPPAcqMode" << YAML::Value << params.dppAcqMode;
-		stream << YAML::Key << "IOLevel" << YAML::Value << params.IOlevel;
-		stream << YAML::Key << "TriggerMode" << YAML::Value << params.triggerMode;
-		stream << YAML::Key << "SyncMode" << YAML::Value << params.syncMode;
-		stream << YAML::EndMap;
-	}
-
-	static void SerializePHAChannels(YAML::Emitter& stream, const std::vector<PHAParameters>& paramList)
-	{
-		stream << YAML::Key << "PHAChannels" << YAML::Value << YAML::BeginSeq;
-		for (auto& params : paramList)
-		{
-			stream << YAML::BeginMap;
-
-			stream << YAML::Key << "IsEnabled" << YAML::Value << params.isEnabled;
-			stream << YAML::Key << "PreTrigger" << YAML::Value << params.preTriggerSamples;
-			stream << YAML::Key << "DCOffset" << YAML::Value << params.dcOffset;
-			stream << YAML::Key << "PulsePolarity" << YAML::Value << params.pulsePolarity;
-			stream << YAML::Key << "DynamicRange" << YAML::Value << params.dynamicRange;
-			stream << YAML::Key << "DecayTimeConst" << YAML::Value << params.decayTimeConst;
-			stream << YAML::Key << "TrapFlatTop" << YAML::Value << params.trapFlatTop;
-			stream << YAML::Key << "TrapRiseTime" << YAML::Value << params.trapRiseTime;
-			stream << YAML::Key << "FlatTopDelay" << YAML::Value << params.flatTopDelay;
-			stream << YAML::Key << "TriggerSmoothing" << YAML::Value << params.triggerFilterSmoothing;
-			stream << YAML::Key << "InputRiseTime" << YAML::Value << params.inputRiseTime;
-			stream << YAML::Key << "TriggerThreshold" << YAML::Value << params.triggerThreshold;
-			stream << YAML::Key << "SamplesBaseline" << YAML::Value << params.samplesBaseLineMean;
-			stream << YAML::Key << "SamplesPeak" << YAML::Value << params.samplesPeakMean;
-			stream << YAML::Key << "PeakHoldoff" << YAML::Value << params.peakHoldOff;
-			stream << YAML::Key << "BaselineHoldoff" << YAML::Value << params.baseLineHoldOff;
-			stream << YAML::Key << "TriggerHoldoff" << YAML::Value << params.triggerHoldOff;
-			stream << YAML::Key << "RiseTimeWindow" << YAML::Value << params.riseTimeValidationWindow;
-			stream << YAML::Key << "RiseTimeDiscrimination" << YAML::Value << params.riseTimeDiscrimination;
-			stream << YAML::Key << "DigitalProbeGain" << YAML::Value << params.digitalProbeGain;
-			stream << YAML::Key << "EnergyNormFactor" << YAML::Value << params.energyNormalizationFactor;
-			stream << YAML::Key << "InputDecimation" << YAML::Value << params.inputDecimation;
-
-			stream << YAML::EndMap;
-		}
-
-		stream << YAML::EndSeq;
-	}
-
-	static void SerializePSDChannels(YAML::Emitter& stream, const std::vector<PSDParameters>& paramList)
-	{
-		stream << YAML::Key << "PSDChannels" << YAML::Value << YAML::BeginSeq;
-		for (auto& params : paramList)
-		{
-			stream << YAML::BeginMap;
-
-			stream << YAML::Key << "IsEnabled" << YAML::Value << params.isEnabled;
-			stream << YAML::Key << "PreTrigger" << YAML::Value << params.preTriggerSamples;
-			stream << YAML::Key << "DCOffset" << YAML::Value << params.dcOffset;
-			stream << YAML::Key << "PulsePolarity" << YAML::Value << params.pulsePolarity;
-			stream << YAML::Key << "DynamicRange" << YAML::Value << params.dynamicRange;
-			stream << YAML::Key << "BaselineThreshold" << YAML::Value << params.baselineThreshold;
-			stream << YAML::Key << "TriggerHoldoff" << YAML::Value << params.triggerHoldOff;
-			stream << YAML::Key << "TriggerThreshold" << YAML::Value << params.triggerThreshold;
-			stream << YAML::Key << "SelfTrigger" << YAML::Value << params.selfTrigger;
-			stream << YAML::Key << "ChargeSensitivity" << YAML::Value << params.chargeSensitivity;
-			stream << YAML::Key << "ShortGate" << YAML::Value << params.shortGate;
-			stream << YAML::Key << "LongGate" << YAML::Value << params.longGate;
-			stream << YAML::Key << "PreGate" << YAML::Value << params.preGate;
-			stream << YAML::Key << "TriggerWindow" << YAML::Value << params.triggerValidationWindow;
-			stream << YAML::Key << "BaselineSamples" << YAML::Value << params.samplesBasline;
-			stream << YAML::Key << "DiscriminatorType" << YAML::Value << params.discrminatorType;
-			stream << YAML::Key << "CFDFraction" << YAML::Value << params.cfdFraction;
-			stream << YAML::Key << "CFDDelay" << YAML::Value << params.cfdDelay;
-			stream << YAML::Key << "TriggerConfig" << YAML::Value << params.triggerConfig;
-			stream << YAML::Key << "PileUpRejection" << YAML::Value << params.pileUpRejection;
-			stream << YAML::Key << "PURGap" << YAML::Value << params.purgap;
-
-			stream << YAML::EndMap;
-		}
-
-		stream << YAML::EndSeq;
-	}
-
-	static void SerializePHAWaves(YAML::Emitter& stream, const PHAWaveParameters& waves)
-	{
-		stream << YAML::Key << "PHAWaveParameters" << YAML::Value << YAML::BeginMap;
-
-		stream << YAML::Key << "IsDual" << YAML::Value << waves.isDual;
-		stream << YAML::Key << "AnalogProbe1" << YAML::Value << waves.analogProbe1;
-		stream << YAML::Key << "AnalogProbe2" << YAML::Value << waves.analogProbe1;
-		stream << YAML::Key << "DigitalProbe1" << YAML::Value << waves.digitalProbe1;
-
-		stream << YAML::EndMap;
-	}
-
-	static void SerializePSDWaves(YAML::Emitter& stream, const PSDWaveParameters& waves)
-	{
-		stream << YAML::Key << "PSDWaveParameters" << YAML::Value << YAML::BeginMap;
-
-		stream << YAML::Key << "IsDual" << YAML::Value << waves.isDual;
-		stream << YAML::Key << "AnalogProbe1" << YAML::Value << waves.analogProbe1;
-		stream << YAML::Key << "AnalogProbe2" << YAML::Value << waves.analogProbe1;
-		stream << YAML::Key << "DigitalProbe1" << YAML::Value << waves.digitalProbe1;
-		stream << YAML::Key << "DigitalProbe2" << YAML::Value << waves.digitalProbe2;
-
-		stream << YAML::EndMap;
-	}
-
-	//Deserialize funcs
-	static DigitizerArgs DeserializeDigitizerArgs(YAML::Node& node)
-	{
-		DigitizerArgs args;
-		args.name = node["Digitizer"].as<std::string>();
-		YAML::Node& argNode = node["DigitizerArgs"];
-		if (argNode)
-		{
-			args.type = (CAEN_DGTZ_ConnectionType) argNode.as<int>();
-			args.linkNumber = argNode["LinkNumber"].as<int>();
-			args.conetNode = argNode["ConetNode"].as<int>();
-			args.vmeAddress = argNode["VMEAddress"].as<uint32_t>();
-			args.handle = argNode["Handle"].as<int>();
-			args.model = (CAEN_DGTZ_BoardModel_t) argNode["Model"].as<int>();
-			args.firmware = (CAEN_DGTZ_DPPFirmware_t) argNode["Firmware"].as<int>();
-			args.channels = argNode["Channels"].as<int>();
-			return args;
-		}
-		else
-		{
-			BS_ERROR("Bad parse at DeserializeDigitizerArgs! No DigitizerArgs member!");
-			return DigitizerArgs();
-		}
-	}
-
-	
-	static DigitizerParameters DeserializeDigitizerParameters(YAML::Node& node)
-	{
-		DigitizerParameters params;
-		YAML::Node& paramNode = node["DigitizerParameters"];
-		if (paramNode)
-		{
-			params.recordLength = paramNode["RecordLength"].as<uint32_t>();
-			params.channelMask = paramNode["ChannelMask"].as<uint32_t>();
-			params.eventAggr = paramNode["EventAggr"].as<int>();
-			params.acqMode = (CAEN_DGTZ_AcqMode_t) paramNode["AcqMode"].as<int>();
-			params.dppAcqMode = (CAEN_DGTZ_DPP_AcqMode_t) paramNode["DPPAcqMode"].as<int>();
-			params.IOlevel = (CAEN_DGTZ_IOLevel_t) paramNode["IOLevel"].as<int>();
-			params.triggerMode = (CAEN_DGTZ_TriggerMode_t) paramNode["TriggerMode"].as<int>();
-			params.syncMode = (CAEN_DGTZ_RunSyncMode_t) paramNode["SyncMode"].as<int>();
-		}
-		else
-		{
-			BS_ERROR("Bad parse at DeserializeDigitizerParameters! No DigitizerParameters member!");
-		}
-		return params;
-	}
-
-	static std::vector<PHAParameters> DeserializePHAChannels(YAML::Node& node)
-	{
-		std::vector<PHAParameters> phaChannels;
-		YAML::Node& phaNode = node["PHAChannels"];
-		if (phaNode)
-		{
-			PHAParameters params;
-			for (auto& channel : phaNode)
-			{
-				params.isEnabled = channel["IsEnabled"].as<bool>();
-				params.preTriggerSamples = channel["PreTrigger"].as<uint32_t>();
-				params.dcOffset = channel["DCOffset"].as<float>();
-				params.pulsePolarity = (CAEN_DGTZ_PulsePolarity_t) channel["PulsePolarity"].as<int>();
-				params.dynamicRange = (DynamicRange) channel["DynamicRange"].as<int>();
-				params.decayTimeConst = channel["DecayTimeConst"].as<int>();
-				params.trapFlatTop = channel["TrapFlatTop"].as<int>();
-				params.trapRiseTime = channel["TrapRiseTime"].as<int>();
-				params.flatTopDelay = channel["FlatTopDelay"].as<int>();
-				params.triggerFilterSmoothing = channel["TriggerSmoothing"].as<int>();
-				params.inputRiseTime = channel["InputRiseTime"].as<int>();
-				params.triggerThreshold = channel["TriggerThreshold"].as<int>();
-				params.samplesBaseLineMean = channel["SamplesBaseline"].as<int>();
-				params.samplesPeakMean = channel["SamplesPeak"].as<int>();
-				params.peakHoldOff = channel["PeakHoldoff"].as<int>();
-				params.baseLineHoldOff = channel["BaselineHoldoff"].as<int>();
-				params.triggerHoldOff = channel["TriggerHoldoff"].as<int>();
-				params.riseTimeValidationWindow = channel["RiseTimeWindow"].as<int>();
-				params.riseTimeDiscrimination = channel["RiseTimeDiscrimination"].as<int>();
-				params.digitalProbeGain = channel["DigitalProbeGain"].as<int>();
-				params.energyNormalizationFactor = channel["EnergyNormFactor"].as<int>();
-				params.inputDecimation = channel["InputDecimation"].as<int>();
-
-				phaChannels.push_back(params);
-			}
-		}
-		else
-		{
-			BS_ERROR("Bad parse at DeserializePHAChannels! No PHAChannels member!");
-		}
-
-		return phaChannels;
-	}
-
-	static std::vector<PSDParameters> DeserializePSDChannels(YAML::Node& node)
-	{
-		std::vector<PSDParameters> psdChannels;
-		YAML::Node& psdNode = node["PSDChannels"];
-		if (psdNode)
-		{
-			PSDParameters params;
-			for (auto& channel : psdNode)
-			{
-				params.isEnabled = psdNode["IsEnabled"].as<bool>();
-				params.preTriggerSamples = psdNode["PreTrigger"].as<int>();
-				params.dcOffset = psdNode["DCOffset"].as<float>();
-				params.pulsePolarity = (CAEN_DGTZ_PulsePolarity_t) psdNode["PulsePolarity"].as<int>();
-				params.dynamicRange = (DynamicRange) psdNode["DynamicRange"].as<int>();
-				params.baselineThreshold = psdNode["BaselineThreshold"].as<int>();
-				params.triggerHoldOff = psdNode["TriggerHoldoff"].as<int>();
-				params.triggerThreshold = psdNode["TriggerThreshold"].as<int>();
-				params.selfTrigger = psdNode["SelfTrigger"].as<int>();
-				params.chargeSensitivity = psdNode["ChargeSensitivity"].as<int>();
-				params.shortGate = psdNode["ShortGate"].as<int>();
-				params.longGate = psdNode["LongGate"].as<int>();
-				params.preGate = psdNode["PreGate"].as<int>();
-				params.triggerValidationWindow = psdNode["TriggerWindow"].as<int>();
-				params.samplesBasline = psdNode["BaselineSamples"].as<int>();
-				params.discrminatorType = psdNode["DiscriminatorType"].as<int>();
-				params.cfdFraction = psdNode["CFDFraction"].as<int>();
-				params.cfdDelay = psdNode["CFDDelay"].as<int>();
-				params.triggerConfig = (CAEN_DGTZ_DPP_TriggerConfig_t) psdNode["TriggerConfig"].as<int>();
-				params.pileUpRejection = (CAEN_DGTZ_DPP_PUR_t) psdNode["PileUpRejection"].as<int>();
-				params.purgap = psdNode["PURGap"].as<int>();
-
-				psdChannels.push_back(params);
-			}
-		}
-		else
-		{
-			BS_ERROR("Bad parse at DeserializePSDChannels! No PSDChannels member!");
-		}
-
-		return psdChannels;
-	}
-	*/
 
 	ProjectSerializer::ProjectSerializer(const std::string& filepath) :
 		m_filepath(filepath)
@@ -691,26 +432,20 @@ namespace BoxScore {
 		{
 			yamlStream << YAML::BeginMap;
 			yamlStream << YAML::Key << "Digitizer" << YAML::Value << args.name;
-			//SerializeDigitizerArgs(yamlStream, args);
 			yamlStream << YAML::Key << "DigitizerArgs" << YAML::Value << args;
 			yamlStream << YAML::Key << "DigitizerParameters" << YAML::Value << project->GetDigitizerParameters(args.handle);
-			//SerializeDigitizerParameters(yamlStream, project->GetDigitizerParameters(args.handle));
 			switch (args.firmware)
 			{
 				case CAEN_DGTZ_DPPFirmware_PHA:
 				{
 					yamlStream << YAML::Key << "PHAChannels" << YAML::Value << project->GetPHAParameters(args.handle);
 					yamlStream << YAML::Key << "PHAWaves" << YAML::Value << project->GetPHAWaveParameters(args.handle);
-					//SerializePHAChannels(yamlStream, project->GetPHAParameters(args.handle));
-					//SerializePHAWaves(yamlStream, project->GetPHAWaveParameters(args.handle));
 					break;
 				}
 				case CAEN_DGTZ_DPPFirmware_PSD:
 				{
 					yamlStream << YAML::Key << "PSDChannels" << YAML::Value << project->GetPSDParameters(args.handle);
 					yamlStream << YAML::Key << "PSDWaves" << YAML::Value << project->GetPSDWaveParameters(args.handle);
-					//SerializePSDChannels(yamlStream, project->GetPSDParameters(args.handle));
-					//SerializePSDWaves(yamlStream, project->GetPSDWaveParameters(args.handle));
 					break;
 				}
 				case CAEN_DGTZ_DPPFirmwareNotSupported:
@@ -760,8 +495,6 @@ namespace BoxScore {
 				args = dgtz["DigitizerArgs"].as<DigitizerArgs>();
 				args.name = dgtz["Digitizer"].as<std::string>();
 				params = dgtz["DigitizerParameters"].as<DigitizerParameters>();
-				//args = DeserializeDigitizerArgs(dgtz);
-				//params = DeserializeDigitizerParameters(dgtz);
 				switch (args.firmware)
 				{
 					case CAEN_DGTZ_DPPFirmware_PHA:
@@ -778,8 +511,6 @@ namespace BoxScore {
 						project->SetDigitizerParameters(args.handle, params);
 						project->SetPHAParameters(args.handle, phaChannels);
 						project->SetPHAWaveParameters(args.handle, phaWaves);
-						//phaChannels = DeserializePHAChannels(dgtz);
-						//phaWaves = DeserializePHAWaves(dgtz);
 						break;
 					}
 					case CAEN_DGTZ_DPPFirmware_PSD:
@@ -796,8 +527,6 @@ namespace BoxScore {
 						project->SetDigitizerParameters(args.handle, params);
 						project->SetPSDParameters(args.handle, psdChannels);
 						project->SetPSDWaveParameters(args.handle, psdWaves);
-						//psdChannels = DeserializePSDChannels(dgtz);
-						//psdWaves = DeserializePSDWaves(dgtz);
 						break;
 					}
 					case CAEN_DGTZ_DPPFirmwareNotSupported:
