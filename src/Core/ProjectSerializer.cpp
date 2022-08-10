@@ -57,6 +57,8 @@ namespace YAML {
 			node.force_insert<std::string, int>("IOLevel", params.IOlevel);
 			node.force_insert<std::string, int>("TriggerMode", params.triggerMode);
 			node.force_insert<std::string, int>("SyncMode", params.syncMode);
+
+			return node;
 		}
 
 		static bool decode(const Node& node, BoxScore::DigitizerParameters& params)
@@ -483,7 +485,7 @@ namespace BoxScore {
 		project->SetRunNumber(data["RunNumber"].as<uint32_t>());
 		project->SetDPPAcqMode((DPPAcqMode)data["DPPAcqMode"].as<int>());
 
-		YAML::Node& digitizers = data["Digitizers"];
+		YAML::Node digitizers = data["Digitizers"];
 
 		//Init some memory  for digitizer data
 		DigitizerArgs args;
@@ -495,7 +497,7 @@ namespace BoxScore {
 
 		if (digitizers)
 		{
-			for (auto& dgtz : digitizers)
+			for (auto dgtz : digitizers)
 			{
 				args = dgtz["DigitizerArgs"].as<DigitizerArgs>();
 				args.name = dgtz["Digitizer"].as<std::string>();
