@@ -79,9 +79,36 @@ namespace BoxScore {
             ec |= CAEN_DGTZ_SetRunSynchronizationMode(digitizer->GetDigitizerArgs().handle, value);
             ec |= CAEN_DGTZ_GetRunSynchronizationMode(digitizer->GetDigitizerArgs().handle, &setSyncValue);
             ec |= CAEN_DGTZ_GetAcquisitionMode(digitizer->GetDigitizerArgs().handle, &setAcqMode);
-            auto params = digitizer->GetDigitzerParameters();
+            auto params = digitizer->GetDigitizerParameters();
             params.syncMode = setSyncValue;
             params.acqMode = setAcqMode;
+            digitizer->SetDigitizerParameters(params);
+        }
+        return ec;
+    }
+
+    int SetChainDPPAcqMode(DPPAcqMode mode, const std::vector<Digitizer::Ref>& chain)
+    {
+        CAEN_DGTZ_DPP_AcqMode_t modeIn;
+        CAEN_DGTZ_DPP_AcqMode_t modeOut;
+        CAEN_DGTZ_DPP_SaveParam_t saveIn = CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime;
+        CAEN_DGTZ_DPP_SaveParam_t saveOut;
+
+        switch (mode)
+        {
+        case DPPAcqMode::List: modeIn = CAEN_DGTZ_DPP_ACQ_MODE_List; break;
+        case DPPAcqMode::Waves: modeIn = CAEN_DGTZ_DPP_ACQ_MODE_Oscilloscope; break;
+        case DPPAcqMode::None: return 0;
+        }
+
+        int ec = 0;
+        for (auto& digitizer : chain)
+        {
+            ec |= CAEN_DGTZ_SetDPPAcquisitionMode(digitizer->GetDigitizerArgs().handle, modeIn, saveIn);
+            ec |= CAEN_DGTZ_GetDPPAcquisitionMode(digitizer->GetDigitizerArgs().handle, &modeOut, &saveOut);
+            DigitizerParameters params = digitizer->GetDigitizerParameters();
+            params.dppAcqMode = modeOut;
+            params.dppSaveMode = saveOut;
             digitizer->SetDigitizerParameters(params);
         }
         return ec;

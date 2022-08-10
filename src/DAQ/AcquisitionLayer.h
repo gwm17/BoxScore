@@ -36,6 +36,7 @@ namespace BoxScore {
 		bool OnAcqParametersEvent(AcqParametersEvent& e);
 		bool OnAcqSyncArgsEvent(AcqSyncArgsEvent& e);
 		bool OnAcqDisconnectBoardsEvent(AcqDisconnectBoardsEvent& e);
+		bool OnAcqDPPModeEvent(AcqDPPModeEvent& e);
 
 		//Functionality
 		void CreateAcqThread();

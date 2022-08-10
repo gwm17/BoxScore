@@ -86,13 +86,13 @@ namespace BoxScore {
 		EVENT_TYPE_SETUP(AcqDisconnectBoards);
 	};
 
-	class AcqBoardsFoundEvent : public Event
+	class AcqDPPModeEvent : public Event
 	{
 	public:
-		AcqBoardsFoundEvent() = default;
+		AcqDPPModeEvent() = default;
 
 		EVENT_CATEGORY_SETUP(EventCategoryAcq);
-		EVENT_TYPE_SETUP(AcqBoardsFound);
+		EVENT_TYPE_SETUP(AcqDPPMode);
 
 	};
 }

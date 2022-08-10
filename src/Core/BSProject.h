@@ -3,6 +3,7 @@
 
 #include "DAQ/DigitizerDefs.h"
 #include "DAQ/Digitizer.h"
+#include "DAQ/Synchronize.h"
 
 #include <mutex>
 #include <filesystem>
@@ -28,6 +29,7 @@ namespace BoxScore {
 		void SetPSDWaveParameters(int handle, const PSDWaveParameters& params);
 		void SetRunNumber(uint32_t number);
 		void IncrementRunNumber();
+		void SetDPPAcqMode(DPPAcqMode mode);
 
 		void PipeData(const std::vector<BSData>& data);
 
@@ -41,6 +43,8 @@ namespace BoxScore {
 		PHAWaveParameters GetPHAWaveParameters(int handle);
 		PSDWaveParameters GetPSDWaveParameters(int handle);
 		uint32_t GetRunNumber();
+		DPPAcqMode GetDPPAcqMode();
+		size_t GetNumberOfBoards();
 
 	private:
 		void InternalClear();
@@ -53,6 +57,7 @@ namespace BoxScore {
 		std::unordered_map<int, PSDWaveParameters> m_psdWaveMap;
 		std::filesystem::path m_projectPath;
 		uint32_t m_runNumber;
+		DPPAcqMode m_dppMode;
 
 		std::mutex m_projectMutex;
 

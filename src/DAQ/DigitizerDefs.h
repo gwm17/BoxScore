@@ -139,6 +139,7 @@ namespace BoxScore {
         int eventAggr = 0; //Allow CAEN to optimize
         CAEN_DGTZ_AcqMode_t acqMode = CAEN_DGTZ_SW_CONTROLLED;
         CAEN_DGTZ_DPP_AcqMode_t dppAcqMode = CAEN_DGTZ_DPP_ACQ_MODE_List;
+        CAEN_DGTZ_DPP_SaveParam_t dppSaveMode = CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime;
         CAEN_DGTZ_IOLevel_t IOlevel = CAEN_DGTZ_IOLevel_NIM;
         CAEN_DGTZ_TriggerMode_t triggerMode = CAEN_DGTZ_TRGMODE_ACQ_ONLY;
         CAEN_DGTZ_RunSyncMode_t syncMode = CAEN_DGTZ_RUN_SYNC_Disabled;

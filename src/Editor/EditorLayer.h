@@ -30,7 +30,6 @@ namespace BoxScore {
 		virtual void OnImGuiRender() override;
 
 	private:
-		bool OnAcqBoardsFoundEvent(AcqBoardsFoundEvent& e);
 		void UpdateDigitizerPanels();
 
 		EventCallbackFunc m_eventCallback;

@@ -27,24 +27,18 @@ namespace BoxScore {
 
 	void EditorLayer::OnEvent(Event& e)
     {
-        EventDispatcher dispatch(e);
-        dispatch.Dispatch<AcqBoardsFoundEvent>(BIND_EVENT_FUNCTION(EditorLayer::OnAcqBoardsFoundEvent));
-    }
-
-    bool EditorLayer::OnAcqBoardsFoundEvent(AcqBoardsFoundEvent& e)
-    {
-        BS_INFO("Found event {0}", e);
-        m_digitizerArgList = m_project->GetDigitizerArgsList();
-        BS_INFO("Arg list size {0}", m_digitizerArgList.size());
-
-        m_digiPanels.clear();
-        for (auto& args : m_digitizerArgList)
-            m_digiPanels.emplace_back(args);
-        return true;
     }
 
     void EditorLayer::UpdateDigitizerPanels()
     {
+        if (m_project->GetNumberOfBoards() != m_digiPanels.size())
+        {
+            m_digitizerArgList = m_project->GetDigitizerArgsList();
+            m_digiPanels.clear();
+            for (auto& args : m_digitizerArgList)
+                m_digiPanels.emplace_back(args);
+        }
+
         std::vector<DigitizerParameters> boardParams = m_project->GetDigitizerParameterList();
         int handle;
         for (auto& panel : m_digiPanels)
@@ -67,7 +61,11 @@ namespace BoxScore {
         static uint32_t stepSize = 1;
         static uint32_t fastStepSize = 5;
         static bool autoIncrFlag = true;
-        static std::string projectFilePath = "";
+        static std::string dppModeString = "";
+        static bool dataServer = false;
+        static bool writeDataToDisk = false;
+        static std::string runString = "Start Run";
+        static bool disableAll = false;
 
         // We are using the ImGuiWindowFlags_NoDocking flag to make the parent window not dockable into,
        // because it would be confusing to have two docking targets within each others.
@@ -112,6 +110,9 @@ namespace BoxScore {
 
         style.WindowMinSize.x = minWinSizeX;
 
+        if (disableAll)
+            ImGui::BeginDisabled();
+
         //Menu bar
         if (ImGui::BeginMenuBar())
         {
@@ -138,11 +139,13 @@ namespace BoxScore {
                 {
                     AcqDetectBoardsEvent db_event;
                     m_eventCallback(db_event);
+                    UpdateDigitizerPanels();
                 }
                 if (ImGui::MenuItem("Disconnect boards..."))
                 {
                     AcqDisconnectBoardsEvent db_event;
                     m_eventCallback(db_event);
+                    UpdateDigitizerPanels();
                 }
                 if (ImGui::MenuItem("Synchronize boards..."))
                 {
@@ -152,6 +155,9 @@ namespace BoxScore {
             }
             ImGui::EndMenuBar();
         }
+
+        if (disableAll)
+            ImGui::EndDisabled();
         //End of menu bar
 
         //Begin main ImGui window
@@ -162,9 +168,27 @@ namespace BoxScore {
             {
                 if (ImGui::BeginTabItem("Project"))
                 {
-                    ImGui::Text("Project File: ");
-                    ImGui::SameLine();
-                    ImGui::Text("%s", projectFilePath.c_str());
+                    if (ImGui::Button(runString.c_str()))
+                    {
+                        if (runString == "Start Run")
+                        {
+                            AcqStartEvent e;
+                            m_eventCallback(e);
+                            runString = "Stop Run";
+                            disableAll = true;
+                        }
+                        else if (runString == "Stop Run")
+                        {
+                            AcqStopEvent e;
+                            m_eventCallback(e);
+                            runString = "Start Run";
+                            disableAll = false;
+                        }
+                    }
+
+                    if (disableAll)
+                        ImGui::BeginDisabled();
+
                     ImGui::Text("Project Directory: ");
                     ImGui::SameLine();
                     ImGui::Text("%s", m_projectPath.c_str());
@@ -173,6 +197,27 @@ namespace BoxScore {
                     ImGui::SameLine();
                     ImGui::Checkbox("Auto-increment", &autoIncrFlag);
 
+                    if (ImGui::BeginCombo("DPP Acquisition Mode", dppModeString.c_str()))
+                    {
+                        if (ImGui::Selectable("List", dppModeString == "List"))
+                        {
+                            dppModeString = "List";
+                            m_project->SetDPPAcqMode(DPPAcqMode::List);
+                            AcqDPPModeEvent e;
+                            m_eventCallback(e);
+                        }
+                        if (ImGui::Selectable("Waves", dppModeString == "Waves"))
+                        {
+                            dppModeString = "Waves";
+                            m_project->SetDPPAcqMode(DPPAcqMode::Waves);
+                            AcqDPPModeEvent e;
+                            m_eventCallback(e);
+                        }
+                        ImGui::EndCombo();
+                    }
+
+                    ImGui::Checkbox("Write data to disk", &writeDataToDisk);
+                    ImGui::Checkbox("Data Server", &dataServer);
 
                     ImGui::EndTabItem();
                 }
@@ -209,6 +254,9 @@ namespace BoxScore {
                 ImGui::EndTabBar();
             }
             //End internal tab bar
+
+            if (disableAll)
+                ImGui::EndDisabled();
         }
         ImGui::End();
         
@@ -220,8 +268,7 @@ namespace BoxScore {
             {
                 case FileDialog::Type::OpenFile:
                 {
-                    projectFilePath = fd_result.first;
-                    ProjectSerializer serializer(projectFilePath);
+                    ProjectSerializer serializer(fd_result.first);
                     serializer.DeserializeData(m_project);
                     m_project->SetProjectPath("");
                     m_projectPath = m_project->GetProjectPath().string();

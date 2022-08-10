@@ -53,6 +53,7 @@ namespace YAML {
 			node.force_insert<std::string, int>("EventAggr", params.eventAggr);
 			node.force_insert<std::string, int>("AcqMode", params.acqMode);
 			node.force_insert<std::string, int>("DPPAcqMode", params.dppAcqMode);
+			node.force_insert<std::string, int>("DPPSaveMode", params.dppSaveMode);
 			node.force_insert<std::string, int>("IOLevel", params.IOlevel);
 			node.force_insert<std::string, int>("TriggerMode", params.triggerMode);
 			node.force_insert<std::string, int>("SyncMode", params.syncMode);
@@ -68,6 +69,7 @@ namespace YAML {
 			params.eventAggr = node["EventAggr"].as<int>();
 			params.acqMode = (CAEN_DGTZ_AcqMode_t)node["AcqMode"].as<int>();
 			params.dppAcqMode = (CAEN_DGTZ_DPP_AcqMode_t)node["DPPAcqMode"].as<int>();
+			params.dppSaveMode = (CAEN_DGTZ_DPP_SaveParam_t)node["DPPSaveMode"].as<int>();
 			params.IOlevel = (CAEN_DGTZ_IOLevel_t)node["IOLevel"].as<int>();
 			params.triggerMode = (CAEN_DGTZ_TriggerMode_t)node["TriggerMode"].as<int>();
 			params.syncMode = (CAEN_DGTZ_RunSyncMode_t)node["SyncMode"].as<int>();
@@ -287,6 +289,7 @@ namespace YAML {
 		stream << YAML::Key << "EventAggr" << YAML::Value << params.eventAggr;
 		stream << YAML::Key << "AcqMode" << YAML::Value << params.acqMode;
 		stream << YAML::Key << "DPPAcqMode" << YAML::Value << params.dppAcqMode;
+		stream << YAML::Key << "DPPSaveMode" << YAML::Value << params.dppSaveMode;
 		stream << YAML::Key << "IOLevel" << YAML::Value << params.IOlevel;
 		stream << YAML::Key << "TriggerMode" << YAML::Value << params.triggerMode;
 		stream << YAML::Key << "SyncMode" << YAML::Value << params.syncMode;
@@ -424,6 +427,7 @@ namespace BoxScore {
 
 		yamlStream << YAML::Key << "ProjectPath" << YAML::Value << project->GetProjectPath().string();
 		yamlStream << YAML::Key << "RunNumber" << YAML::Value << project->GetRunNumber();
+		yamlStream << YAML::Key << "DPPAcqMode" << YAML::Value << project->GetDPPAcqMode();
 		
 		std::vector<DigitizerArgs> argList = project->GetDigitizerArgsList();
 
@@ -477,6 +481,7 @@ namespace BoxScore {
 
 		project->SetProjectPath(data["ProjectPath"].as<std::string>());
 		project->SetRunNumber(data["RunNumber"].as<uint32_t>());
+		project->SetDPPAcqMode((DPPAcqMode)data["DPPAcqMode"].as<int>());
 
 		YAML::Node& digitizers = data["Digitizers"];
 

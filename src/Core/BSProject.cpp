@@ -34,7 +34,7 @@ namespace BoxScore {
 		{
 			auto& args = digitizer->GetDigitizerArgs();
 			m_argList.push_back(args);
-			m_boardParamList.push_back(digitizer->GetDigitzerParameters());
+			m_boardParamList.push_back(digitizer->GetDigitizerParameters());
 			if (args.firmware == CAEN_DGTZ_DPPFirmware_PHA)
 			{
 				m_phaChannelMap[args.handle] = std::static_pointer_cast<DigitizerPHA>(digitizer)->GetChannelParameters();
@@ -110,6 +110,12 @@ namespace BoxScore {
 	{
 		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		++m_runNumber;
+	}
+
+	void BSProject::SetDPPAcqMode(DPPAcqMode mode)
+	{
+		std::scoped_lock<std::mutex> guard(m_projectMutex);
+		m_dppMode = mode;
 	}
 
 	const std::filesystem::path& BSProject::GetProjectPath()
@@ -196,6 +202,18 @@ namespace BoxScore {
 	{
 		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_runNumber;
+	}
+
+	DPPAcqMode BSProject::GetDPPAcqMode()
+	{
+		std::scoped_lock<std::mutex> guard(m_projectMutex);
+		return m_dppMode;
+	}
+
+	size_t BSProject::GetNumberOfBoards()
+	{
+		std::scoped_lock<std::mutex> guard(m_projectMutex);
+		return m_argList.size();
 	}
 
 	void BSProject::PipeData(const std::vector<BSData>& data)

@@ -34,7 +34,7 @@ namespace BoxScore {
         virtual void LoadSettings() = 0;
         virtual const std::vector<BSData>& ReadData() = 0;
 
-        const DigitizerParameters& GetDigitzerParameters() const { return m_digitizerParams; }
+        const DigitizerParameters& GetDigitizerParameters() const { return m_digitizerParams; }
         const DigitizerArgs& GetDigitizerArgs() const { return m_args; }
         const bool IsActive() const { return m_isActive; }
         const bool IsConnected() const { return m_isConnected; }

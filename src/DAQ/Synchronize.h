@@ -12,6 +12,13 @@
 
 namespace BoxScore {
 
+    enum DPPAcqMode
+    {
+        List = 1,
+        Waves = 2,
+        None = 0
+    };
+
     enum class SyncStartType
     {
         HardwareControlled,
@@ -35,6 +42,8 @@ namespace BoxScore {
     int SyncTest_SetChainSynchronize(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain);
 
     int SetChainSynchronize(const SyncArgs& args, const std::vector<Digitizer::Ref>& chain);
+
+    int SetChainDPPAcqMode(DPPAcqMode setting, const std::vector<Digitizer::Ref>& chain);
 
     int SyncTest_StartSynchronizedRun(const SyncArgs& args, const std::vector<std::shared_ptr<Digitizer>>& chain);
 

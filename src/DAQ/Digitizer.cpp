@@ -161,7 +161,7 @@ namespace BoxScore {
     void DigitizerPHA::LoadDigitizerParameters()
     {
         m_args.status |= CAEN_DGTZ_SetAcquisitionMode(m_args.handle, m_digitizerParams.acqMode);
-        m_args.status |= CAEN_DGTZ_SetDPPAcquisitionMode(m_args.handle, m_digitizerParams.dppAcqMode, CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime);
+        m_args.status |= CAEN_DGTZ_SetDPPAcquisitionMode(m_args.handle, m_digitizerParams.dppAcqMode, m_digitizerParams.dppSaveMode);
         m_args.status |= CAEN_DGTZ_SetRecordLength(m_args.handle, m_digitizerParams.recordLength);
         m_args.status |= CAEN_DGTZ_SetIOLevel(m_args.handle, m_digitizerParams.IOlevel);
 
@@ -400,7 +400,7 @@ namespace BoxScore {
     void DigitizerPSD::LoadDigitizerParameters()
     {
         m_args.status |= CAEN_DGTZ_SetAcquisitionMode(m_args.handle, m_digitizerParams.acqMode);
-        m_args.status |= CAEN_DGTZ_SetDPPAcquisitionMode(m_args.handle, m_digitizerParams.dppAcqMode, CAEN_DGTZ_DPP_SAVE_PARAM_EnergyAndTime); //why would you ever not want one of these?
+        m_args.status |= CAEN_DGTZ_SetDPPAcquisitionMode(m_args.handle, m_digitizerParams.dppAcqMode, m_digitizerParams.dppSaveMode); //why would you ever not want one of these?
         m_args.status |= CAEN_DGTZ_SetRecordLength(m_args.handle, m_digitizerParams.recordLength);
         m_args.status |= CAEN_DGTZ_SetIOLevel(m_args.handle, m_digitizerParams.IOlevel);
 

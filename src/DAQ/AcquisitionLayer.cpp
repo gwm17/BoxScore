@@ -34,6 +34,7 @@ namespace BoxScore {
 		dispatch.Dispatch<AcqStopEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqStopEvent));
 		dispatch.Dispatch<AcqParametersEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqParametersEvent));
 		dispatch.Dispatch<AcqSyncArgsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqSyncArgsEvent));
+		dispatch.Dispatch<AcqDPPModeEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDPPModeEvent));
 		dispatch.Dispatch<AcqDetectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDetectBoardsEvent));
 		dispatch.Dispatch<AcqDisconnectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDisconnectBoardsEvent));
 	}
@@ -145,6 +146,19 @@ namespace BoxScore {
 		return true;
 	}
 
+	bool AcquisitionLayer::OnAcqDPPModeEvent(AcqDPPModeEvent& e)
+	{
+		if (m_running)
+		{
+			BS_WARN("Cannot update DPP Acquisition settings while aquisitiion is running!");
+			return true;
+		}
+
+		SetChainDPPAcqMode(m_project->GetDPPAcqMode(), m_digitizerChain);
+		m_project->SetDigitizerData(m_digitizerChain);
+		return true;
+	}
+
 	bool AcquisitionLayer::OnAcqDetectBoardsEvent(AcqDetectBoardsEvent& e)
 	{
 		BS_INFO("Querying the system for digitizers. WARNING: BoxScore currently only supports OpticalLink connections");
@@ -175,13 +189,10 @@ namespace BoxScore {
 		if (m_digitizerChain.size() == 0)
 			BS_WARN("No digitizers found... check to see that they are on and connected to the system via optical link");
 		else
-			std::sort(m_digitizerChain.begin(), m_digitizerChain.end(), SortByHandle);
+			std::sort(m_digitizerChain.begin(), m_digitizerChain.end(), SortByHandle); //in general seems to not be necessary, but just to be safe
 
-		m_project->SetDigitizerArgsList(GetArgList());
-
-		//Emit back out the argument list so that the editor gets updated
-		AcqBoardsFoundEvent bf_event;
-		m_callbackFunction(bf_event);
+		//Tell the project what happened
+		m_project->SetDigitizerData(m_digitizerChain); 
 
 		return true;
 	}
@@ -200,11 +211,8 @@ namespace BoxScore {
 
 		BS_INFO("Digitizers disconnected.");
 
-		m_project->SetDigitizerArgsList(GetArgList());
-
-		//Emit back out the argument list so that the editor gets updated
-		AcqBoardsFoundEvent bf_event;
-		m_callbackFunction(bf_event);
+		//Tell the project what happened
+		m_project->SetDigitizerData(m_digitizerChain);
 		
 		return true;
 	}
