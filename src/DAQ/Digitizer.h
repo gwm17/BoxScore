@@ -88,6 +88,7 @@ namespace BoxScore {
         void LoadChannelParameters();
         void LoadWaveformParameters();
         void AllocateMemory();
+        void DeallocateMemory();
 
         CAEN_DGTZ_DPP_PHA_Event_t** m_eventData; //middle man CAEN data types, required raw
         uint32_t m_eventBufferSize;
@@ -127,6 +128,7 @@ namespace BoxScore {
         void LoadChannelParameters();
         void LoadWaveformParameters();
         void AllocateMemory();
+        void DeallocateMemory();
 
         CAEN_DGTZ_DPP_PSD_Event_t** m_eventData; //middle man CAEN data types
         uint32_t m_eventBufferSize;

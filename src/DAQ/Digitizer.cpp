@@ -88,11 +88,7 @@ namespace BoxScore {
     {
         StopAquisition(); //Stop aquisition if needed
 
-        m_args.status |= CAEN_DGTZ_CloseDigitizer(m_args.handle);
-        m_args.status |= CAEN_DGTZ_FreeReadoutBuffer(&m_lowBuffer);
-        m_args.status |= CAEN_DGTZ_FreeDPPEvents(m_args.handle, (void**)(m_eventData));
-        for(int i=0; i<m_internalData.Channels; i++)
-            m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData[i]));
+        DeallocateMemory();
 
         delete[] m_eventCountsPerChannel;
 
@@ -152,9 +148,13 @@ namespace BoxScore {
 
     void DigitizerPHA::LoadSettings()
     {
+        DeallocateMemory();
+
         LoadDigitizerParameters();
         LoadChannelParameters();
         LoadWaveformParameters();
+
+        AllocateMemory();
     }
 
     //Set digitizer wide parameters
@@ -237,6 +237,14 @@ namespace BoxScore {
         m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(m_eventData), &m_eventBufferSize); 
         for(int channel=0; channel<m_internalData.Channels; channel++)
             m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData[channel]), &m_waveBufferSize);
+    }
+
+    void DigitizerPHA::DeallocateMemory()
+    {
+        m_args.status |= CAEN_DGTZ_FreeReadoutBuffer(&m_lowBuffer);
+        m_args.status |= CAEN_DGTZ_FreeDPPEvents(m_args.handle, (void**)(m_eventData));
+        for(int i=0; i<m_internalData.Channels; i++)
+            m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData[i]));
     }
 
     const std::vector<BSData>& DigitizerPHA::ReadData()
@@ -328,10 +336,7 @@ namespace BoxScore {
     {
         StopAquisition(); //Stop aquisition if needed
 
-        m_args.status |= CAEN_DGTZ_CloseDigitizer(m_args.handle);
-        m_args.status |= CAEN_DGTZ_FreeReadoutBuffer(&m_lowBuffer);
-        m_args.status |= CAEN_DGTZ_FreeDPPEvents(m_args.handle, (void**)(m_eventData));
-        m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData));
+        DeallocateMemory();
 
         delete[] m_eventCountsPerChannel;
 
@@ -391,9 +396,13 @@ namespace BoxScore {
 
     void DigitizerPSD::LoadSettings()
     {
+        DeallocateMemory();
+
         LoadDigitizerParameters();
         LoadChannelParameters();
         LoadWaveformParameters();
+
+        AllocateMemory();
     }
 
     //Set digitizer wide parameters
@@ -469,6 +478,14 @@ namespace BoxScore {
         m_args.status |= CAEN_DGTZ_MallocDPPEvents(m_args.handle, (void**)(m_eventData), &m_eventBufferSize); 
         for(int channel=0; channel<m_internalData.Channels; channel++)
             m_args.status |= CAEN_DGTZ_MallocDPPWaveforms(m_args.handle, (void**)(&m_waveData[channel]), &m_waveBufferSize);
+    }
+
+    void DigitizerPSD::DeallocateMemory()
+    {
+        m_args.status |= CAEN_DGTZ_FreeReadoutBuffer(&m_lowBuffer);
+        m_args.status |= CAEN_DGTZ_FreeDPPEvents(m_args.handle, (void**)(m_eventData));
+        for(int i=0; i<m_internalData.Channels; i++)
+            m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData[i]));
     }
 
     const std::vector<BSData>& DigitizerPSD::ReadData()
