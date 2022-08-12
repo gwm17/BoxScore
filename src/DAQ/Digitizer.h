@@ -32,7 +32,7 @@ namespace BoxScore {
 
         virtual void SetDigitizerParameters(const DigitizerParameters& params) = 0;
         virtual void LoadSettings() = 0;
-        virtual const std::vector<BSData>& ReadData() = 0;
+        virtual void ReadData(std::vector<BSData>& buffer) = 0;
 
         const DigitizerParameters& GetDigitizerParameters() const { return m_digitizerParams; }
         const DigitizerArgs& GetDigitizerArgs() const { return m_args; }
@@ -44,8 +44,6 @@ namespace BoxScore {
 
         DigitizerArgs m_args;
         DigitizerParameters m_digitizerParams;
-        std::vector<BSData> m_outputData;
-        std::vector<BSData> m_emptyResult;
 
         bool m_isActive;
         bool m_isConnected;
@@ -77,7 +75,7 @@ namespace BoxScore {
         virtual void SetDigitizerParameters(const DigitizerParameters& params) override;
         void SetChannelParameters(const std::vector<PHAParameters>& params);
         void SetWaveformParameters(const PHAWaveParameters& params);
-        virtual const std::vector<BSData>& ReadData() override;
+        virtual void ReadData(std::vector<BSData>& buffer) override;
 
         const std::vector<PHAParameters>& GetChannelParameters() { return m_channelParams; }
         const PHAWaveParameters& GetWaveformParameters() { return m_waveParams; }
@@ -117,7 +115,7 @@ namespace BoxScore {
         virtual void SetDigitizerParameters(const DigitizerParameters& params) override;
         void SetChannelParameters(const std::vector<PSDParameters>& params);
         void SetWaveformParameters(const PSDWaveParameters& params);
-        virtual const std::vector<BSData>& ReadData() override;
+        virtual void ReadData(std::vector<BSData>& buffer) override;
 
         const std::vector<PSDParameters>& GetChannelParameters() { return m_channelParams; }
         const PSDWaveParameters& GetWaveformParameters() { return m_waveParams; }

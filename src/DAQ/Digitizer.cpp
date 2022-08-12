@@ -125,7 +125,7 @@ namespace BoxScore {
     }
 
     //This cannot possibly be the correct method for cases where digitizers are chained.
-    //July 2022: Is not. See CAEN SyncTest for example
+    //July 2022: Is not. See Synchronize.h/.cpp
     void DigitizerPHA::StartAquisition()
     {
         if(!m_isActive && m_isConnected)
@@ -136,7 +136,7 @@ namespace BoxScore {
     }
 
     //This cannot possibly be the correct method for cases where digitizers are chained.
-    //July 2022: Is not. See CAEN SyncTest for example
+    //July 2022: Is not. See Synchronize.h/.cpp
     void DigitizerPHA::StopAquisition()
     {
         if(m_isActive && m_isConnected)
@@ -247,45 +247,47 @@ namespace BoxScore {
             m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData[i]));
     }
 
-    const std::vector<BSData>& DigitizerPHA::ReadData()
+    void DigitizerPHA::ReadData(std::vector<BSData>& buffer)
     {
         if(!m_isActive || !m_isConnected)
-            return m_outputData;
+            return;
 
         m_args.status |= CAEN_DGTZ_ReadData(m_args.handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, m_lowBuffer, &m_lowBufferSize);
         if (m_lowBufferSize == 0)
         {
-            return m_emptyResult;
+            return;
         }
 
         m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventCountsPerChannel);
         size_t waveSize;
+        BSData tempData;
+        tempData.board = m_args.handle;
         for(int i=0; i<m_internalData.Channels; i++)
         {
-            m_outputData[i].channel = i;
+            tempData.channel = i;
             for(int j=0; j<m_eventCountsPerChannel[i]; j++)
             {
-                m_outputData[i].energy = m_eventData[i][j].Energy;
-                m_outputData[i].timestamp = m_eventData[i][j].TimeTag;
-                m_outputData[i].flags = m_eventData[i][j].Extras;
+                tempData.energy = m_eventData[i][j].Energy;
+                tempData.timestamp = m_eventData[i][j].TimeTag;
+                tempData.flags = m_eventData[i][j].Extras;
 
                 if(m_digitizerParams.dppAcqMode != CAEN_DGTZ_DPP_ACQ_MODE_List)
                 {
                     CAEN_DGTZ_DecodeDPPWaveforms(m_args.handle, (void*)&(m_eventData[i][j]), m_waveData);
-                    m_outputData[i].waveSize = m_waveData[i]->Ns;
+                    tempData.waveSize = m_waveData[i]->Ns;
                     waveSize = m_waveData[i]->Ns;
                     if(waveSize != 0)
                     {
                         //Copy the data to our vectors PHA supports 2 analog traces and 2 digital traces
-                        m_outputData[i].trace1Samples.assign(m_waveData[i]->Trace1, m_waveData[i]->Trace1 + waveSize);
-                        m_outputData[i].trace2Samples.assign(m_waveData[i]->Trace2, m_waveData[i]->Trace2 + waveSize); //This is all zero if in single analog trace mode
-                        m_outputData[i].digitalTrace1Samples.assign(m_waveData[i]->DTrace1, m_waveData[i]->DTrace1 + waveSize);
-                        m_outputData[i].digitalTrace2Samples.assign(m_waveData[i]->DTrace2, m_waveData[i]->DTrace2 + waveSize);
+                        tempData.trace1Samples.assign(m_waveData[i]->Trace1, m_waveData[i]->Trace1 + waveSize);
+                        tempData.trace2Samples.assign(m_waveData[i]->Trace2, m_waveData[i]->Trace2 + waveSize); //This is all zero if in single analog trace mode
+                        tempData.digitalTrace1Samples.assign(m_waveData[i]->DTrace1, m_waveData[i]->DTrace1 + waveSize);
+                        tempData.digitalTrace2Samples.assign(m_waveData[i]->DTrace2, m_waveData[i]->DTrace2 + waveSize);
                     }
                 }
+                buffer.push_back(tempData);
             }
         }
-        return m_outputData;
     }
     /////////////////////// DigitizerPHA ///////////////////////
 
@@ -317,10 +319,6 @@ namespace BoxScore {
         m_args.channels = info.Channels;
 
         m_channelParams.resize(info.Channels);
-        m_outputData.resize(info.Channels);
-        for(auto& hit : m_outputData)
-            hit.board = m_args.handle;
-
         m_eventCountsPerChannel = new uint32_t[info.Channels];
         m_eventData = new CAEN_DGTZ_DPP_PSD_Event_t*[info.Channels];
         m_waveData = new CAEN_DGTZ_DPP_PSD_Waveforms_t*[info.Channels];
@@ -373,7 +371,7 @@ namespace BoxScore {
     }
 
     //This cannot possibly be the correct method for cases where digitizers are chained.
-    //July 2022: Is not. See CAEN SyncTest for example
+    //July 2022: Is not. See Synchronize.h/.cpp
     void DigitizerPSD::StartAquisition()
     {
         if(!m_isActive && m_isConnected)
@@ -384,7 +382,7 @@ namespace BoxScore {
     }
 
     //This cannot possibly be the correct method for cases where digitizers are chained.
-    //July 2022: Is not. See CAEN SyncTest for example
+    //July 2022: Is not. See Synchronize.h/.cpp
     void DigitizerPSD::StopAquisition()
     {
         if(m_isActive && m_isConnected)
@@ -488,45 +486,47 @@ namespace BoxScore {
             m_args.status |= CAEN_DGTZ_FreeDPPWaveforms(m_args.handle, (void*)(m_waveData[i]));
     }
 
-    const std::vector<BSData>& DigitizerPSD::ReadData()
+    void DigitizerPSD::ReadData(std::vector<BSData>& buffer)
     {
-        if(!m_isActive || !m_isConnected)
-            return m_outputData;
+        if (!m_isActive || !m_isConnected)
+            return;
 
         m_args.status |= CAEN_DGTZ_ReadData(m_args.handle, CAEN_DGTZ_SLAVE_TERMINATED_READOUT_MBLT, m_lowBuffer, &m_lowBufferSize);
         if (m_lowBufferSize == 0)
         {
-            return m_emptyResult;
+            return;
         }
 
         m_args.status |= CAEN_DGTZ_GetDPPEvents(m_args.handle, m_lowBuffer, m_lowBufferSize, (void**)(&m_eventData), m_eventCountsPerChannel);
         size_t waveSize;
+        BSData tempData;
+        tempData.board = m_args.handle;
         for(int i=0; i<m_internalData.Channels; i++)
         {
-            m_outputData[i].channel = i;
+            tempData.channel = i;
             for(int j=0; j<m_eventCountsPerChannel[i]; j++)
             {
-                m_outputData[i].energy = m_eventData[i][j].ChargeLong;
-                m_outputData[i].energyShort = m_eventData[i][j].ChargeShort;
-                m_outputData[i].timestamp = m_eventData[i][j].TimeTag;
-                m_outputData[i].flags = m_eventData[i][j].Extras;
+                tempData.energy = m_eventData[i][j].ChargeLong;
+                tempData.energyShort = m_eventData[i][j].ChargeShort;
+                tempData.timestamp = m_eventData[i][j].TimeTag;
+                tempData.flags = m_eventData[i][j].Extras;
 
                 if(m_digitizerParams.dppAcqMode != CAEN_DGTZ_DPP_ACQ_MODE_List)
                 {
                     CAEN_DGTZ_DecodeDPPWaveforms(m_args.handle, (void*)&(m_eventData[i][j]), m_waveData);
-                    m_outputData[i].waveSize = m_waveData[i]->Ns;
+                    tempData.waveSize = m_waveData[i]->Ns;
                     waveSize = m_waveData[i]->Ns;
-                    if(m_outputData[i].waveSize != 0)
+                    if(tempData.waveSize != 0)
                     {
                         //Copy the data to our vectors PHA supports 2 analog traces and 2 digital traces
-                        m_outputData[i].trace1Samples.assign(m_waveData[i]->Trace1, m_waveData[i]->Trace1 + waveSize);
-                        m_outputData[i].trace2Samples.assign(m_waveData[i]->Trace2, m_waveData[i]->Trace2 + waveSize); //This is all zero if in single analog trace mode
-                        m_outputData[i].digitalTrace1Samples.assign(m_waveData[i]->DTrace1, m_waveData[i]->DTrace1 + waveSize);
-                        m_outputData[i].digitalTrace2Samples.assign(m_waveData[i]->DTrace2, m_waveData[i]->DTrace2 + waveSize);
+                        tempData.trace1Samples.assign(m_waveData[i]->Trace1, m_waveData[i]->Trace1 + waveSize);
+                        tempData.trace2Samples.assign(m_waveData[i]->Trace2, m_waveData[i]->Trace2 + waveSize); //This is all zero if in single analog trace mode
+                        tempData.digitalTrace1Samples.assign(m_waveData[i]->DTrace1, m_waveData[i]->DTrace1 + waveSize);
+                        tempData.digitalTrace2Samples.assign(m_waveData[i]->DTrace2, m_waveData[i]->DTrace2 + waveSize);
                     }
                 }
+                buffer.push_back(tempData);
             }
         }
-        return m_outputData;
     }
 }

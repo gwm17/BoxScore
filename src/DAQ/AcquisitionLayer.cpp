@@ -310,20 +310,19 @@ namespace BoxScore {
 		if (!StartDigitizers())
 			return;
 
-		std::vector<BSData> recievedData;
+		std::vector<BSData> recievedData; //local data buffer
 		
 		//Run aquisition loop
 		while (m_running)
 		{
 			for (auto& digitizer : m_digitizerChain)
-			{
-				recievedData = digitizer->ReadData();
-				if (recievedData.empty())
-					continue;
+				digitizer->ReadData(recievedData);
 
-				//Do some stuff with data...
-				m_project->PipeData(recievedData);
-			}
+			if (recievedData.empty())
+				continue;
+
+			//Do some stuff with data
+
 		}
 
 		StopDigitizers();
