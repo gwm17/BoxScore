@@ -68,10 +68,6 @@ namespace BoxScore {
         m_args.channels = info.Channels;
 
         m_channelParams.resize(info.Channels);
-        m_outputData.resize(info.Channels);
-        for(auto& hit : m_outputData)
-            hit.board = m_args.handle;
-
         m_eventCountsPerChannel = new uint32_t[info.Channels];
         m_eventData = new CAEN_DGTZ_DPP_PHA_Event_t*[info.Channels];
         m_waveData = new CAEN_DGTZ_DPP_PHA_Waveforms_t*[info.Channels];

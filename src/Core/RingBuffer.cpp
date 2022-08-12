@@ -6,6 +6,9 @@ namespace BoxScore {
 	int RingBuffer::s_pushIndex = 0;
 	int RingBuffer::s_inUseSize = 0;
 	uint64_t RingBuffer::s_nextKey = 0;
+	std::array<std::vector<BSData>, RingBuffer::s_bufferSize> RingBuffer::s_buffer;
+	std::unordered_map<uint64_t, int> RingBuffer::s_consumerMap; //Maps key (id) to that consumer's popIndex
+	std::mutex RingBuffer::s_bufferMutex;
 
 	uint64_t RingBuffer::Attach()
 	{
@@ -25,6 +28,8 @@ namespace BoxScore {
 			return false;
 
 		s_consumerMap.erase(consumerID);
+
+		return true;
 	}
 
 	bool RingBuffer::PushData(const std::vector<BSData>& data)

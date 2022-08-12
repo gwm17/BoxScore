@@ -64,7 +64,9 @@ target_sources(BoxScore PRIVATE
     Editor/SyncDialog.cpp
     Core/ProjectSerializer.h
     Core/ProjectSerializer.cpp
- "Core/RingBuffer.h" "Core/RingBuffer.cpp")
+    Core/RingBuffer.h
+    Core/RingBuffer.cpp
+)
 
 #Packaged dependencies
 target_link_libraries(BoxScore PRIVATE imgui glfw glad yaml-cpp)
