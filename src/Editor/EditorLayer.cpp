@@ -7,7 +7,7 @@
 namespace BoxScore {
 
     EditorLayer::EditorLayer(const BSProject::Ref& project) :
-        Layer("EditorLayer"), m_project(project)
+        Layer("EditorLayer"), m_project(project), m_scopePanel(nullptr)
 	{
         m_projectPath = m_project->GetProjectPath().string();
         m_runNumber = m_project->GetRunNumber();
@@ -17,13 +17,20 @@ namespace BoxScore {
         m_digiPanels.emplace_back(DigitizerArgs());
 	}
 
-	EditorLayer::~EditorLayer() {}
+	EditorLayer::~EditorLayer()
+    {
+        delete m_scopePanel;
+    }
 
 	void EditorLayer::OnAttach() {}
 
 	void EditorLayer::OnDetach() {}
 
-	void EditorLayer::OnUpdate() {}
+	void EditorLayer::OnUpdate()
+    {
+        if (m_scopePanel)
+            m_scopePanel->OnUpdate();
+    }
 
 	void EditorLayer::OnEvent(Event& e)
     {
@@ -205,6 +212,9 @@ namespace BoxScore {
                             m_project->SetDPPAcqMode(DPPAcqMode::List);
                             AcqDPPModeEvent e;
                             m_eventCallback(e);
+
+                            delete m_scopePanel;
+                            m_scopePanel = nullptr;
                         }
                         if (ImGui::Selectable("Waves", dppModeString == "Waves"))
                         {
@@ -212,6 +222,8 @@ namespace BoxScore {
                             m_project->SetDPPAcqMode(DPPAcqMode::Waves);
                             AcqDPPModeEvent e;
                             m_eventCallback(e);
+
+                            m_scopePanel = new ScopePanel(m_digiPanels.size());
                         }
                         ImGui::EndCombo();
                     }
@@ -260,7 +272,11 @@ namespace BoxScore {
         }
         ImGui::End();
         
+        //Render the scope if needed
+        if (m_scopePanel)
+            m_scopePanel->OnImGuiRender();
 
+        //Render file dialog if needed
         auto fd_result = m_fileDialog.RenderFileDialog(".yaml");
         if (!fd_result.first.empty())
         {
@@ -286,6 +302,7 @@ namespace BoxScore {
             
         }
 
+        //render sync dialog if needed
         bool test = m_syncDialog.OnImGuiRender();
         if (test)
         {

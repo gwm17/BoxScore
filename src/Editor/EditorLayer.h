@@ -8,6 +8,7 @@
 #include "Core/BSProject.h"
 #include "DigitizerPanel.h"
 #include "SyncDialog.h"
+#include "ScopePanel.h"
 
 #include "imgui.h"
 
@@ -42,6 +43,7 @@ namespace BoxScore {
 		FileDialog m_fileDialog;
 		std::vector<DigitizerPanel> m_digiPanels;
 		SyncDialog m_syncDialog;
+		ScopePanel* m_scopePanel;
 
 		//ImGui Settings
 		bool dockspaceOpen = true;

@@ -4,6 +4,7 @@
 #include "imgui.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+#include "implot.h"
 
 #include "GLFW/glfw3.h"
 #include "glad/glad.h"
@@ -24,6 +25,7 @@ namespace BoxScore {
 
 		BS_INFO("Creating ImGui Context...");
 		ImGui::CreateContext();
+		ImPlot::CreateContext();
 
 		//enable docking and viewports
 		ImGuiIO& io = ImGui::GetIO();
@@ -32,6 +34,7 @@ namespace BoxScore {
 		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;
 
 		ImGui::StyleColorsDark(); //Hacker mode
+		ImPlot::StyleColorsDark();
 
 		ImGuiStyle& style = ImGui::GetStyle();
 
@@ -53,6 +56,7 @@ namespace BoxScore {
 	{
 		ImGui_ImplOpenGL3_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
+		ImPlot::DestroyContext();
 		ImGui::DestroyContext();
 	}
 

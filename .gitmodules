@@ -11,3 +11,7 @@
 [submodule "vendor/yaml-cpp"]
 	path = vendor/yaml-cpp
 	url = https://github.com/jbeder/yaml-cpp.git
+[submodule "vendor/implot"]
+	path = vendor/implot
+	url = https://github.com/gwm17/implot.git
+	branch = backends

@@ -6,6 +6,7 @@ target_include_directories(BoxScore
     ../vendor/spdlog/include
     ../vendor/glad/include
     ../vendor/yaml-cpp/include
+    ../vendor/implot/
     ./
 )
 
@@ -66,6 +67,20 @@ target_sources(BoxScore PRIVATE
     Core/ProjectSerializer.cpp
     Core/RingBuffer.h
     Core/RingBuffer.cpp
+    Editor/ScopePanel.h
+    Editor/ScopePanel.cpp
+)
+
+#ImPlot sources
+target_sources(BoxScore PRIVATE
+    ../vendor/implot/implot.cpp
+    ../vendor/implot/implot.h
+    ../vendor/implot/implot_demo.cpp
+    ../vendor/implot/implot_internal.h
+    ../vendor/implot/implot_items.cpp
+    ../vendor/implot/backends/implot_backend.h
+    ../vendor/implot/backends/implot_impl_opengl3.cpp
+    ../vendor/implot/backends/implot_impl_opengl3.h
 )
 
 #Packaged dependencies
@@ -96,6 +111,6 @@ elseif(CMAKE_BUILD_TYPE STREQUAL "Debug")
 endif()
 
 #Some extra defs
-target_compile_definitions(BoxScore PRIVATE GLFW_INCLUDE_NONE YAML_CPP_STATIC_DEFINE IMGUI_IMPL_OPENGL_LOADER_GLAD)
+target_compile_definitions(BoxScore PRIVATE GLFW_INCLUDE_NONE YAML_CPP_STATIC_DEFINE IMGUI_IMPL_OPENGL_LOADER_GLAD IMPLOT_BACKEND_ENABLE_OPENGL3)
 
 set_target_properties(BoxScore PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${BS_BINARY_DIR})
