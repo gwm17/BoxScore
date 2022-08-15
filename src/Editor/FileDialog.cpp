@@ -35,6 +35,7 @@ namespace BoxScore {
 			ImGui::OpenPopup("File Dialog");
 		}
 
+		//Open & Save Dir are equivalent operations, but can be useful to specify for handling later
 		std::string result = "";
 		if (ImGui::BeginPopupModal("File Dialog"))
 		{
@@ -51,6 +52,11 @@ namespace BoxScore {
 				break;
 			}
 			case Type::OpenDir:
+			{
+				result = ImGuiRenderOpenDir();
+				break;
+			}
+			case Type::SaveDir:
 			{
 				result = ImGuiRenderOpenDir();
 				break;

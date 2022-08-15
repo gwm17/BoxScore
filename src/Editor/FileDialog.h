@@ -15,6 +15,7 @@ namespace BoxScore {
 			OpenFile,
 			SaveFile,
 			OpenDir,
+			SaveDir,
 			None
 		};
 

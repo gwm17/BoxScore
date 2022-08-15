@@ -1,8 +1,11 @@
 #include "EditorLayer.h"
 #include "Core/Application.h"
 #include "Events/AcqEvent.h"
-#include "misc/cpp/imgui_stdlib.h"
 #include "Core/ProjectSerializer.h"
+
+#include "misc/cpp/imgui_stdlib.h"
+
+#include <filesystem>
 
 namespace BoxScore {
 
@@ -127,11 +130,15 @@ namespace BoxScore {
             {
                 if (ImGui::MenuItem("Open Project..."))
                 {
-                    m_fileDialog.OpenDialog(FileDialog::Type::OpenFile);
+                    m_fileDialog.OpenDialog(FileDialog::Type::OpenDir);
                 }
                 if (ImGui::MenuItem("Save Project"))
                 {
-                    m_fileDialog.OpenDialog(FileDialog::Type::SaveFile);
+                    SaveProject();
+                }
+                if (ImGui::MenuItem("Save Project As..."))
+                {
+                    m_fileDialog.OpenDialog(FileDialog::Type::SaveDir);
                 }
                 if (ImGui::MenuItem("Exit"))
                 {
@@ -282,21 +289,38 @@ namespace BoxScore {
         {
             switch (fd_result.second)
             {
-                case FileDialog::Type::OpenFile:
+                case FileDialog::Type::OpenDir:
                 {
-                    ProjectSerializer serializer(fd_result.first);
+                    std::filesystem::path dir(fd_result.first);
+                    if (!std::filesystem::exists(dir / "settings.yaml"))
+                    {
+                        BS_ERROR("Project settings file {0} does not exist! Cannot be opened!", dir.string());
+                        break;
+                    }
+                    ProjectSerializer serializer(dir / "settings.yaml");
                     serializer.DeserializeData(m_project);
-                    m_project->SetProjectPath("");
+                    m_projectPath = m_project->GetProjectPath().string();
+                    UpdateDigitizerPanels();
+                    AcqParametersEvent e(-100); //make a macro-fied or enumed value for this
+                    m_eventCallback(e);
+                    break;
+                }
+                case FileDialog::Type::SaveDir:
+                {
+                    bool status = m_project->SetProjectPath(fd_result.first);
+                    std::filesystem::path path(fd_result.first);
+                    if (!status)
+                    {
+                        BS_ERROR("Project directory {0} could not be created! Settings not saved.", fd_result.first);
+                        break;
+                    }
+                    ProjectSerializer serializer(m_project->GetProjectPath() / "settings.yaml");
+                    serializer.SerializeData(m_project);
                     m_projectPath = m_project->GetProjectPath().string();
                     break;
                 }
-                case FileDialog::Type::SaveFile:
-                {
-                    ProjectSerializer serializer("./test.yaml");
-                    serializer.SerializeData(m_project);
-                    break;
-                }
-                case FileDialog::Type::OpenDir: break; //Unused
+                case FileDialog::Type::OpenFile: break; //Unused
+                case FileDialog::Type::SaveFile: break; //Unused
                 case FileDialog::Type::None: break; //Null result
             }
             
@@ -313,4 +337,16 @@ namespace BoxScore {
 
         ImGui::End();
 	}
+
+    void EditorLayer::SaveProject()
+    {
+        const std::filesystem::path& path = m_project->GetProjectPath();
+        if (!path.empty())
+        {
+            ProjectSerializer serializer(m_project->GetProjectPath() / "settings.yaml");
+            serializer.SerializeData(m_project);
+        }
+        else
+            m_fileDialog.OpenDialog(FileDialog::Type::SaveDir);
+    }
 }

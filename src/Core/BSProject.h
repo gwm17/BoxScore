@@ -5,7 +5,6 @@
 #include "DAQ/Digitizer.h"
 #include "DAQ/Synchronize.h"
 
-#include <mutex>
 #include <filesystem>
 
 namespace BoxScore {
@@ -18,7 +17,7 @@ namespace BoxScore {
 		BSProject();
 		~BSProject();
 
-		void SetProjectPath(const std::filesystem::path& path);
+		bool SetProjectPath(const std::filesystem::path& path);
 		void SetDigitizerData(const std::vector<Digitizer::Ref>& chain);
 		void SetDigitizerArgsList(const std::vector<DigitizerArgs>& args);
 		void SetDigitizerParameterList(const std::vector<DigitizerParameters>& params);
@@ -30,8 +29,6 @@ namespace BoxScore {
 		void SetRunNumber(uint32_t number);
 		void IncrementRunNumber();
 		void SetDPPAcqMode(DPPAcqMode mode);
-
-		void PipeData(const std::vector<BSData>& data);
 
 		const std::filesystem::path& GetProjectPath();
 		const std::vector<DigitizerArgs>& GetDigitizerArgsList();
@@ -58,8 +55,6 @@ namespace BoxScore {
 		std::filesystem::path m_projectPath;
 		uint32_t m_runNumber;
 		DPPAcqMode m_dppMode;
-
-		std::mutex m_projectMutex;
 
 		//some null result stuff
 		std::vector<PHAParameters> m_nullphaChannels;

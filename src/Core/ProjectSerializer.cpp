@@ -407,7 +407,7 @@ namespace YAML {
 namespace BoxScore {
 
 
-	ProjectSerializer::ProjectSerializer(const std::string& filepath) :
+	ProjectSerializer::ProjectSerializer(const std::filesystem::path& filepath) :
 		m_filepath(filepath)
 	{
 	}
@@ -473,7 +473,7 @@ namespace BoxScore {
 		YAML::Node data;
 		try
 		{
-			data = YAML::LoadFile(m_filepath);
+			data = YAML::LoadFile(m_filepath.string());
 		}
 		catch (YAML::ParserException& e)
 		{

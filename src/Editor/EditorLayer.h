@@ -32,6 +32,7 @@ namespace BoxScore {
 
 	private:
 		void UpdateDigitizerPanels();
+		void SaveProject(); //For call to save project to current path
 
 		EventCallbackFunc m_eventCallback;
 

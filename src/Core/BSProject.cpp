@@ -3,7 +3,7 @@
 namespace BoxScore {
 
 	BSProject::BSProject() :
-		m_runNumber(0)
+		m_runNumber(0), m_dppMode(DPPAcqMode::List)
 	{
 	}
 
@@ -19,15 +19,21 @@ namespace BoxScore {
 		m_phaWaveMap.clear();
 	}
 
-	void BSProject::SetProjectPath(const std::filesystem::path& path)
+	bool BSProject::SetProjectPath(const std::filesystem::path& path)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
-		m_projectPath = path;
+		bool status = true;
+		m_projectPath = path.lexically_normal();
+		if (!std::filesystem::exists(m_projectPath))
+		{
+			status = std::filesystem::create_directory(path);
+			if (!status)
+				m_projectPath.clear();
+		}
+		return status;
 	}
 
 	void BSProject::SetDigitizerData(const std::vector<Digitizer::Ref>& chain)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		InternalClear();
 
 		for (auto& digitizer : chain)
@@ -54,19 +60,16 @@ namespace BoxScore {
 
 	void BSProject::SetDigitizerArgsList(const std::vector<DigitizerArgs>& args)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_argList = args;
 	}
 
 	void BSProject::SetDigitizerParameterList(const std::vector<DigitizerParameters>& params)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_boardParamList = params;
 	}
 
 	void BSProject::SetDigitizerParameters(int handle, const DigitizerParameters& params)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		if (handle >= m_boardParamList.size() || handle == -1)
 		{
 			BS_ERROR("Attempting to set digitizer parameters for non-extant board: given handle {0}, number of boards {1}", handle, m_boardParamList.size());
@@ -78,61 +81,51 @@ namespace BoxScore {
 
 	void BSProject::SetPHAParameters(int handle, const std::vector<PHAParameters>& params)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_phaChannelMap[handle] = params;
 	}
 
 	void BSProject::SetPSDParameters(int handle, const std::vector<PSDParameters>& params)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_psdChannelMap[handle] = params;
 	}
 
 	void BSProject::SetPHAWaveParameters(int handle, const PHAWaveParameters& params)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_phaWaveMap[handle] = params;
 	}
 
 	void BSProject::SetPSDWaveParameters(int handle, const PSDWaveParameters& params)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_psdWaveMap[handle] = params;
 	}
 
 	void BSProject::SetRunNumber(uint32_t number)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_runNumber = number;
 	}
 
 	void BSProject::IncrementRunNumber()
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		++m_runNumber;
 	}
 
 	void BSProject::SetDPPAcqMode(DPPAcqMode mode)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		m_dppMode = mode;
 	}
 
 	const std::filesystem::path& BSProject::GetProjectPath()
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_projectPath;
 	}
 
 	const std::vector<DigitizerArgs>& BSProject::GetDigitizerArgsList()
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_argList;
 	}
 
 	DigitizerArgs BSProject::GetDigitizerArgs(int handle)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		if (handle >= m_argList.size() || handle == -1)
 		{
 			BS_ERROR("Attempting to get digitizer args for non-extant board: given handle {0}, number of boards {1}", handle, m_argList.size());
@@ -143,13 +136,11 @@ namespace BoxScore {
 
 	const std::vector<DigitizerParameters>& BSProject::GetDigitizerParameterList()
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_boardParamList;
 	}
 
 	DigitizerParameters BSProject::GetDigitizerParameters(int handle)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		if (handle >= m_boardParamList.size() || handle == -1)
 		{
 			BS_ERROR("Attempting to get digitizer parameters for non-extant board: given handle {0}, number of boards {1}", handle, m_boardParamList.size());
@@ -160,7 +151,6 @@ namespace BoxScore {
 
 	const std::vector<PHAParameters>& BSProject::GetPHAParameters(int handle)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		auto iter = m_phaChannelMap.find(handle);
 		if (iter != m_phaChannelMap.end())
 			return iter->second;
@@ -170,7 +160,6 @@ namespace BoxScore {
 	
 	const std::vector<PSDParameters>& BSProject::GetPSDParameters(int handle)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		auto iter = m_psdChannelMap.find(handle);
 		if (iter != m_psdChannelMap.end())
 			return iter->second;
@@ -180,7 +169,6 @@ namespace BoxScore {
 
 	PHAWaveParameters BSProject::GetPHAWaveParameters(int handle)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		auto iter = m_phaWaveMap.find(handle);
 		if (iter != m_phaWaveMap.end())
 			return iter->second;
@@ -190,7 +178,6 @@ namespace BoxScore {
 
 	PSDWaveParameters BSProject::GetPSDWaveParameters(int handle)
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		auto iter = m_psdWaveMap.find(handle);
 		if (iter != m_psdWaveMap.end())
 			return iter->second;
@@ -200,25 +187,17 @@ namespace BoxScore {
 
 	uint32_t BSProject::GetRunNumber()
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_runNumber;
 	}
 
 	DPPAcqMode BSProject::GetDPPAcqMode()
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_dppMode;
 	}
 
 	size_t BSProject::GetNumberOfBoards()
 	{
-		std::scoped_lock<std::mutex> guard(m_projectMutex);
 		return m_argList.size();
 	}
 
-	void BSProject::PipeData(const std::vector<BSData>& data)
-	{
-		//Figure out what to do here hahaha
-		return;
-	}
 }
