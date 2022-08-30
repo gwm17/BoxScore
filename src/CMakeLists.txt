@@ -7,6 +7,7 @@ target_include_directories(BoxScore
     ../vendor/glad/include
     ../vendor/yaml-cpp/include
     ../vendor/implot/
+    ../vendor/asio/include
     ./
 )
 

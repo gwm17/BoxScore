@@ -15,3 +15,6 @@
 	path = vendor/implot
 	url = https://github.com/gwm17/implot.git
 	branch = backends
+[submodule "vendor/asio"]
+	path = vendor/asio
+	url = https://github.com/chriskohlhoff/asio.git
