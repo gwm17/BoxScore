@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.16) #pch support
 
-set(CMAKE_CXX_STANDARD 17) #c++17
+set(CMAKE_CXX_STANDARD 20) #c++20
 
 #currently default to debug. Eventually move to release
 if(NOT CMAKE_BUILD_TYPE STREQUAL "Release")
