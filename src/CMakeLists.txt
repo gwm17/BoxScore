@@ -70,7 +70,11 @@ target_sources(BoxScore PRIVATE
     Core/RingBuffer.cpp
     Editor/ScopePanel.h
     Editor/ScopePanel.cpp
- "BSio/BSFile.h" "BSio/BSFile.cpp")
+    BSio/BSFile.h
+    BSio/BSFile.cpp
+    BSio/BSRun.h
+    BSio/BSRun.cpp
+)
 
 #ImPlot sources
 target_sources(BoxScore PRIVATE

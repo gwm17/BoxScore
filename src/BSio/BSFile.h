@@ -1,5 +1,5 @@
-#ifndef BSFILE_H
-#define BSFILE_H
+#ifndef BS_FILE_H
+#define BS_FILE_H
 
 #include <filesystem>
 #include "DAQ/DigitizerDefs.h"
@@ -9,9 +9,11 @@ namespace BoxScore {
 	class BSFile
 	{
 	public:
+		BSFile();
 		BSFile(const std::filesystem::path& path);
 		~BSFile();
 
+		void Open(const std::filesystem::path& path);
 		void Write(const BSData& data);
 		void Close();
 		bool IsOpen() const { return m_fileHandle == nullptr ? false : m_fileHandle->is_open(); }

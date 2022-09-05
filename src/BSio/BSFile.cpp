@@ -3,18 +3,33 @@
 
 namespace BoxScore {
 
-	BSFile::BSFile(const std::filesystem::path& path) :
-		m_path(path), m_currentLocation(0)
+	BSFile::BSFile() :
+		m_fileHandle(nullptr), m_currentLocation(0)
 	{
 		if (std::endian::native == std::endian::big)
 			BS_WARN("You are using a big endian system! Data will be encoded in reverse byte order on most machines");
 		m_buffer.resize(s_bufferSize);
 	}
 
+	BSFile::BSFile(const std::filesystem::path& path) :
+		m_fileHandle(nullptr), m_currentLocation(0)
+	{
+		if (std::endian::native == std::endian::big)
+			BS_WARN("You are using a big endian system! Data will be encoded in reverse byte order on most machines");
+		m_buffer.resize(s_bufferSize);
+		Open(path);
+	}
+
 	BSFile::~BSFile()
 	{
 		if (IsOpen())
 			Close();
+	}
+
+	void BSFile::Open(const std::filesystem::path& path)
+	{
+		m_path = path;
+		m_fileHandle = std::make_shared<std::ofstream>(path);
 	}
 
 	void BSFile::Close()

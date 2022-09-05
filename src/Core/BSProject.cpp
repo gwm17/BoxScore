@@ -200,4 +200,21 @@ namespace BoxScore {
 		return m_argList.size();
 	}
 
+
+	std::filesystem::path BSProject::CreateRunDirectory()
+	{
+		std::string runName = "run_" + std::to_string(m_runNumber);
+		std::filesystem::path runPath = m_projectPath / runName;
+
+		if (std::filesystem::exists(runPath))
+		{
+			BS_WARN("Run directory {0} already exists! Could lead to overwritting data!", runPath);
+		}
+		else
+		{
+			std::filesystem::create_directory(runPath);
+		}
+
+		return runPath;
+	}
 }

@@ -43,6 +43,8 @@ namespace BoxScore {
 		DPPAcqMode GetDPPAcqMode();
 		size_t GetNumberOfBoards();
 
+		std::filesystem::path CreateRunDirectory();
+
 	private:
 		void InternalClear();
 
