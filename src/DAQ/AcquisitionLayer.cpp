@@ -39,29 +39,6 @@ namespace BoxScore {
 		dispatch.Dispatch<AcqDetectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDetectBoardsEvent));
 		dispatch.Dispatch<AcqDisconnectBoardsEvent>(BIND_EVENT_FUNCTION(AcquisitionLayer::OnAcqDisconnectBoardsEvent));
 	}
-	
-	void AcquisitionLayer::CreateAcqThread()
-	{
-		if (m_running)
-		{
-			BS_WARN("Attempted to start a new acquisition while one is already running!");
-			return;
-		}
-		else if (m_digitizerChain.empty())
-		{
-			BS_WARN("Cannot start acquisition without any digitizers!");
-			return;
-		}
-		else if (m_acqThread != nullptr)
-		{
-			DestroyAcqThread();
-		}
-
-		BS_INFO("Starting acquisition thread...");
-		m_running = true;
-		m_acqThread = new std::thread(&AcquisitionLayer::Run, std::ref(*this));
-		BS_INFO("Running.");
-	}
 
 	void AcquisitionLayer::DestroyAcqThread()
 	{
@@ -80,13 +57,38 @@ namespace BoxScore {
 
 	bool AcquisitionLayer::OnAcqStartEvent(AcqStartEvent& e)
 	{
-		CreateAcqThread();
+		if (m_running)
+		{
+			BS_WARN("Attempted to start a new acquisition while one is already running!");
+			return true;
+		}
+		else if (m_digitizerChain.empty())
+		{
+			BS_WARN("Cannot start acquisition without any digitizers!");
+			return true;
+		}
+		else if (m_acqThread != nullptr)
+		{
+			DestroyAcqThread();
+		}
+
+		BS_INFO("Starting acquisition thread...");
+		m_running = true;
+		m_acqThread = new std::thread(&AcquisitionLayer::Run, std::ref(*this));
+		BS_INFO("Running.");
+
+		//If we chose to write to disk, start the file handler
+		if (e.IsWriteToDisk())
+			m_fileIO.StartRun(m_project);
+		
 		return true;
 	}
 
 	bool AcquisitionLayer::OnAcqStopEvent(AcqStopEvent& e)
 	{
 		DestroyAcqThread();
+		if (m_fileIO.IsRunning())
+			m_fileIO.StopRun();
 		return true;
 	}
 

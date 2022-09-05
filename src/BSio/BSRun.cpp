@@ -1,5 +1,6 @@
 #include "BSRun.h"
 #include "Core/RingBuffer.h"
+#include "Core/ProjectSerializer.h"
 
 namespace BoxScore {
 
@@ -22,6 +23,10 @@ namespace BoxScore {
 	void BSRun::InitFiles(const BSProject::Ref& project)
 	{
 		std::filesystem::path runPath = project->CreateRunDirectory();
+
+		//Write a run local copy of the daq settings
+		ProjectSerializer serializer(runPath / "settings.yaml");
+		serializer.SerializeData(project);
 
 		const std::vector<DigitizerArgs>& argList = project->GetDigitizerArgsList();
 
@@ -69,7 +74,7 @@ namespace BoxScore {
 				fileIter.second.Close();
 			m_files.clear();
 		}
-		else
+		else if(m_processingThread != nullptr)
 			BS_WARN("Unable to destroy the processing thread for file writing!");
 	}
 

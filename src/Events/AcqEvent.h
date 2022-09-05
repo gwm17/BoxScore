@@ -12,10 +12,20 @@ namespace BoxScore {
 	class AcqStartEvent : public Event
 	{
 	public:
-		AcqStartEvent() = default;
+		AcqStartEvent(bool writeToDisk, bool writeToServer) :
+			m_isWriteToDisk(writeToDisk), m_isWriteToServer(writeToServer)
+		{
+		}
+
+		bool IsWriteToDisk() const { return m_isWriteToDisk; }
+		bool IsWriteToServer() const { return m_isWriteToServer; }
 
 		EVENT_CATEGORY_SETUP(EventCategoryAcq);
 		EVENT_TYPE_SETUP(AcqStart);
+
+	private:
+		bool m_isWriteToDisk;
+		bool m_isWriteToServer;
 	};
 
 	class AcqStopEvent : public Event

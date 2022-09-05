@@ -186,7 +186,7 @@ namespace BoxScore {
                     {
                         if (runString == "Start Run")
                         {
-                            AcqStartEvent e;
+                            AcqStartEvent e(writeDataToDisk, dataServer);
                             m_eventCallback(e);
                             runString = "Stop Run";
                             disableAll = true;

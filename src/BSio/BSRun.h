@@ -17,6 +17,7 @@ namespace BoxScore {
 
 		void StartRun(const BSProject::Ref& project);
 		void StopRun();
+		bool IsRunning() const { return m_isRunning; }
 
 	private:
 		void InitFiles(const BSProject::Ref& project);

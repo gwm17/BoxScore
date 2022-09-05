@@ -7,6 +7,8 @@
 #include "Synchronize.h"
 #include "Core/BSProject.h"
 
+#include "BSio/BSRun.h"
+
 #include <thread>
 #include <mutex>
 #include <atomic>
@@ -39,7 +41,6 @@ namespace BoxScore {
 		bool OnAcqDPPModeEvent(AcqDPPModeEvent& e);
 
 		//Functionality
-		void CreateAcqThread();
 		void DestroyAcqThread();
 		void SetSynchronization(const SyncArgs& args);
 		bool StartDigitizers();
@@ -52,6 +53,8 @@ namespace BoxScore {
 		EventCallbackFunc m_callbackFunction;
 
 		BSProject::Ref m_project;
+
+		BSRun m_fileIO;
 
 		std::vector<Digitizer::Ref> m_digitizerChain;
 		SyncArgs m_syncStatus;
