@@ -7,7 +7,7 @@ target_include_directories(BoxScore
     ../vendor/glad/include
     ../vendor/yaml-cpp/include
     ../vendor/implot/
-    ../vendor/asio/include
+    ../vendor/asio/asio/include
     ./
 )
 
@@ -74,6 +74,9 @@ target_sources(BoxScore PRIVATE
     BSio/BSFile.cpp
     BSio/BSRun.h
     BSio/BSRun.cpp
+    BSio/TCPConnection.h
+    BSio/TCPConnection.cpp
+    BSio/BSListData.h
 )
 
 #ImPlot sources
