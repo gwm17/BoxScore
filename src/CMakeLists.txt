@@ -74,9 +74,11 @@ target_sources(BoxScore PRIVATE
     BSio/BSFile.cpp
     BSio/BSRun.h
     BSio/BSRun.cpp
-    BSio/TCPConnection.h
-    BSio/TCPConnection.cpp
+    "BSio/TCPServer.h"
+    "BSio/TCPServer.cpp"
     BSio/BSListData.h
+    
+    BSio/BSMessage.h
 )
 
 #ImPlot sources
