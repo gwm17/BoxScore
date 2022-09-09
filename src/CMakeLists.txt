@@ -74,12 +74,12 @@ target_sources(BoxScore PRIVATE
     BSio/BSFile.cpp
     BSio/BSRun.h
     BSio/BSRun.cpp
-    "BSio/TCPServer.h"
-    "BSio/TCPServer.cpp"
+    BSio/TCPServer.h
+    BSio/TCPServer.cpp
     BSio/BSListData.h
-    
     BSio/BSMessage.h
-)
+    Core/ThreadSafeQueue.h
+ "Core/DataDistributor.h" "Core/DataDistributor.cpp")
 
 #ImPlot sources
 target_sources(BoxScore PRIVATE

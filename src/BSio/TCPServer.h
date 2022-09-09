@@ -2,6 +2,9 @@
 #define TCP_CONNECTION_H
 
 #include "BSMessage.h"
+#include "Core/ThreadSafeQueue.h"
+#include "Core/DataDistributor.h"
+
 #include "asio.hpp"
 
 #include <thread>
@@ -12,17 +15,24 @@ namespace BoxScore {
 	class TCPServerConnection
 	{
 	public:
+		using Ref = std::shared_ptr<TCPServerConnection>;
+
 		TCPServerConnection(asio::io_context& context, asio::ip::tcp::socket socket);
 		~TCPServerConnection();
 
 		bool IsConnected() const { return m_socket.is_open(); }
-		void Write(const BSMessage& message);
+		void Send(const BSMessage& message);
 
 		void Disconnect();
 
 	private:
+		void WriteHeader();
+		void WriteBody();
+
 		asio::ip::tcp::socket m_socket;
 		asio::io_context& m_contextRef;
+
+		ThreadSafeQueue<BSMessage> m_queue;
 	};
 
 	/*
@@ -39,7 +49,7 @@ namespace BoxScore {
 	class TCPServer
 	{
 	public:
-		TCPServer(uint16_t port);
+		TCPServer(uint16_t serverPort);
 		~TCPServer();
 
 		/*
@@ -52,7 +62,7 @@ namespace BoxScore {
 		/*
 		Shutdown()
 		Shutdown the entire server, including both the acceptor thread and the data feed thread.
-		This should be done essentially onece, at application shutdown.
+		This should be done essentially once, at application shutdown.
 		*/
 		void Shutdown();
 
@@ -70,19 +80,20 @@ namespace BoxScore {
 		*/
 		void StopDataFeed();
 
-		bool IsActive() { return m_socket.is_open(); }
+		bool IsActive() { return m_acceptor.is_open(); }
 
-		void Send(const BSMessage& message);
 
 	private:
-		void RunDataFeed();
+		void MessageClients(const BSMessage& message);
 		void WaitForClient();
 
 		asio::io_context m_context;
 		asio::ip::tcp::acceptor m_acceptor;
 
-		std::mutex m_clientListMutex;
-		std::vector<TCPServerConnection> m_clients;
+		std::mutex m_clientMutex;
+		std::vector<TCPServerConnection::Ref> m_clients;
+
+		DistributorClient m_dataHandle;
 
 		std::thread m_acceptorThread;
 		std::thread m_dataFeedThread;

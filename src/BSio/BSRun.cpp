@@ -11,7 +11,7 @@ namespace BoxScore {
 	}
 
 	BSRun::BSRun() :
-		m_ringConsumerID(-1), m_isRunning(false), m_processingThread(nullptr)
+		m_isRunning(false), m_processingThread(nullptr)
 	{
 	}
 
@@ -52,7 +52,8 @@ namespace BoxScore {
 		if (m_isRunning)
 			StopRun();
 
-		m_ringConsumerID = RingBuffer::Attach();
+		//m_ringConsumerID = RingBuffer::Attach();
+		m_dataHandle = DataDistributor::Connect();
 		InitFiles(project);
 		m_isRunning = true;
 
@@ -61,13 +62,22 @@ namespace BoxScore {
 
 	void BSRun::StopRun()
 	{
+		if(m_dataHandle.dataQueue != nullptr && !m_dataHandle.dataQueue->IsEmpty())
+		{
+			BS_INFO("Finishing writing data to file before stopping... Still have {0} events to process", m_dataHandle.dataQueue->Size());
+			while (!m_dataHandle.dataQueue)
+			{
+				//bad. make thread block here instead
+			}
+		}
 		m_isRunning = false;
 		if (m_processingThread != nullptr && m_processingThread->joinable())
 		{
 			m_processingThread->join();
 			delete m_processingThread;
 			m_processingThread = nullptr;
-			RingBuffer::Detach(m_ringConsumerID); 
+			//RingBuffer::Detach(m_ringConsumerID);
+			DataDistributor::Disconnect(m_dataHandle);
 
 			//Close all files and clear the map to be ready for re-use
 			for (auto& fileIter : m_files)
@@ -84,13 +94,16 @@ namespace BoxScore {
 		uint32_t key;
 		while (m_isRunning)
 		{
-			if (RingBuffer::PopData(m_ringConsumerID, dataBuffer))
+			//if (RingBuffer::PopData(m_ringConsumerID, dataBuffer))
+			if (!m_dataHandle.dataQueue->IsEmpty())
 			{
+				dataBuffer = m_dataHandle.dataQueue->Front();
 				for (auto& datum : dataBuffer)
 				{
 					key = SzudzikPairingFunction(datum.board, datum.channel);
 					m_files[key].Write(datum);
 				}
+				m_dataHandle.dataQueue->PopFront();
 			}
 		}
 	}

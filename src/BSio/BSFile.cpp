@@ -49,7 +49,7 @@ namespace BoxScore {
 	//See BSListData.h for details on loading data to buffer. 
 	void BSFile::Write(const BSData& data)
 	{
-		m_currentLocation = LoadBSDataToBuffer(m_buffer, data, m_currentLocation);
+		m_currentLocation = LoadBSDataToBuffer(m_buffer, data);
 		if (m_currentLocation == s_bufferSize)
 			Flush();
 	}

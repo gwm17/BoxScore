@@ -351,7 +351,7 @@ namespace BoxScore {
 			return;
 
 		std::vector<BSData> recievedData; //local data buffer
-		bool wasPushed = false;
+		//bool wasPushed = false;
 		//Run aquisition loop
 		while (m_running)
 		{
@@ -362,10 +362,14 @@ namespace BoxScore {
 				continue;
 
 			//Do some stuff with data
+			/*
 			while (!wasPushed)
 			{
 				wasPushed = RingBuffer::PushData(recievedData);
 			}
+			*/
+
+			DataDistributor::PushData(recievedData);
 			recievedData.clear();
 		}
 

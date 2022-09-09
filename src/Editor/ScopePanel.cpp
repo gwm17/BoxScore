@@ -9,7 +9,8 @@ namespace BoxScore {
 	ScopePanel::ScopePanel(int nboards) :
 		m_dataReady(false), m_selectedBoard(0), m_selectedChannel(0), m_maxNumBoards(nboards)
 	{
-		m_consumerID = RingBuffer::Attach();
+		//m_consumerID = RingBuffer::Attach();
+		m_dataHandle = DataDistributor::Connect();
 		for (int i = 0; i < nboards; i++)
 			m_boardListForImGui.push_back(fmt::format("{0}", i));
 		for (int i = 0; i < 16; i++) //bad hardcode, fix later
@@ -18,15 +19,18 @@ namespace BoxScore {
 
 	ScopePanel::~ScopePanel()
 	{
-		RingBuffer::Detach(m_consumerID);
+		DataDistributor::Disconnect(m_dataHandle);
 	}
 
 	void ScopePanel::OnUpdate()
 	{
-		static bool bufferFilled = false;
-		bufferFilled = RingBuffer::PopData(m_consumerID, m_buffer);
-		if (bufferFilled)
+		//static bool bufferFilled = false;
+		//bufferFilled = RingBuffer::PopData(m_consumerID, m_buffer);
+		//if (bufferFilled)
+		if (!m_dataHandle.dataQueue->IsEmpty())
 		{
+			m_buffer = m_dataHandle.dataQueue->Front();
+			m_dataHandle.dataQueue->PopFront();
 			for (auto& hit : m_buffer)
 			{
 				if (hit.board == m_selectedBoard && hit.channel == m_selectedChannel)

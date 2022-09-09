@@ -3,6 +3,7 @@
 
 #include "BSFile.h"
 #include "Core/BSProject.h"
+#include "Core/DataDistributor.h"
 
 #include <atomic>
 #include <thread>
@@ -24,7 +25,7 @@ namespace BoxScore {
 		void ProcessData();
 		
 		std::unordered_map<uint32_t, BSFile> m_files;
-		std::uint64_t m_ringConsumerID;
+		DistributorClient m_dataHandle;
 		std::atomic<bool> m_isRunning;
 		std::thread* m_processingThread;
 	};

@@ -2,6 +2,7 @@
 #define SCOPE_PANEL_H
 
 #include "DAQ/DigitizerDefs.h"
+#include "Core/DataDistributor.h"
 
 namespace BoxScore {
 
@@ -15,7 +16,8 @@ namespace BoxScore {
 		void OnImGuiRender();
 
 	private:
-		uint64_t m_consumerID;
+		//uint64_t m_consumerID;
+		DistributorClient m_dataHandle;
 		std::vector<BSData> m_buffer; //Buffered data retrieved from ring
 		BSData m_selectedHit; //Hit associated with selected board/channel
 		std::vector<int16_t> m_selectedXAxis; //X data is not given by DAQ, has to be made based on number of wave samples

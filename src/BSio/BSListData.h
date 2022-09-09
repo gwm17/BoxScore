@@ -24,16 +24,16 @@ namespace BoxScore {
 	Cannot guarantee padding is equivalent from different compilers, architectures.
 	So, convert each individual data member to binary, and write our own compact message.
 	*/
-    static std::size_t LoadBSDataToBuffer(std::vector<char>& buffer, const BSData& data, std::size_t startPosition)
+    static std::size_t LoadBSDataToBuffer(std::vector<char>& buffer, const BSData& data)
     {
 		char* dataPointer;
 		int loopIndex; // predeclare to save allocation time
-		int position = startPosition;
+		int position = buffer.empty() ? 0 : buffer.size() - 1;
 
-		if (buffer.size() - startPosition < Data::dataSize)
+		if (buffer.size() - position < Data::dataSize)
 		{
-			BS_ERROR("Could not load data to buffer; data size exceeded remaining buffer size {0}", buffer.size() - startPosition);
-			return startPosition;
+			BS_ERROR("Could not load data to buffer; data size exceeded remaining buffer size {0}", buffer.size() - position);
+			return position;
 		}
 
 		//Write board (2 bytes)
@@ -75,7 +75,7 @@ namespace BoxScore {
 	Again, rather nasty. Here we C-style cast the data in the buffer to our types in the list data,
 	write them to the input parameter reference, and then iterate forward the appropriate number of bytes.
 	*/
-	static std::size_t UnLoadBSListDataFromBuffer(const std::vector<char> buffer, BSListData& data, std::size_t startPosition)
+	static std::size_t UnLoadBSListDataFromBuffer(const std::vector<char>& buffer, BSListData& data, std::size_t startPosition)
 	{
 		std::size_t position = startPosition;
 		if (buffer.size() - startPosition < Data::dataSize)
