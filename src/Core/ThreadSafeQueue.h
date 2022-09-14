@@ -4,6 +4,8 @@
 #include <deque>
 #include <mutex>
 #include <thread>
+#include <condition_variable>
+#include <atomic>
 
 namespace BoxScore {
 
@@ -19,12 +21,18 @@ namespace BoxScore {
 		{
 			std::scoped_lock<std::mutex> guard(m_queueMutex);
 			m_queue.push_back(data);
+
+			std::scoped_lock<std::mutex> guard(m_conditionMutex);
+			m_conditional.notify_one();
 		}
 
 		void PushFront(const T& data)
 		{
 			std::scoped_lock<std::mutex> guard(m_queueMutex);
 			m_queue.push_front(data);
+
+			std::scoped_lock<std::mutex> guard(m_conditionMutex);
+			m_conditional.notify_one();
 		}
 
 		void PopBack()
@@ -83,9 +91,36 @@ namespace BoxScore {
 			return m_queue.end();
 		}
 
+		void Wait()
+		{
+			while(IsEmpty() && !m_isForceWakeup)
+			{
+				std::unique_lock<std::mutex> guard(m_conditionMutex);
+				m_conditional(guard);
+			}
+		}
+
+		void ForceWakeup()
+		{
+			m_isForceWakeup = true;
+
+			std::unique_lock<std::mutex> guard(m_conditionMutex);
+			m_conditional.notify_one();
+		}
+
+		void ResetWakeup()
+		{
+			m_isForceWakeup = false;
+		}
+
 	private:
 		std::mutex m_queueMutex;
 		std::deque<T> m_queue;
+
+		std::mutex m_conditionMutex;
+		std::condition_variable m_conditional;
+
+		std::atomic<bool> m_isForceWakeup = false;
 	};
 }
 

@@ -65,12 +65,14 @@ namespace BoxScore {
 		if(m_dataHandle.dataQueue != nullptr && !m_dataHandle.dataQueue->IsEmpty())
 		{
 			BS_INFO("Finishing writing data to file before stopping... Still have {0} events to process", m_dataHandle.dataQueue->Size());
-			while (!m_dataHandle.dataQueue)
+			while (!m_dataHandle.dataQueue->IsEmpty())
 			{
 				//bad. make thread block here instead
 			}
 		}
+
 		m_isRunning = false;
+		m_dataHandle.dataQueue->ForceWakeup();
 		if (m_processingThread != nullptr && m_processingThread->joinable())
 		{
 			m_processingThread->join();
@@ -86,6 +88,7 @@ namespace BoxScore {
 		}
 		else if(m_processingThread != nullptr)
 			BS_WARN("Unable to destroy the processing thread for file writing!");
+		m_dataHandle.dataQueue->ResetWakeup();
 	}
 
 	void BSRun::ProcessData()
@@ -94,8 +97,9 @@ namespace BoxScore {
 		uint32_t key;
 		while (m_isRunning)
 		{
+			m_dataHandle.dataQueue->Wait(); //Block for the queue to be full
 			//if (RingBuffer::PopData(m_ringConsumerID, dataBuffer))
-			if (!m_dataHandle.dataQueue->IsEmpty())
+			if (!m_dataHandle.dataQueue->IsEmpty()) //Protect for edge cases
 			{
 				dataBuffer = m_dataHandle.dataQueue->Front();
 				for (auto& datum : dataBuffer)

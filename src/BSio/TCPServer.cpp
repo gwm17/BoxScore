@@ -83,7 +83,7 @@ namespace BoxScore {
 	}
 
 	TCPServer::TCPServer(uint16_t serverPort) :
-		m_acceptor(m_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort))
+		m_acceptor(m_context, asio::ip::tcp::endpoint(asio::ip::tcp::v4(), serverPort)), m_isDataFeedRunning(false)
 	{
 
 	}
@@ -130,10 +130,13 @@ namespace BoxScore {
 		if (m_dataHandle.dataQueue != nullptr)
 			m_dataHandle = DataDistributor::Connect();
 
+		m_isDataFeedRunning = true;
 		m_dataFeedThread = std::thread([this]()
 			{
-				while (true)
+				while (m_isDataFeedRunning)
 				{
+					m_dataHandle.dataQueue->Wait();
+
 					if (!m_dataHandle.dataQueue->IsEmpty())
 						continue;
 
@@ -146,8 +149,11 @@ namespace BoxScore {
 
 	void TCPServer::StopDataFeed()
 	{
+		m_isDataFeedRunning = false;
+		m_dataHandle.dataQueue->ForceWakeup();
 		if (m_dataFeedThread.joinable())
 			m_dataFeedThread.join();
+		m_dataHandle.dataQueue->ResetWakeup();
 	}
 
 	void TCPServer::MessageClients(const BSMessage& message)

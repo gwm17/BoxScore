@@ -9,6 +9,7 @@
 
 #include <thread>
 #include <mutex>
+#include <atomic>
 
 namespace BoxScore {
 
@@ -97,6 +98,8 @@ namespace BoxScore {
 
 		std::thread m_acceptorThread;
 		std::thread m_dataFeedThread;
+
+		std::atomic<bool> m_isDataFeedRunning;
 	};
 }
 
