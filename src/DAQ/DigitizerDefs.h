@@ -12,6 +12,13 @@ namespace BoxScore {
         static constexpr uint64_t dataSize = 24; //size of writable data in bytes (no waveforms)
     }
 
+    enum class DigitizerAccessType
+    {
+        All,
+        Single,
+        None
+    };
+
     //Unified BoxScore Data structure (similar to CAEN CoMPASS)
     struct BSData
     {

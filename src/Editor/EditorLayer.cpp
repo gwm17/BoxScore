@@ -265,7 +265,7 @@ namespace BoxScore {
                             BS_WARN("Unidentified digitizer type attempting to communicate with project");
                         }
                         //Emit event to update aquisition side
-                        AcqParametersEvent e(panel.GetDigitizerHandle());
+                        AcqParametersEvent e(DigitizerAccessType::Single, panel.GetDigitizerHandle());
                         m_eventCallback(e);
                     }
 
@@ -301,7 +301,7 @@ namespace BoxScore {
                     serializer.DeserializeData(m_project);
                     m_projectPath = m_project->GetProjectPath().string();
                     UpdateDigitizerPanels();
-                    AcqParametersEvent e(-100); //make a macro-fied or enumed value for this
+                    AcqParametersEvent e(DigitizerAccessType::All);
                     m_eventCallback(e);
                     break;
                 }

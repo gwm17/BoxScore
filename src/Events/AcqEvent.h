@@ -40,12 +40,13 @@ namespace BoxScore {
 	class AcqParametersEvent : public Event
 	{
 	public:
-		AcqParametersEvent(int boardHandle) :
+		AcqParametersEvent(DigitizerAccessType type, int boardHandle = -1) :
 			m_boardHandle(boardHandle)
 		{
 		}
 
 		int GetBoardHandle() { return m_boardHandle; }
+		DigitizerAccessType GetAccessType() { return m_type; }
 
 		virtual std::string ToString() const override
 		{
@@ -59,6 +60,7 @@ namespace BoxScore {
 
 	private:
 		int m_boardHandle;
+		DigitizerAccessType m_type;
 	};
 
 	class AcqSyncArgsEvent : public Event
