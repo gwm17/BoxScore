@@ -16,10 +16,12 @@ namespace BoxScore {
 
 	AcquisitionLayer::~AcquisitionLayer()
 	{
+		BS_INFO("Shutting down acq");
 		if (m_running)
 		{
 			DestroyAcqThread();
 		}
+		BS_INFO("Finished");
 	}
 
 	void AcquisitionLayer::OnUpdate()

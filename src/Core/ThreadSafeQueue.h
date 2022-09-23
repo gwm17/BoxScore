@@ -22,7 +22,7 @@ namespace BoxScore {
 			std::scoped_lock<std::mutex> guard(m_queueMutex);
 			m_queue.push_back(data);
 
-			std::scoped_lock<std::mutex> guard(m_conditionMutex);
+			std::scoped_lock<std::mutex> condGuard(m_conditionMutex);
 			m_conditional.notify_one();
 		}
 
@@ -96,7 +96,7 @@ namespace BoxScore {
 			while(IsEmpty() && !m_isForceWakeup)
 			{
 				std::unique_lock<std::mutex> guard(m_conditionMutex);
-				m_conditional(guard);
+				m_conditional.wait(guard);
 			}
 		}
 

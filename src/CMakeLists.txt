@@ -79,7 +79,9 @@ target_sources(BoxScore PRIVATE
     BSio/BSListData.h
     BSio/BSMessage.h
     Core/ThreadSafeQueue.h
- "Core/DataDistributor.h" "Core/DataDistributor.cpp")
+    Core/DataDistributor.h
+    Core/DataDistributor.cpp
+)
 
 #ImPlot sources
 target_sources(BoxScore PRIVATE

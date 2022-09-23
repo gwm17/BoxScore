@@ -62,7 +62,9 @@ namespace BoxScore {
 
 	void BSRun::StopRun()
 	{
-		if(m_dataHandle.dataQueue != nullptr && !m_dataHandle.dataQueue->IsEmpty())
+		if (m_dataHandle.dataQueue == nullptr)
+			return;
+		else if(!m_dataHandle.dataQueue->IsEmpty())
 		{
 			BS_INFO("Finishing writing data to file before stopping... Still have {0} events to process", m_dataHandle.dataQueue->Size());
 			while (!m_dataHandle.dataQueue->IsEmpty())
