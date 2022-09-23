@@ -1,5 +1,4 @@
 #include "BSRun.h"
-#include "Core/RingBuffer.h"
 #include "Core/ProjectSerializer.h"
 
 namespace BoxScore {
@@ -69,7 +68,7 @@ namespace BoxScore {
 			BS_INFO("Finishing writing data to file before stopping... Still have {0} events to process", m_dataHandle.dataQueue->Size());
 			while (!m_dataHandle.dataQueue->IsEmpty())
 			{
-				//bad. make thread block here instead
+				continue;
 			}
 		}
 
@@ -80,7 +79,6 @@ namespace BoxScore {
 			m_processingThread->join();
 			delete m_processingThread;
 			m_processingThread = nullptr;
-			//RingBuffer::Detach(m_ringConsumerID);
 			DataDistributor::Disconnect(m_dataHandle);
 
 			//Close all files and clear the map to be ready for re-use
@@ -100,7 +98,6 @@ namespace BoxScore {
 		while (m_isRunning)
 		{
 			m_dataHandle.dataQueue->Wait(); //Block for the queue to be full
-			//if (RingBuffer::PopData(m_ringConsumerID, dataBuffer))
 			if (!m_dataHandle.dataQueue->IsEmpty()) //Protect for edge cases
 			{
 				dataBuffer = m_dataHandle.dataQueue->Front();

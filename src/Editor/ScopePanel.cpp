@@ -1,5 +1,4 @@
 #include "ScopePanel.h"
-#include "Core/RingBuffer.h"
 
 #include "imgui.h"
 #include "implot.h"
@@ -24,9 +23,6 @@ namespace BoxScore {
 
 	void ScopePanel::OnUpdate()
 	{
-		//static bool bufferFilled = false;
-		//bufferFilled = RingBuffer::PopData(m_consumerID, m_buffer);
-		//if (bufferFilled)
 		if (!m_dataHandle.dataQueue->IsEmpty())
 		{
 			m_buffer = m_dataHandle.dataQueue->Front();

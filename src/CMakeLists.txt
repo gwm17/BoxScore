@@ -64,8 +64,6 @@ target_sources(BoxScore PRIVATE
     Editor/SyncDialog.cpp
     Core/ProjectSerializer.h
     Core/ProjectSerializer.cpp
-    Core/RingBuffer.h
-    Core/RingBuffer.cpp
     Editor/ScopePanel.h
     Editor/ScopePanel.cpp
     BSio/BSFile.h
