@@ -36,6 +36,12 @@ namespace BoxScore {
 	{
 		InternalClear();
 
+		//buffers
+		std::vector<PSDParameters> psdChannels;
+		std::vector<PHAParameters> phaChannels;
+		PSDWaveParameters psdWaves;
+		PHAWaveParameters phaWaves;
+
 		for (auto& digitizer : chain)
 		{
 			auto& args = digitizer->GetDigitizerArgs();
@@ -43,13 +49,17 @@ namespace BoxScore {
 			m_boardParamList.push_back(digitizer->GetDigitizerParameters());
 			if (args.firmware == CAEN_DGTZ_DPPFirmware_PHA)
 			{
-				m_phaChannelMap[args.handle] = std::static_pointer_cast<DigitizerPHA>(digitizer)->GetChannelParameters();
-				m_phaWaveMap[args.handle] = std::static_pointer_cast<DigitizerPHA>(digitizer)->GetWaveformParameters();
+				digitizer->GetChannelParameters(phaChannels);
+				digitizer->GetWaveformParameters(phaWaves);
+				m_phaChannelMap[args.handle] = phaChannels;
+				m_phaWaveMap[args.handle] = phaWaves;
 			}
 			else if(args.firmware == CAEN_DGTZ_DPPFirmware_PSD)
 			{
-				m_psdChannelMap[args.handle] = std::static_pointer_cast<DigitizerPSD>(digitizer)->GetChannelParameters();
-				m_psdWaveMap[args.handle] = std::static_pointer_cast<DigitizerPSD>(digitizer)->GetWaveformParameters();
+				digitizer->GetChannelParameters(psdChannels);
+				digitizer->GetWaveformParameters(psdWaves);
+				m_psdChannelMap[args.handle] = psdChannels;
+				m_psdWaveMap[args.handle] = psdWaves;
 			}
 			else
 			{

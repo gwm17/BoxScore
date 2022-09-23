@@ -42,7 +42,7 @@ namespace BoxScore {
 
     /////////////////////// DigitizerPHA ///////////////////////
     DigitizerPHA::DigitizerPHA(const DigitizerArgs& args, const CAEN_DGTZ_BoardInfo_t& info, int ec) :
-        Digitizer(), m_eventData(nullptr), m_eventCountsPerChannel(nullptr), m_waveData(nullptr)
+        Digitizer(), m_eventData(nullptr), m_waveData(nullptr)
     {
         Init(args, info, ec);
     }
@@ -104,7 +104,7 @@ namespace BoxScore {
         m_digitizerParams = params;
     }
 
-    void DigitizerPHA::SetChannelParameters(const std::vector<PHAParameters>& params)
+    void DigitizerPHA::InternalSetChannelParameters(const std::vector<PHAParameters>& params)
     {
         if(!m_isConnected || m_isActive)
             return;
@@ -112,7 +112,7 @@ namespace BoxScore {
         m_channelParams = params;
     }
 
-    void DigitizerPHA::SetWaveformParameters(const PHAWaveParameters& params)
+    void DigitizerPHA::InternalSetWaveformParameters(const PHAWaveParameters& params)
     {
         if(!m_isConnected || m_isActive)
             return;
@@ -289,7 +289,7 @@ namespace BoxScore {
 
     /////////////////////// DigitizerPSD ///////////////////////
     DigitizerPSD::DigitizerPSD(const DigitizerArgs& args, const CAEN_DGTZ_BoardInfo_t& info, int code) :
-        Digitizer(), m_eventData(nullptr), m_eventCountsPerChannel(nullptr), m_waveData(nullptr)
+        Digitizer(), m_eventData(nullptr), m_waveData(nullptr)
     {
         Init(args, info, code);
     }
@@ -350,7 +350,7 @@ namespace BoxScore {
         m_digitizerParams = params;
     }
 
-    void DigitizerPSD::SetChannelParameters(const std::vector<PSDParameters>& params)
+    void DigitizerPSD::InternalSetChannelParameters(const std::vector<PSDParameters>& params)
     {
         if(!m_isConnected || m_isActive)
             return;
@@ -358,7 +358,7 @@ namespace BoxScore {
         m_channelParams = params;
     }
 
-    void DigitizerPSD::SetWaveformParameters(const PSDWaveParameters& params)
+    void DigitizerPSD::InternalSetWaveformParameters(const PSDWaveParameters& params)
     {
         if(!m_isConnected || m_isActive)
             return;

@@ -94,10 +94,12 @@ namespace BoxScore {
 	bool AcquisitionLayer::OnAcqStopEvent(AcqStopEvent& e)
 	{
 		DestroyAcqThread();
+
 		if (m_fileIO.IsRunning())
 			m_fileIO.StopRun();
 		if (m_server.IsFeeding())
 			m_server.StopDataFeed();
+
 		return true;
 	}
 
@@ -116,31 +118,19 @@ namespace BoxScore {
 				const DigitizerArgs& args = digitizer->GetDigitizerArgs();
 				if (args.firmware == CAEN_DGTZ_DPPFirmware_PHA)
 				{
-					std::shared_ptr<DigitizerPHA> phaDigitizer = std::static_pointer_cast<DigitizerPHA>(digitizer);
-					if (phaDigitizer == nullptr)
-					{
-						BS_ERROR("Digitizer data indicates PHA, but digitizer is not of type PHA in AcquisitionLayer::OnAcqParametersEvent!");
-						return true;
-					}
-					phaDigitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
-					phaDigitizer->SetChannelParameters(m_project->GetPHAParameters(args.handle));
-					phaDigitizer->SetWaveformParameters(m_project->GetPHAWaveParameters(args.handle));
+					digitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
+					digitizer->SetChannelParameters(m_project->GetPHAParameters(args.handle));
+					digitizer->SetWaveformParameters(m_project->GetPHAWaveParameters(args.handle));
 
-					phaDigitizer->LoadSettings();
+					digitizer->LoadSettings();
 				}
 				else if (digitizer->GetDigitizerArgs().firmware == CAEN_DGTZ_DPPFirmware_PSD)
 				{
-					std::shared_ptr<DigitizerPSD> psdDigitizer = std::static_pointer_cast<DigitizerPSD>(digitizer);
-					if (psdDigitizer == nullptr)
-					{
-						BS_ERROR("Digitizer data indicates PSD, but digitizer is not of type PSD in AcquisitionLayer::OnAcqParametersEvent!");
-						return true;
-					}
-					psdDigitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
-					psdDigitizer->SetChannelParameters(m_project->GetPSDParameters(args.handle));
-					psdDigitizer->SetWaveformParameters(m_project->GetPSDWaveParameters(args.handle));
+					digitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
+					digitizer->SetChannelParameters(m_project->GetPSDParameters(args.handle));
+					digitizer->SetWaveformParameters(m_project->GetPSDWaveParameters(args.handle));
 
-					psdDigitizer->LoadSettings();
+					digitizer->LoadSettings();
 				}
 			}
 		}
@@ -150,33 +140,24 @@ namespace BoxScore {
 			const DigitizerArgs& args = digitizer->GetDigitizerArgs();
 			if (args.firmware == CAEN_DGTZ_DPPFirmware_PHA)
 			{
-				std::shared_ptr<DigitizerPHA> phaDigitizer = std::static_pointer_cast<DigitizerPHA>(digitizer);
-				if (phaDigitizer == nullptr)
-				{
-					BS_ERROR("Digitizer data indicates PHA, but digitizer is not of type PHA in AcquisitionLayer::OnAcqParametersEvent!");
-					return true;
-				}
-				phaDigitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
-				phaDigitizer->SetChannelParameters(m_project->GetPHAParameters(args.handle));
-				phaDigitizer->SetWaveformParameters(m_project->GetPHAWaveParameters(args.handle));
+				digitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
+				digitizer->SetChannelParameters(m_project->GetPHAParameters(args.handle));
+				digitizer->SetWaveformParameters(m_project->GetPHAWaveParameters(args.handle));
 
-				phaDigitizer->LoadSettings();
+				digitizer->LoadSettings();
 			}
 			else if (digitizer->GetDigitizerArgs().firmware == CAEN_DGTZ_DPPFirmware_PSD)
 			{
-				std::shared_ptr<DigitizerPSD> psdDigitizer = std::static_pointer_cast<DigitizerPSD>(digitizer);
-				if (psdDigitizer == nullptr)
-				{
-					BS_ERROR("Digitizer data indicates PSD, but digitizer is not of type PSD in AcquisitionLayer::OnAcqParametersEvent!");
-					return true;
-				}
-				psdDigitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
-				psdDigitizer->SetChannelParameters(m_project->GetPSDParameters(args.handle));
-				psdDigitizer->SetWaveformParameters(m_project->GetPSDWaveParameters(args.handle));
+				digitizer->SetDigitizerParameters(m_project->GetDigitizerParameters(args.handle));
+				digitizer->SetChannelParameters(m_project->GetPSDParameters(args.handle));
+				digitizer->SetWaveformParameters(m_project->GetPSDWaveParameters(args.handle));
 
-				psdDigitizer->LoadSettings();
+				digitizer->LoadSettings();
 			}
 		}
+
+		//Setting parameters can sometimes lead to CAEN modifying values (invalid value, etc), so inform the project of changes
+		m_project->SetDigitizerData(m_digitizerChain);
 
 		return true;
 	}

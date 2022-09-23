@@ -250,4 +250,20 @@ namespace BoxScore {
 
 		return "None";
 	}
+
+	std::string FirmwareTypeToString(int val)
+	{
+		switch (val)
+		{
+		case CAEN_DGTZ_DPPFirmware_PHA: return "PHA";
+		case CAEN_DGTZ_DPPFirmware_PSD: return "PSD";
+		case CAEN_DGTZ_DPPFirmware_CI: return "CI";
+		case CAEN_DGTZ_DPPFirmware_DAW: return "DAW";
+		case CAEN_DGTZ_DPPFirmware_QDC: return "QDC";
+		case CAEN_DGTZ_DPPFirmware_ZLE: return "ZLE";
+		case CAEN_DGTZ_DPPFirmwareNotSupported: return "NotSupported";
+		}
+
+		return "None";
+	}
 }

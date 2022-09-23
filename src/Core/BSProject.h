@@ -19,26 +19,32 @@ namespace BoxScore {
 
 		bool SetProjectPath(const std::filesystem::path& path);
 		void SetDigitizerData(const std::vector<Digitizer::Ref>& chain);
+
 		void SetDigitizerArgsList(const std::vector<DigitizerArgs>& args);
 		void SetDigitizerParameterList(const std::vector<DigitizerParameters>& params);
 		void SetDigitizerParameters(int handle, const DigitizerParameters& params);
+
 		void SetPHAParameters(int handle, const std::vector<PHAParameters>& params);
 		void SetPSDParameters(int handle, const std::vector<PSDParameters>& params);
 		void SetPHAWaveParameters(int handle, const PHAWaveParameters& params);
 		void SetPSDWaveParameters(int handle, const PSDWaveParameters& params);
+
 		void SetRunNumber(uint32_t number);
 		void IncrementRunNumber();
 		void SetDPPAcqMode(DPPAcqMode mode);
 
 		const std::filesystem::path& GetProjectPath();
+
 		const std::vector<DigitizerArgs>& GetDigitizerArgsList();
 		DigitizerArgs GetDigitizerArgs(int handle);
 		const std::vector<DigitizerParameters>& GetDigitizerParameterList();
 		DigitizerParameters GetDigitizerParameters(int handle);
+
 		const std::vector<PHAParameters>& GetPHAParameters(int handle);
 		const std::vector<PSDParameters>& GetPSDParameters(int handle);
 		PHAWaveParameters GetPHAWaveParameters(int handle);
 		PSDWaveParameters GetPSDWaveParameters(int handle);
+
 		uint32_t GetRunNumber();
 		DPPAcqMode GetDPPAcqMode();
 		size_t GetNumberOfBoards();

@@ -55,6 +55,7 @@ namespace BoxScore {
 
 		BSProject::Ref m_project;
 
+		//IO
 		BSRun m_fileIO;
 		TCPServer m_server;
 

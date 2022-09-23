@@ -250,6 +250,7 @@ namespace BoxScore {
     std::string PSDDigitalProbe2ToString(int val);
     std::string SyncModeToString(int val);
     std::string AcqModeToString(int val);
+    std::string FirmwareTypeToString(int val);
 
     //Simple integer power calc
     int Power(int base, int order);
