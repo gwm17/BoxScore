@@ -8,6 +8,7 @@
 #include "Core/BSProject.h"
 
 #include "BSio/BSRun.h"
+#include "BSio/TCPServer.h"
 
 #include <thread>
 #include <mutex>
@@ -55,6 +56,7 @@ namespace BoxScore {
 		BSProject::Ref m_project;
 
 		BSRun m_fileIO;
+		TCPServer m_server;
 
 		std::vector<Digitizer::Ref> m_digitizerChain;
 		SyncArgs m_syncStatus;

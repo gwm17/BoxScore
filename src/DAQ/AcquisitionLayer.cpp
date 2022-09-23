@@ -10,8 +10,9 @@ namespace BoxScore {
 	}
 
 	AcquisitionLayer::AcquisitionLayer(const BSProject::Ref& project) :
-		m_project(project), m_acqThread(nullptr), m_running(false)
+		m_project(project), m_acqThread(nullptr), m_running(false), m_server(52324)
 	{
+		m_server.PowerOn();
 	}
 
 	AcquisitionLayer::~AcquisitionLayer()
@@ -22,6 +23,7 @@ namespace BoxScore {
 			DestroyAcqThread();
 		}
 		BS_INFO("Finished");
+		m_server.Shutdown();
 	}
 
 	void AcquisitionLayer::OnUpdate()
@@ -82,6 +84,9 @@ namespace BoxScore {
 		//If we chose to write to disk, start the file handler
 		if (e.IsWriteToDisk())
 			m_fileIO.StartRun(m_project);
+		//If we chose to write to server start the server feed
+		if (e.IsWriteToServer())
+			m_server.StartDataFeed();
 		
 		return true;
 	}
@@ -91,6 +96,8 @@ namespace BoxScore {
 		DestroyAcqThread();
 		if (m_fileIO.IsRunning())
 			m_fileIO.StopRun();
+		if (m_server.IsFeeding())
+			m_server.StopDataFeed();
 		return true;
 	}
 

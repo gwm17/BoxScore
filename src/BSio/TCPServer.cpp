@@ -149,6 +149,9 @@ namespace BoxScore {
 
 	void TCPServer::StopDataFeed()
 	{
+		if (m_isDataFeedRunning == false)
+			return;
+
 		m_isDataFeedRunning = false;
 		m_dataHandle.dataQueue->ForceWakeup();
 		if (m_dataFeedThread.joinable())

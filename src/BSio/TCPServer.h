@@ -82,6 +82,7 @@ namespace BoxScore {
 		void StopDataFeed();
 
 		bool IsActive() { return m_acceptor.is_open(); }
+		bool IsFeeding() { return m_isDataFeedRunning; }
 
 
 	private:
