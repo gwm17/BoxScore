@@ -3,7 +3,7 @@
 
 #include "DAQ/DigitizerDefs.h"
 #include "DAQ/Digitizer.h"
-#include "DAQ/Synchronize.h"
+#include "DAQ/DigitizerChain.h"
 
 #include <filesystem>
 
@@ -18,7 +18,8 @@ namespace BoxScore {
 		~BSProject();
 
 		bool SetProjectPath(const std::filesystem::path& path);
-		void SetDigitizerData(const std::vector<Digitizer::Ref>& chain);
+		//void SetDigitizerData(const std::vector<Digitizer::Ref>& chain);
+		void SetDigitizerData(const DigitizerChain& chain);
 
 		void SetDigitizerArgsList(const std::vector<DigitizerArgs>& args);
 		void SetDigitizerParameterList(const std::vector<DigitizerParameters>& params);

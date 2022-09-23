@@ -1,6 +1,6 @@
 #include "AcquisitionLayer.h"
 #include "Core/BoxScoreCore.h"
-#include "Core/RingBuffer.h"
+#include "Core/DataDistributor.h"
 
 namespace BoxScore {
 
@@ -170,7 +170,7 @@ namespace BoxScore {
 			return true;
 		}
 
-		SetSynchronization(e.GetArgs());
+		m_digitizerChain.SynchronizeBoards(e.GetArgs());
 		return true;
 	}
 
@@ -182,7 +182,7 @@ namespace BoxScore {
 			return true;
 		}
 
-		SetChainDPPAcqMode(m_project->GetDPPAcqMode(), m_digitizerChain);
+		m_digitizerChain.SetDPPAcqMode(m_project->GetDPPAcqMode());
 		m_project->SetDigitizerData(m_digitizerChain);
 		return true;
 	}
@@ -190,35 +190,7 @@ namespace BoxScore {
 	bool AcquisitionLayer::OnAcqDetectBoardsEvent(AcqDetectBoardsEvent& e)
 	{
 		BS_INFO("Querying the system for digitizers. WARNING: BoxScore currently only supports OpticalLink connections");
-
-		m_digitizerChain.clear();
-
-		static int nLinks = 4;
-		static int nNodes = 8;
-
-		DigitizerArgs args;
-		for(int link=0; link<nLinks; link++)
-		{
-			for(int node=0; node<nNodes; node++)
-			{
-				args = DigitizerArgs();
-				args.conetNode = node;
-				args.linkNumber = link;
-				Digitizer::Ref digi = OpenDigitizer(args);
-				if(digi != nullptr)
-				{
-					args = digi->GetDigitizerArgs();
-					m_digitizerChain.push_back(digi);
-					BS_INFO("Found digitizer named {0} at link {1} on node {2}", args.name, args.linkNumber, args.conetNode);
-				}
-			}
-		}
-
-		if (m_digitizerChain.size() == 0)
-			BS_WARN("No digitizers found... check to see that they are on and connected to the system via optical link");
-		else
-			std::sort(m_digitizerChain.begin(), m_digitizerChain.end(), SortByHandle); //in general seems to not be necessary, but just to be safe
-
+		m_digitizerChain.DetectBoards();
 		//Tell the project what happened
 		m_project->SetDigitizerData(m_digitizerChain); 
 
@@ -235,7 +207,7 @@ namespace BoxScore {
 
 		BS_INFO("Disconnecting digitizers...");
 
-		m_digitizerChain.clear();
+		m_digitizerChain.DisconnectBoards();
 
 		BS_INFO("Digitizers disconnected.");
 
@@ -254,92 +226,12 @@ namespace BoxScore {
 		return list;
 	}
 
-	void AcquisitionLayer::SetSynchronization(const SyncArgs& args)
-	{
-		if (m_digitizerChain.size() <= 1)
-		{
-			BS_WARN("Cannot synchronize digitizer chain of size {0}", m_digitizerChain.size());
-			return;
-		}
-
-		int error_code = SetChainSynchronize(args, m_digitizerChain);
-		if (error_code != CAEN_DGTZ_Success)
-		{
-			BS_ERROR("Unable to synchronize digitizers, CAEN reports error {0}", error_code);
-			return;
-		}
-
-		m_project->SetDigitizerData(m_digitizerChain);
-		m_syncStatus = args;
-	}
-
-	bool AcquisitionLayer::StartDigitizers()
-	{
-		//Start digitizers
-		if (m_digitizerChain.size() == 0)
-		{
-			BS_ERROR("Cannot run data aquisition without any digitizers!");
-			return false;
-		}
-		else if (m_digitizerChain.size() == 1)
-		{
-			m_digitizerChain[0]->StartAquisition();
-			if (!m_digitizerChain[0]->IsActive())
-			{
-				BS_ERROR("Unable to start single digitizer config!");
-				return false;
-			}
-		}
-		else
-		{
-			int ec = StartSynchronizedRun(m_syncStatus, m_digitizerChain);
-			if (ec != CAEN_DGTZ_Success)
-			{
-				BS_ERROR("Unable to start synchronized digitizer chain");
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool AcquisitionLayer::StopDigitizers()
-	{
-		//Stop digitizers
-		if (m_digitizerChain.size() == 0)
-		{
-			BS_ERROR("How the hell did you get here?");
-			return false;
-		}
-		else if (m_digitizerChain.size() == 1)
-		{
-			m_digitizerChain[0]->StopAquisition();
-			if (m_digitizerChain[0]->IsActive())
-			{
-				BS_ERROR("Single digitizer stop failed...");
-				return false;
-			}
-		}
-		else
-		{
-			int ec = StopSynchronizedRun(m_syncStatus, m_digitizerChain);
-			if (ec != CAEN_DGTZ_Success)
-			{
-				BS_ERROR("Failed to stop digitizer chain...");
-				return false;
-			}
-		}
-
-		return true;
-	}
-
 	void AcquisitionLayer::Run()
 	{
-		if (!StartDigitizers())
+		if (!m_digitizerChain.Start())
 			return;
 
 		std::vector<BSData> recievedData; //local data buffer
-		//bool wasPushed = false;
 		//Run aquisition loop
 		while (m_running)
 		{
@@ -349,18 +241,10 @@ namespace BoxScore {
 			if (recievedData.empty())
 				continue;
 
-			//Do some stuff with data
-			/*
-			while (!wasPushed)
-			{
-				wasPushed = RingBuffer::PushData(recievedData);
-			}
-			*/
-
 			DataDistributor::PushData(recievedData);
 			recievedData.clear();
 		}
 
-		StopDigitizers();
+		m_digitizerChain.Stop();
 	}
 }

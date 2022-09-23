@@ -22,8 +22,6 @@ target_sources(BoxScore PRIVATE
     DAQ/Digitizer.h
     DAQ/Digitizer.cpp
     DAQ/DigitizerDefs.h
-    DAQ/Synchronize.h
-    DAQ/Synchronize.cpp
     Core/Logger.h
     Core/Logger.cpp
     Core/main.cpp
@@ -81,6 +79,8 @@ target_sources(BoxScore PRIVATE
     Core/ThreadSafeQueue.h
     Core/DataDistributor.h
     Core/DataDistributor.cpp
+    DAQ/DigitizerChain.h
+    DAQ/DigitizerChain.cpp
 )
 
 #ImPlot sources

@@ -266,4 +266,26 @@ namespace BoxScore {
 
 		return "None";
 	}
+
+	std::string SyncMethodToString(SyncMethod method)
+	{
+		switch (method)
+		{
+		case SyncMethod::SIn_TrigOut: return "S-In TrigOut";
+		case SyncMethod::None: return "None";
+		}
+
+		return "None";
+	}
+
+	double GetSamplingPeriod(CAEN_DGTZ_BoardModel_t model)
+	{
+		switch (model)
+		{
+		case CAEN_DGTZ_V1730: return 2.0; //ns -> 500 MSamples/s
+		case CAEN_DGTZ_V1725: return 4.0; //ns -> 250 MSamples/s
+		}
+
+		return 4.0; //Idk?
+	}
 }

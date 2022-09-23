@@ -2,10 +2,10 @@
 #define ACQUISITION_LAYER_H
 
 #include "Core/Layer.h"
+#include "Core/BSProject.h"
 #include "Events/AcqEvent.h"
 #include "Digitizer.h"
-#include "Synchronize.h"
-#include "Core/BSProject.h"
+#include "DigitizerChain.h"
 
 #include "BSio/BSRun.h"
 #include "BSio/TCPServer.h"
@@ -43,9 +43,6 @@ namespace BoxScore {
 
 		//Functionality
 		void DestroyAcqThread();
-		void SetSynchronization(const SyncArgs& args);
-		bool StartDigitizers();
-		bool StopDigitizers();
 		std::vector<DigitizerArgs> GetArgList();
 
 		//Acquistion loop
@@ -59,7 +56,7 @@ namespace BoxScore {
 		BSRun m_fileIO;
 		TCPServer m_server;
 
-		std::vector<Digitizer::Ref> m_digitizerChain;
+		DigitizerChain m_digitizerChain;
 		SyncArgs m_syncStatus;
 		
 		std::thread* m_acqThread;

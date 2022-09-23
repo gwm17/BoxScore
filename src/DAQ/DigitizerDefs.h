@@ -35,6 +35,33 @@ namespace BoxScore {
         std::vector<uint8_t> digitalTrace2Samples; //Technically DPP supports 4 in docs? But all examples only seem to support 2...
     };
 
+    enum DPPAcqMode
+    {
+        List = 1,
+        Waves = 2,
+        None = 0
+    };
+
+    enum class SyncStartType
+    {
+        HardwareControlled,
+        SoftwareControlled,
+        None
+    };
+
+    //Add more later, right now only accept SPS standard
+    enum class SyncMethod
+    {
+        SIn_TrigOut,
+        None
+    };
+
+    struct SyncArgs
+    {
+        SyncStartType startType = SyncStartType::SoftwareControlled;
+        SyncMethod syncMethod = SyncMethod::SIn_TrigOut;
+    };
+
     //These need to be plain enums cause we're gonna cast them to int, so just be careful
     enum DynamicRange
     {
@@ -251,9 +278,14 @@ namespace BoxScore {
     std::string SyncModeToString(int val);
     std::string AcqModeToString(int val);
     std::string FirmwareTypeToString(int val);
-
+    std::string SyncMethodToString(SyncMethod method);
+    
     //Simple integer power calc
     int Power(int base, int order);
+
+    //Sampling rate->time per sample
+    double GetSamplingPeriod(CAEN_DGTZ_BoardModel_t model);
+
 }
 
 #endif

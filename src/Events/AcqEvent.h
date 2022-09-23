@@ -3,7 +3,6 @@
 
 #include "Event.h"
 #include "DAQ/DigitizerDefs.h"
-#include "DAQ/Synchronize.h"
 
 namespace BoxScore {
 

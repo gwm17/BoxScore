@@ -32,7 +32,8 @@ namespace BoxScore {
 		return status;
 	}
 
-	void BSProject::SetDigitizerData(const std::vector<Digitizer::Ref>& chain)
+	//void BSProject::SetDigitizerData(const std::vector<Digitizer::Ref>& chain)
+	void BSProject::SetDigitizerData(const DigitizerChain& chain)
 	{
 		InternalClear();
 

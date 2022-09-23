@@ -60,13 +60,13 @@ namespace BoxScore {
         */
 
         template<typename T>
-        void GetChannelParameters(T& paramBuffer)
+        void GetChannelParameters(T& paramBuffer) const
         {
             InternalGetChannelParameters(paramBuffer);
         }
 
         template<typename T>
-        void GetWaveformParameters(T& paramBuffer)
+        void GetWaveformParameters(T& paramBuffer) const
         {
             InternalGetWaveformParameters(paramBuffer);
         }
@@ -103,19 +103,19 @@ namespace BoxScore {
             BS_WARN("Attempting to set PSD wave parameters for unsupported digitizer firmware {0}", FirmwareTypeToString(m_args.firmware));
         }
 
-        virtual void InternalGetChannelParameters(std::vector<PHAParameters>& paramBuffer)
+        virtual void InternalGetChannelParameters(std::vector<PHAParameters>& paramBuffer) const
         {
             BS_WARN("Attempting to get PHA parameters for unsupported digitizer firmware {0}", FirmwareTypeToString(m_args.firmware));
         }
-        virtual void InternalGetChannelParameters(std::vector<PSDParameters>& paramBuffer)
+        virtual void InternalGetChannelParameters(std::vector<PSDParameters>& paramBuffer) const
         {
             BS_WARN("Attempting to get PSD parameters for unsupported digitizer firmware {0}", FirmwareTypeToString(m_args.firmware));
         }
-        virtual void InternalGetWaveformParameters(PHAWaveParameters& paramBuffer)
+        virtual void InternalGetWaveformParameters(PHAWaveParameters& paramBuffer) const
         {
             BS_WARN("Attempting to get PHA wave parameters for unsupported digitizer firmware {0}", FirmwareTypeToString(m_args.firmware));
         }
-        virtual void InternalGetWaveformParameters(PSDWaveParameters& paramBuffer)
+        virtual void InternalGetWaveformParameters(PSDWaveParameters& paramBuffer) const
         {
             BS_WARN("Attempting to get PSD wave parameters for unsupported digitizer firmware {0}", FirmwareTypeToString(m_args.firmware));
         }
@@ -162,8 +162,8 @@ namespace BoxScore {
 
         virtual void InternalSetChannelParameters(const std::vector<PHAParameters>& params) override;
         virtual void InternalSetWaveformParameters(const PHAWaveParameters& params) override;
-        virtual void InternalGetChannelParameters(std::vector<PHAParameters>& paramBuffer) override { paramBuffer = m_channelParams; }
-        virtual void InternalGetWaveformParameters(PHAWaveParameters& paramBuffer) override { paramBuffer = m_waveParams; }
+        virtual void InternalGetChannelParameters(std::vector<PHAParameters>& paramBuffer) const override { paramBuffer = m_channelParams; }
+        virtual void InternalGetWaveformParameters(PHAWaveParameters& paramBuffer) const override { paramBuffer = m_waveParams; }
 
         void LoadDigitizerParameters();
         void LoadChannelParameters();
@@ -201,8 +201,8 @@ namespace BoxScore {
 
         virtual void InternalSetChannelParameters(const std::vector<PSDParameters>& params) override;
         virtual void InternalSetWaveformParameters(const PSDWaveParameters& params) override;
-        virtual void InternalGetChannelParameters(std::vector<PSDParameters>& paramBuffer) override { paramBuffer = m_channelParams; }
-        virtual void InternalGetWaveformParameters(PSDWaveParameters& paramBuffer) override { paramBuffer = m_waveParams; }
+        virtual void InternalGetChannelParameters(std::vector<PSDParameters>& paramBuffer) const override { paramBuffer = m_channelParams; }
+        virtual void InternalGetWaveformParameters(PSDWaveParameters& paramBuffer) const override { paramBuffer = m_waveParams; }
 
         void LoadDigitizerParameters();
         void LoadChannelParameters();
