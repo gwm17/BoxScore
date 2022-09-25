@@ -88,18 +88,25 @@ namespace BoxScore {
             BS_ERROR("Application attempting to run after having already exited");
 
         float bckgndColor[4] = { 0.1, 0.1, 0.1, 1.0 };
+        double currentTime = 0.0;
+        double prevTime = 0.0;
+        double timestep;
 
         while (m_running)
         {
             RenderCommand::SetClearColor(bckgndColor);
             RenderCommand::Clear();
 
+            currentTime = RenderCommand::GetFrameTime();
+            timestep = currentTime - prevTime;
+            prevTime = currentTime;
+
             for (auto& layer : m_layerStack)
                 layer->OnUpdate();
 
             m_imguiLayer->Begin();
             for (auto& layer : m_layerStack)
-                layer->OnImGuiRender();
+                layer->OnImGuiRender(timestep);
             m_imguiLayer->End();
 
             m_window->OnUpdate();

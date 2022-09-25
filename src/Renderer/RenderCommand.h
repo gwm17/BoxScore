@@ -11,7 +11,7 @@ namespace BoxScore {
 
 		static void SetClearColor(float color[4]) { s_api->SetClearColor(color); }
 		static void Clear() { s_api->Clear(); }
-		static void GetFrameTime() { s_api->GetFrameTime(); }
+		static double GetFrameTime() { return s_api->GetFrameTime(); }
 
 	private:
 		static RendererAPI* s_api;

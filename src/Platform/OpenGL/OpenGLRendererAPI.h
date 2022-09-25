@@ -10,7 +10,7 @@ namespace BoxScore {
 	public:
 		virtual void SetClearColor(float color[4]) override;
 		virtual void Clear() override;
-		virtual float GetFrameTime() override;
+		virtual double GetFrameTime() override;
 	};
 
 }

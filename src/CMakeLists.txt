@@ -79,6 +79,10 @@ target_sources(BoxScore PRIVATE
     Core/DataDistributor.cpp
     DAQ/DigitizerChain.h
     DAQ/DigitizerChain.cpp
+    Core/ScalarDistributor.h
+    Core/ScalarDistributor.cpp
+    Editor/ScalarPanel.h
+    Editor/ScalarPanel.cpp
 )
 
 #ImPlot sources

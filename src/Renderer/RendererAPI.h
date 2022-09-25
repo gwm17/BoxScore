@@ -14,7 +14,7 @@ namespace BoxScore {
 
 		virtual void Clear() = 0;
 		virtual void SetClearColor(float color[4]) = 0;
-		virtual float GetFrameTime() = 0;
+		virtual double GetFrameTime() = 0;
 		
 		static API GetAPI() { return s_api; }
 

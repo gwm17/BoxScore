@@ -72,6 +72,11 @@ namespace BoxScore {
         m_eventData = new CAEN_DGTZ_DPP_PHA_Event_t*[info.Channels];
         m_waveData = new CAEN_DGTZ_DPP_PHA_Waveforms_t*[info.Channels];
 
+        for (int i = 0; i < info.Channels; i++)
+        {
+            m_scalars.push_back(ScalarDistributor::Bind(m_args.name + std::to_string(i)));
+        }
+
         LoadDigitizerParameters();
         LoadChannelParameters();
         //Must load default parameters here to generate a buffer 
@@ -94,6 +99,13 @@ namespace BoxScore {
         m_waveData = nullptr;
 
         m_isConnected = false;
+
+        //Explicitly wipe-out scalars
+        for (auto& scalar : m_scalars)
+        {
+            ScalarDistributor::UnBind(scalar->name);
+        }
+        m_scalars.clear();
     }
 
     void DigitizerPHA::SetDigitizerParameters(const DigitizerParameters& params)
@@ -261,6 +273,8 @@ namespace BoxScore {
         for(int i=0; i<m_internalData.Channels; i++)
         {
             tempData.channel = i;
+            //Increment scalars
+            m_scalars[i]->value += m_eventCountsPerChannel[i];
             for(int j=0; j<m_eventCountsPerChannel[i]; j++)
             {
                 tempData.energy = m_eventData[i][j].Energy;
@@ -323,6 +337,11 @@ namespace BoxScore {
         //Must load default parameters here to generate a buffer 
         AllocateMemory(); //More specifically: CAEN memory
 
+        for (int i = 0; i < info.Channels; i++)
+        {
+            m_scalars.push_back(ScalarDistributor::Bind(m_args.name + std::to_string(i)));
+        }
+
         m_isConnected = true;
     }
 
@@ -340,6 +359,13 @@ namespace BoxScore {
         m_waveData = nullptr;
 
         m_isConnected = false;
+
+        //Explicitly wipe-out scalars
+        for (auto& scalar : m_scalars)
+        {
+            ScalarDistributor::UnBind(scalar->name);
+        }
+        m_scalars.clear();
     }
 
     void DigitizerPSD::SetDigitizerParameters(const DigitizerParameters& params)
@@ -500,6 +526,8 @@ namespace BoxScore {
         for(int i=0; i<m_internalData.Channels; i++)
         {
             tempData.channel = i;
+            //Increment scalars
+            m_scalars[i]->value += m_eventCountsPerChannel[i];
             for(int j=0; j<m_eventCountsPerChannel[i]; j++)
             {
                 tempData.energy = m_eventData[i][j].ChargeLong;

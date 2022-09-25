@@ -8,7 +8,6 @@ namespace BoxScore {
 	ScopePanel::ScopePanel(int nboards) :
 		m_dataReady(false), m_selectedBoard(0), m_selectedChannel(0), m_maxNumBoards(nboards)
 	{
-		//m_consumerID = RingBuffer::Attach();
 		m_dataHandle = DataDistributor::Connect();
 		for (int i = 0; i < nboards; i++)
 			m_boardListForImGui.push_back(fmt::format("{0}", i));

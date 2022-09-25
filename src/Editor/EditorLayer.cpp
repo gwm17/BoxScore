@@ -66,7 +66,7 @@ namespace BoxScore {
         }
     }
 
-	void EditorLayer::OnImGuiRender()
+	void EditorLayer::OnImGuiRender(double timestep)
 	{
         static uint32_t stepSize = 1;
         static uint32_t fastStepSize = 5;
@@ -74,6 +74,7 @@ namespace BoxScore {
         static std::string dppModeString = "";
         static bool dataServer = false;
         static bool writeDataToDisk = false;
+        static bool showScalars = false;
         static std::string runString = "Start Run";
         static bool disableAll = false;
 
@@ -235,8 +236,16 @@ namespace BoxScore {
                         ImGui::EndCombo();
                     }
 
+                    //These don't really do anything right now, to be implemented
                     ImGui::Checkbox("Write data to disk", &writeDataToDisk);
-                    ImGui::Checkbox("Data Server", &dataServer);
+                    ImGui::Checkbox("Write data to server", &dataServer);
+
+                    
+                    if (ImGui::Checkbox("Show Scalars", &showScalars))
+                    {
+                        if (showScalars)
+                            m_scalarPanel.ResetScalars();
+                    }
 
                     ImGui::EndTabItem();
                 }
@@ -282,6 +291,9 @@ namespace BoxScore {
         //Render the scope if needed
         if (m_scopePanel)
             m_scopePanel->OnImGuiRender();
+
+        if (showScalars)
+            m_scalarPanel.OnImGuiRender(m_digitizerArgList, timestep);
 
         //Render file dialog if needed
         auto fd_result = m_fileDialog.RenderFileDialog(".yaml");

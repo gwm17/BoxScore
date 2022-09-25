@@ -14,8 +14,8 @@ namespace BoxScore {
 		glClearColor(color[0], color[1], color[2], color[3]);
 	}
 
-	float OpenGLRendererAPI::GetFrameTime()
+	double OpenGLRendererAPI::GetFrameTime()
 	{
-		return (float)glfwGetTime();
+		return glfwGetTime();
 	}
 }

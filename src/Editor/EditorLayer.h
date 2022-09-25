@@ -9,6 +9,7 @@
 #include "DigitizerPanel.h"
 #include "SyncDialog.h"
 #include "ScopePanel.h"
+#include "ScalarPanel.h"
 
 #include "imgui.h"
 
@@ -28,7 +29,7 @@ namespace BoxScore {
 		virtual void OnDetach() override;
 		virtual void OnUpdate() override;
 		virtual void OnEvent(Event& e) override;
-		virtual void OnImGuiRender() override;
+		virtual void OnImGuiRender(double timestep) override;
 
 	private:
 		void UpdateDigitizerPanels();
@@ -45,6 +46,7 @@ namespace BoxScore {
 		std::vector<DigitizerPanel> m_digiPanels;
 		SyncDialog m_syncDialog;
 		ScopePanel* m_scopePanel;
+		ScalarPanel m_scalarPanel;
 
 		//ImGui Settings
 		bool dockspaceOpen = true;

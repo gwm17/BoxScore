@@ -8,6 +8,7 @@
 #define DIGITIZER_H
 
 #include "DigitizerDefs.h"
+#include "Core/ScalarDistributor.h"
 
 namespace BoxScore {
 
@@ -132,6 +133,8 @@ namespace BoxScore {
         uint32_t m_eventBufferSize;
         uint32_t* m_eventCountsPerChannel;
         uint32_t m_waveBufferSize;
+
+        std::vector<Scalar::Ref> m_scalars; //Count rates for each channel. Indexed by channel number
 
         CAEN_DGTZ_BoardInfo_t m_internalData; //internal use only
     };

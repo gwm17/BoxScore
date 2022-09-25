@@ -86,7 +86,7 @@ namespace BoxScore {
 		}
 	}
 
-	void ImGuiLayer::OnImGuiRender()
+	void ImGuiLayer::OnImGuiRender(double timestep)
 	{
 		//Demo's used to figure out how to do things.
 		//Should not be on for actual NavProject for 
