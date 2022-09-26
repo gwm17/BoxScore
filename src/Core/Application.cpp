@@ -88,6 +88,8 @@ namespace BoxScore {
             BS_ERROR("Application attempting to run after having already exited");
 
         float bckgndColor[4] = { 0.1, 0.1, 0.1, 1.0 };
+
+        //Time stuff
         double currentTime = 0.0;
         double prevTime = 0.0;
         double timestep;

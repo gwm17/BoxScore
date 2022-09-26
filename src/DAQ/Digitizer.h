@@ -136,6 +136,8 @@ namespace BoxScore {
 
         std::vector<Scalar::Ref> m_scalars; //Count rates for each channel. Indexed by channel number
 
+        double m_samplingTime; //Use this to convert from our UI friendly time parameters to the digitizer-friendly sample based parameters
+
         CAEN_DGTZ_BoardInfo_t m_internalData; //internal use only
     };
 

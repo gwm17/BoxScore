@@ -77,6 +77,8 @@ namespace BoxScore {
             m_scalars.push_back(ScalarDistributor::Bind(m_args.name + std::to_string(i)));
         }
 
+        m_samplingTime = GetSamplingPeriod(m_args.model);
+
         LoadDigitizerParameters();
         LoadChannelParameters();
         //Must load default parameters here to generate a buffer 
@@ -170,7 +172,7 @@ namespace BoxScore {
     {
         m_args.status |= CAEN_DGTZ_SetAcquisitionMode(m_args.handle, m_digitizerParams.acqMode);
         m_args.status |= CAEN_DGTZ_SetDPPAcquisitionMode(m_args.handle, m_digitizerParams.dppAcqMode, m_digitizerParams.dppSaveMode);
-        m_args.status |= CAEN_DGTZ_SetRecordLength(m_args.handle, m_digitizerParams.recordLength);
+        m_args.status |= CAEN_DGTZ_SetRecordLength(m_args.handle, m_digitizerParams.recordLength / m_samplingTime);
         m_args.status |= CAEN_DGTZ_SetIOLevel(m_args.handle, m_digitizerParams.IOlevel);
 
         m_args.status |= CAEN_DGTZ_SetExtTriggerInputMode(m_args.handle, m_digitizerParams.triggerMode);
@@ -183,10 +185,10 @@ namespace BoxScore {
     void DigitizerPHA::LoadChannelParameters()
     {
         m_digitizerParams.channelMask = 0;
-        for(size_t i=0; i<m_channelParams.size(); i++)
+        for(std::size_t i=0; i<m_channelParams.size(); i++)
         {
             m_args.status |= CAEN_DGTZ_SetChannelDCOffset(m_args.handle, i, uint32_t(0xffff * m_channelParams[i].dcOffset)); //Max range is 0xffff
-            m_args.status |= CAEN_DGTZ_SetDPPPreTriggerSize(m_args.handle, i, m_channelParams[i].preTriggerSamples);
+            m_args.status |= CAEN_DGTZ_SetDPPPreTriggerSize(m_args.handle, i, m_channelParams[i].preTriggerTime / m_samplingTime);
             m_args.status |= CAEN_DGTZ_SetChannelPulsePolarity(m_args.handle, i, m_channelParams[i].pulsePolarity);
             m_args.status |= CAEN_DGTZ_WriteRegister(m_args.handle, 0x1028 +  (i<<8), m_channelParams[i].dynamicRange);
             
@@ -197,21 +199,20 @@ namespace BoxScore {
             
             //Write data to garbage CAEN style structs
 
-            m_caenParams.M[i] = m_channelParams[i].decayTimeConst;
-            m_caenParams.m[i] = m_channelParams[i].trapFlatTop;
-            m_caenParams.k[i] = m_channelParams[i].trapRiseTime;
-            m_caenParams.ftd[i] = m_channelParams[i].flatTopDelay;
+            m_caenParams.M[i] = m_channelParams[i].decayTimeConst / m_samplingTime;
+            m_caenParams.m[i] = m_channelParams[i].trapFlatTop / m_samplingTime;
+            m_caenParams.k[i] = m_channelParams[i].trapRiseTime / m_samplingTime;
+            m_caenParams.ftd[i] = m_channelParams[i].flatTopDelay / m_samplingTime;
             m_caenParams.a[i] = m_channelParams[i].triggerFilterSmoothing;
-            m_caenParams.b[i] = m_channelParams[i].inputRiseTime;
+            m_caenParams.b[i] = m_channelParams[i].inputRiseTime / m_samplingTime;
             m_caenParams.thr[i] = m_channelParams[i].triggerThreshold;
             m_caenParams.nsbl[i] = m_channelParams[i].samplesBaseLineMean;
             m_caenParams.nspk[i] = m_channelParams[i].samplesPeakMean;
-            m_caenParams.pkho[i] = m_channelParams[i].peakHoldOff;
-            m_caenParams.blho[i] = m_channelParams[i].baseLineHoldOff;
-            m_caenParams.otrej[i] = m_channelParams[i].otrej;
-            m_caenParams.trgho[i] = m_channelParams[i].triggerHoldOff;
-            m_caenParams.twwdt[i] = m_channelParams[i].riseTimeValidationWindow;
-            m_caenParams.trgwin[i] = m_channelParams[i].riseTimeDiscrimination;
+            m_caenParams.pkho[i] = m_channelParams[i].peakHoldOff / m_samplingTime;
+            m_caenParams.blho[i] = m_channelParams[i].baseLineHoldOff / m_samplingTime;
+            m_caenParams.trgho[i] = m_channelParams[i].triggerHoldOff / m_samplingTime;
+            m_caenParams.twwdt[i] = m_channelParams[i].riseTimeValidationWindow / m_samplingTime;
+            m_caenParams.trgwin[i] = m_channelParams[i].riseTimeDiscrimination / m_samplingTime;
             m_caenParams.dgain[i] = m_channelParams[i].digitalProbeGain;
             m_caenParams.enf[i] = m_channelParams[i].energyNormalizationFactor;
             m_caenParams.decimation[i] = m_channelParams[i].inputDecimation;
@@ -222,9 +223,42 @@ namespace BoxScore {
 	        m_caenParams.blrclip[i] = 0;
             m_caenParams.dcomp[i] = 0;
             m_caenParams.trapbsl[i] = 0;
+            m_caenParams.otrej[i] = 0;
         }
 
+        /*
+            Something not immediately clear... there is no GetDPPParameters function
+            I assume that if a value is passed that is invalid (which we know can happen) the value that is used by 
+            the digitizer is written to the data at the pointer passed to the SetDPPParameters function...
+            I proceed under this assumption
+        */
         m_args.status |= CAEN_DGTZ_SetDPPParameters(m_args.handle, m_digitizerParams.channelMask, &m_caenParams);
+
+        //Retrieve corrected value for the channel parameters
+        for (std::size_t i = 0; i < m_channelParams.size(); i++)
+        {
+            if (!m_channelParams[i].isEnabled)
+            {
+                continue;
+            }
+            m_channelParams[i].decayTimeConst = m_caenParams.M[i] * m_samplingTime;
+            m_channelParams[i].trapFlatTop = m_caenParams.m[i] * m_samplingTime;
+            m_channelParams[i].trapRiseTime = m_caenParams.k[i] * m_samplingTime;
+            m_channelParams[i].flatTopDelay = m_caenParams.ftd[i] * m_samplingTime;
+            m_channelParams[i].triggerFilterSmoothing = m_caenParams.a[i];
+            m_channelParams[i].inputRiseTime = m_caenParams.b[i] * m_samplingTime;
+            m_channelParams[i].triggerThreshold = m_caenParams.thr[i];
+            m_channelParams[i].samplesBaseLineMean = m_caenParams.nsbl[i];
+            m_channelParams[i].samplesPeakMean = m_caenParams.nspk[i];
+            m_channelParams[i].peakHoldOff = m_caenParams.pkho[i] * m_samplingTime;
+            m_channelParams[i].baseLineHoldOff = m_caenParams.blho[i] * m_samplingTime;
+            m_channelParams[i].triggerHoldOff = m_caenParams.trgho[i] * m_samplingTime;
+            m_channelParams[i].riseTimeValidationWindow = m_caenParams.twwdt[i] * m_samplingTime;
+            m_channelParams[i].riseTimeDiscrimination = m_caenParams.trgwin[i] * m_samplingTime;
+            m_channelParams[i].digitalProbeGain = m_caenParams.dgain[i];
+            m_channelParams[i].energyNormalizationFactor = m_caenParams.enf[i];
+            m_channelParams[i].inputDecimation = m_caenParams.decimation[i];
+        }
     }
 
     void DigitizerPHA::LoadWaveformParameters()
@@ -342,6 +376,8 @@ namespace BoxScore {
             m_scalars.push_back(ScalarDistributor::Bind(m_args.name + std::to_string(i)));
         }
 
+        m_samplingTime = GetSamplingPeriod(m_args.model);
+
         m_isConnected = true;
     }
 
@@ -430,7 +466,7 @@ namespace BoxScore {
     {
         m_args.status |= CAEN_DGTZ_SetAcquisitionMode(m_args.handle, m_digitizerParams.acqMode);
         m_args.status |= CAEN_DGTZ_SetDPPAcquisitionMode(m_args.handle, m_digitizerParams.dppAcqMode, m_digitizerParams.dppSaveMode); //why would you ever not want one of these?
-        m_args.status |= CAEN_DGTZ_SetRecordLength(m_args.handle, m_digitizerParams.recordLength);
+        m_args.status |= CAEN_DGTZ_SetRecordLength(m_args.handle, m_digitizerParams.recordLength / m_samplingTime);
         m_args.status |= CAEN_DGTZ_SetIOLevel(m_args.handle, m_digitizerParams.IOlevel);
 
         m_args.status |= CAEN_DGTZ_SetExtTriggerInputMode(m_args.handle, m_digitizerParams.triggerMode);
@@ -443,10 +479,10 @@ namespace BoxScore {
     void DigitizerPSD::LoadChannelParameters()
     {
         m_digitizerParams.channelMask = 0;
-        for(size_t i=0; i<m_channelParams.size(); i++)
+        for(std::size_t i=0; i<m_channelParams.size(); i++)
         {
             m_args.status |= CAEN_DGTZ_SetChannelDCOffset(m_args.handle, i, uint32_t(0xffff * m_channelParams[i].dcOffset)); //Max range is 0xffff
-            m_args.status |= CAEN_DGTZ_SetDPPPreTriggerSize(m_args.handle, i, m_channelParams[i].preTriggerSamples);
+            m_args.status |= CAEN_DGTZ_SetDPPPreTriggerSize(m_args.handle, i, m_channelParams[i].preTriggerTime / m_samplingTime);
             m_args.status |= CAEN_DGTZ_SetChannelPulsePolarity(m_args.handle, i, m_channelParams[i].pulsePolarity);
             m_args.status |= CAEN_DGTZ_WriteRegister(m_args.handle, 0x1028 +  (i<<8), m_channelParams[i].dynamicRange);
             
@@ -459,24 +495,52 @@ namespace BoxScore {
             m_caenParams.thr[i] = m_channelParams[i].triggerThreshold;
             m_caenParams.selft[i] = m_channelParams[i].selfTrigger;
             m_caenParams.csens[i] = m_channelParams[i].chargeSensitivity;
-            m_caenParams.sgate[i] = m_channelParams[i].shortGate;
-            m_caenParams.lgate[i] = m_channelParams[i].longGate;
-            m_caenParams.pgate[i] = m_channelParams[i].preGate;
-            m_caenParams.tvaw[i] = m_channelParams[i].triggerValidationWindow;
+            m_caenParams.sgate[i] = m_channelParams[i].shortGate / m_samplingTime;
+            m_caenParams.lgate[i] = m_channelParams[i].longGate / m_samplingTime;
+            m_caenParams.pgate[i] = m_channelParams[i].preGate / m_samplingTime;
+            m_caenParams.tvaw[i] = m_channelParams[i].triggerValidationWindow / m_samplingTime;
             m_caenParams.nsbl[i] = m_channelParams[i].samplesBasline;
             m_caenParams.discr[i] = m_channelParams[i].discrminatorType;
             m_caenParams.cfdf[i] = m_channelParams[i].cfdFraction;
-            m_caenParams.cfdd[i] = m_channelParams[i].cfdDelay;
-            m_caenParams.trgc[i] = m_channelParams[i].triggerConfig; //This seems to be the same as selft? Identical parameters?
+            m_caenParams.cfdd[i] = m_channelParams[i].cfdDelay / m_samplingTime;
+            m_caenParams.trgc[i] = (CAEN_DGTZ_DPP_TriggerConfig_t)1; // Deprecated, must be set to one according to docs
         }
         //These are like global digitizer params but PSD specific. Here we treat first channel as "global" setting (similar to CoMPASS)
-        m_caenParams.blthr = m_channelParams[0].baselineThreshold;
-        m_caenParams.bltmo = m_channelParams[0].bltmo;
-        m_caenParams.trgho = m_channelParams[0].triggerHoldOff;
-        m_caenParams.purh = m_channelParams[0].pileUpRejection;
-        m_caenParams.purgap = m_channelParams[0].purgap;
+        
 
+        /*
+            Something not immediately clear... there is no GetDPPParameters function
+            I assume that if a value is passed that is invalid (which we know can happen) the value that is used by
+            the digitizer is written to the data at the pointer passed to the SetDPPParameters function...
+            I proceed under this assumption
+        */
         m_args.status |= CAEN_DGTZ_SetDPPParameters(m_args.handle, m_digitizerParams.channelMask, &m_caenParams);
+
+        //Retrieve corrected value for the channel parameters
+        for (std::size_t i = 0; i < m_channelParams.size(); i++)
+        {
+            if (!m_channelParams[i].isEnabled)
+            {
+                continue;
+            }
+
+            m_channelParams[i].triggerThreshold = m_caenParams.thr[i];
+            m_channelParams[i].selfTrigger = m_caenParams.selft[i];
+            m_channelParams[i].chargeSensitivity = m_caenParams.csens[i];
+            m_channelParams[i].shortGate = m_caenParams.sgate[i] * m_samplingTime;
+            m_channelParams[i].longGate = m_caenParams.lgate[i] * m_samplingTime;
+            m_channelParams[i].preGate = m_caenParams.pgate[i] * m_samplingTime;
+            m_channelParams[i].triggerValidationWindow = m_caenParams.tvaw[i] * m_samplingTime;
+            m_channelParams[i].samplesBasline = m_caenParams.nsbl[i];
+            m_channelParams[i].discrminatorType = m_caenParams.discr[i];
+            m_channelParams[i].cfdFraction = m_caenParams.cfdf[i];
+            m_channelParams[i].cfdDelay = m_caenParams.cfdd[i] * m_samplingTime;
+        }
+        m_channelParams[0].baselineThreshold = m_caenParams.blthr;
+        m_channelParams[0].bltmo = m_caenParams.bltmo;
+        m_channelParams[0].triggerHoldOff = m_caenParams.trgho;
+        m_channelParams[0].pileUpRejection = m_caenParams.purh;
+        m_channelParams[0].purgap = m_caenParams.purgap;
     }
 
     void DigitizerPSD::LoadWaveformParameters()

@@ -130,7 +130,7 @@ namespace BoxScore {
 		if (ImGui::BeginTable("Digitizer Parameters", 6, tableFlags))
 		{
 			ImGui::TableSetupColumn("Enable/Disable");
-			ImGui::TableSetupColumn("Record Length");
+			ImGui::TableSetupColumn("Record Length (ns)");
 			ImGui::TableSetupColumn("Event Aggregation");
 			ImGui::TableSetupColumn("Acq. Mode");
 			//ImGui::TableSetupColumn("DPP Acq. Mode");
@@ -201,23 +201,23 @@ namespace BoxScore {
 		{
 			ImGui::TableSetupColumn("Channel");
 			ImGui::TableSetupColumn("Enable/Disable");
-			ImGui::TableSetupColumn("Pre-Trigger Samples");
+			ImGui::TableSetupColumn("Pre-Trigger Time (ns)");
 			ImGui::TableSetupColumn("DC Offset (%)");
 			ImGui::TableSetupColumn("Polarity");
 			ImGui::TableSetupColumn("Dynamic Range");
-			ImGui::TableSetupColumn("Decay Time Const");
-			ImGui::TableSetupColumn("Trap. Flat Top");
-			ImGui::TableSetupColumn("Trap. Rise Time");
-			ImGui::TableSetupColumn("Flat Top Delay");
+			ImGui::TableSetupColumn("Decay Time Const (ns)");
+			ImGui::TableSetupColumn("Trap. Flat Top (ns)");
+			ImGui::TableSetupColumn("Trap. Rise Time (ns)");
+			ImGui::TableSetupColumn("Flat Top Delay (ns)");
 			ImGui::TableSetupColumn("Smoothing");
-			ImGui::TableSetupColumn("Input Rise Time");
-			ImGui::TableSetupColumn("Threshold");
+			ImGui::TableSetupColumn("Input Rise Time (ns)");
+			ImGui::TableSetupColumn("Threshold (lsb)");
 			ImGui::TableSetupColumn("Baseline Samples");
 			ImGui::TableSetupColumn("Peak Samples");
-			ImGui::TableSetupColumn("Peak Hold-off");
-			ImGui::TableSetupColumn("Baseline Hold-off");
-			ImGui::TableSetupColumn("Trigger Hold-off");
-			ImGui::TableSetupColumn("Validation Window");
+			ImGui::TableSetupColumn("Peak Hold-off (ns)");
+			ImGui::TableSetupColumn("Baseline Hold-off (ns)");
+			ImGui::TableSetupColumn("Trigger Hold-off (ns)");
+			ImGui::TableSetupColumn("Validation Window (ns)");
 			ImGui::TableSetupColumn("Rise Time Disc.");
 			ImGui::TableSetupColumn("Probe Gain");
 			ImGui::TableSetupColumn("Input Samples");
@@ -239,7 +239,7 @@ namespace BoxScore {
 					ImGui::BeginDisabled();
 
 				ImGui::TableNextColumn();
-				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples))
+				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerTime))
 				{
 					changed |= true;
 				}
@@ -444,28 +444,27 @@ namespace BoxScore {
 		static std::string tempString; //useful for comps in widgets
 		if (!m_digitizerEnabled)
 			ImGui::BeginDisabled();
-		if (ImGui::BeginTable("PSD Channel Parameters", 22, tableFlags | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY, ImVec2(0, 300)))
+		if (ImGui::BeginTable("PSD Channel Parameters", 21, tableFlags | ImGuiTableFlags_ScrollX | ImGuiTableFlags_ScrollY, ImVec2(0, 300)))
 		{
 			ImGui::TableSetupColumn("Channel");
 			ImGui::TableSetupColumn("Enable/Disable");
-			ImGui::TableSetupColumn("Pre-Trigger Samples");
+			ImGui::TableSetupColumn("Pre-Trigger Time (ns)");
 			ImGui::TableSetupColumn("DC Offset (%)");
 			ImGui::TableSetupColumn("Polarity");
 			ImGui::TableSetupColumn("Dynamic Range");
-			ImGui::TableSetupColumn("Baseline Threshold");
-			ImGui::TableSetupColumn("Trigger Threshold");
-			ImGui::TableSetupColumn("Trigger Hold-Off");
+			ImGui::TableSetupColumn("Baseline Threshold (lsb)");
+			ImGui::TableSetupColumn("Trigger Threshold (lsb)");
+			ImGui::TableSetupColumn("Trigger Hold-Off (ns)");
 			ImGui::TableSetupColumn("Self-Trigger");
 			ImGui::TableSetupColumn("Charge Sensitivity");
-			ImGui::TableSetupColumn("Short Gate");
-			ImGui::TableSetupColumn("Long Gate");
-			ImGui::TableSetupColumn("Pre-Gate");
-			ImGui::TableSetupColumn("Validation Window");
+			ImGui::TableSetupColumn("Short Gate (ns)");
+			ImGui::TableSetupColumn("Long Gate (ns)");
+			ImGui::TableSetupColumn("Pre-Gate (ns)");
+			ImGui::TableSetupColumn("Validation Window (ns)");
 			ImGui::TableSetupColumn("Baseline Samples");
 			ImGui::TableSetupColumn("Discrimintaor Mode");
 			ImGui::TableSetupColumn("CFD Fraction");
-			ImGui::TableSetupColumn("CFD Delay");
-			ImGui::TableSetupColumn("Trigger Config.");
+			ImGui::TableSetupColumn("CFD Delay (ns)");
 			ImGui::TableSetupColumn("PileUp Reject.");
 			ImGui::TableSetupColumn("Purity Gap");
 			ImGui::TableHeadersRow();
@@ -486,7 +485,7 @@ namespace BoxScore {
 					ImGui::BeginDisabled();
 
 				ImGui::TableNextColumn();
-				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerSamples))
+				if (ImGui::InputScalar(fmt::format("##pretrigger_{0}", i).c_str(), ImGuiDataType_U32, &channel.preTriggerTime))
 				{
 					changed |= true;
 				}
@@ -646,22 +645,6 @@ namespace BoxScore {
 				if (ImGui::InputInt(fmt::format("##cfdDelay_{0}", i).c_str(), &channel.cfdDelay, 0, 0))
 				{
 					changed = true;
-				}
-				ImGui::TableNextColumn();
-				tempString = TriggerConfigToString(channel.triggerConfig);
-				if (ImGui::BeginCombo(fmt::format("##trigConfig_{0}", i).c_str(), tempString.c_str()))
-				{
-					if (ImGui::Selectable("Normal", CAEN_DGTZ_DPP_TriggerMode_Normal == channel.triggerConfig))
-					{
-						changed = true;
-						channel.discrminatorType = CAEN_DGTZ_DPP_TriggerMode_Normal;
-					}
-					if (ImGui::Selectable("Leading-Edge", CAEN_DGTZ_DPP_TriggerMode_Coincidence == channel.discrminatorType))
-					{
-						changed = true;
-						channel.discrminatorType = CAEN_DGTZ_DPP_TriggerMode_Coincidence;
-					}
-					ImGui::EndCombo();
 				}
 				ImGui::TableNextColumn();
 				tempString = PileUpModeToString(channel.pileUpRejection);

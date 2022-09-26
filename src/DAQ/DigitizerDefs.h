@@ -173,7 +173,7 @@ namespace BoxScore {
     //Parameters that are applied to digitizer as a whole
     struct DigitizerParameters
     {
-        uint32_t recordLength = 150;
+        uint32_t recordLength = 600; //nanoseconds
         uint32_t channelMask = 0xffff;
         int eventAggr = 0; //Allow CAEN to optimize
         CAEN_DGTZ_AcqMode_t acqMode = CAEN_DGTZ_SW_CONTROLLED;
@@ -188,24 +188,24 @@ namespace BoxScore {
     struct PHAParameters
     {
         bool isEnabled = true;
-        uint32_t preTriggerSamples = 30;
+        uint32_t preTriggerTime = 120; //nanoseconds
         float dcOffset = 0.2f;
         CAEN_DGTZ_PulsePolarity_t pulsePolarity = CAEN_DGTZ_PulsePolarityPositive;
         DynamicRange dynamicRange = DynamicRange::Volt_2;
-        int decayTimeConst = 25000; //ch
-        int trapFlatTop = 496; //ch
-        int trapRiseTime = 96; //ch
-        int flatTopDelay = 250; //Maybe? caen param ftd
+        int decayTimeConst = 100000; //nanoseconds
+        int trapFlatTop = 1984; //nanoseconds
+        int trapRiseTime = 384; //nanoseconds
+        int flatTopDelay = 1000; //nanoseconds
         int triggerFilterSmoothing = 16; // Valid powers of 2 up to 32
-        int inputRiseTime = 48; //ch
+        int inputRiseTime = 192; //nanoseconds
         int triggerThreshold = 300; //LSB
         int samplesBaseLineMean = 3; //Options: 1->16 samples; 2->64 samples; 3->256 samples; 4->1024 samples; 5->4096 samples; 6->16384 samples
         int samplesPeakMean = 3; //Options: 0-> 1 sample; 1->4 samples; 2->16 samples; 3->64 samples
-        int peakHoldOff = 400; //ch
-        int baseLineHoldOff = 500; //ns
+        int peakHoldOff = 1600; //nanoseconds
+        int baseLineHoldOff = 2000; //nanoseconds
         int otrej= 0; // n/a
-        int triggerHoldOff = 496; //ns
-        int riseTimeValidationWindow = 100;// ns
+        int triggerHoldOff = 1984; //nanoseconds
+        int riseTimeValidationWindow = 400;//nanoseconds
         int riseTimeDiscrimination = 0; // 0 off 1 on
         int digitalProbeGain = 0; //Options: 0->DigitalGain=1; 1->DigitalGain=2 (only with decimation >= 2samples); 2->DigitalGain=4 (only with decimation >= 4samples); 3->DigitalGain=8( only with decimation = 8samples)
         float energyNormalizationFactor = 1.0; //Default 1.0
@@ -216,24 +216,24 @@ namespace BoxScore {
     struct PSDParameters
     {
         bool isEnabled = true;
-        uint32_t preTriggerSamples = 1000;
+        uint32_t preTriggerTime = 120; //nanoseconds
         float dcOffset = 0.2f;
         CAEN_DGTZ_PulsePolarity_t pulsePolarity = CAEN_DGTZ_PulsePolarityPositive;
         DynamicRange dynamicRange = DynamicRange::Volt_2;
         int baselineThreshold = 0; //Defined with fixed baseline only (LSB)
         int bltmo = 0;//n/a
-        int triggerHoldOff = 496; //Samples
+        int triggerHoldOff = 1984; //nanoseconds
         int triggerThreshold = 300; //LSB   
         int selfTrigger = 1; //0-Disabled 1-Enabled 
         int chargeSensitivity = 1; //Comments only for 1720 & 1751? Check compass 
-        int shortGate = 24; //ch 
-        int longGate = 100; //ch 2ns for 1730 4ns for 1725
-        int preGate = 8; //ch 
-        int triggerValidationWindow = 1000; //samples?  
+        int shortGate = 96; //nanoseconds
+        int longGate = 400; //nanoseconds
+        int preGate = 32; //nanoseconds
+        int triggerValidationWindow = 4000; //nanoseconds
         int samplesBasline = 4; //Again only 1720 and 1751  
         int discrminatorType = CAEN_DGTZ_DPP_DISCR_MODE_CFD;
         int cfdFraction = 0; //0 25% 1 50% 2 75% 3 100%
-        int cfdDelay = 4; //ch
+        int cfdDelay = 16; //nanoseconds
         CAEN_DGTZ_DPP_TriggerConfig_t triggerConfig = CAEN_DGTZ_DPP_TriggerConfig_Threshold;
         CAEN_DGTZ_DPP_PUR_t pileUpRejection = CAEN_DGTZ_DPP_PSD_PUR_DetectOnly;
         int purgap = 100; //Purity Gap LSB
@@ -283,7 +283,7 @@ namespace BoxScore {
     //Simple integer power calc
     int Power(int base, int order);
 
-    //Sampling rate->time per sample
+    //Get the time per sample for a type of board (returned in nanoseconds)
     double GetSamplingPeriod(CAEN_DGTZ_BoardModel_t model);
 
 }

@@ -286,6 +286,6 @@ namespace BoxScore {
 		case CAEN_DGTZ_V1725: return 4.0; //ns -> 250 MSamples/s
 		}
 
-		return 4.0; //Idk?
+		return 4.0; //Idk? This is a fairly common value...
 	}
 }

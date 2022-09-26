@@ -87,7 +87,7 @@ namespace YAML {
 		{
 			Node node(NodeType::Map);
 			node.force_insert<std::string, bool>("IsEnabled", params.isEnabled);
-			node.force_insert<std::string, uint32_t>("PreTrigger", params.preTriggerSamples);
+			node.force_insert<std::string, uint32_t>("PreTrigger", params.preTriggerTime);
 			node.force_insert<std::string, float>("DCOffset", params.dcOffset);
 			node.force_insert<std::string, int>("PulsePolarity", params.pulsePolarity);
 			node.force_insert<std::string, int>("DynamicRange", params.dynamicRange);
@@ -118,7 +118,7 @@ namespace YAML {
 				return false;
 
 			params.isEnabled = node["IsEnabled"].as<bool>();
-			params.preTriggerSamples = node["PreTrigger"].as<uint32_t>();
+			params.preTriggerTime = node["PreTrigger"].as<uint32_t>();
 			params.dcOffset = node["DCOffset"].as<float>();
 			params.pulsePolarity = (CAEN_DGTZ_PulsePolarity_t)node["PulsePolarity"].as<int>();
 			params.dynamicRange = (BoxScore::DynamicRange)node["DynamicRange"].as<int>();
@@ -152,7 +152,7 @@ namespace YAML {
 			Node node(NodeType::Map);
 
 			node.force_insert<std::string, bool>("IsEnabled", params.isEnabled);
-			node.force_insert<std::string, uint32_t>("PreTrigger", params.preTriggerSamples);
+			node.force_insert<std::string, uint32_t>("PreTrigger", params.preTriggerTime);
 			node.force_insert<std::string, float>("DCOffset", params.dcOffset);
 			node.force_insert<std::string, int>("PulsePolarity", params.pulsePolarity);
 			node.force_insert<std::string, int>("DynamicRange", params.dynamicRange);
@@ -182,7 +182,7 @@ namespace YAML {
 				return false;
 
 			params.isEnabled = node["IsEnabled"].as<bool>();
-			params.preTriggerSamples = node["PreTrigger"].as<int>();
+			params.preTriggerTime = node["PreTrigger"].as<int>();
 			params.dcOffset = node["DCOffset"].as<float>();
 			params.pulsePolarity = (CAEN_DGTZ_PulsePolarity_t)node["PulsePolarity"].as<int>();
 			params.dynamicRange = (BoxScore::DynamicRange)node["DynamicRange"].as<int>();
@@ -304,7 +304,7 @@ namespace YAML {
 	{
 		stream << YAML::BeginMap;
 		stream << YAML::Key << "IsEnabled" << YAML::Value << params.isEnabled;
-		stream << YAML::Key << "PreTrigger" << YAML::Value << params.preTriggerSamples;
+		stream << YAML::Key << "PreTrigger" << YAML::Value << params.preTriggerTime;
 		stream << YAML::Key << "DCOffset" << YAML::Value << params.dcOffset;
 		stream << YAML::Key << "PulsePolarity" << YAML::Value << params.pulsePolarity;
 		stream << YAML::Key << "DynamicRange" << YAML::Value << params.dynamicRange;
@@ -334,7 +334,7 @@ namespace YAML {
 	{
 		stream << YAML::BeginMap;
 		stream << YAML::Key << "IsEnabled" << YAML::Value << params.isEnabled;
-		stream << YAML::Key << "PreTrigger" << YAML::Value << params.preTriggerSamples;
+		stream << YAML::Key << "PreTrigger" << YAML::Value << params.preTriggerTime;
 		stream << YAML::Key << "DCOffset" << YAML::Value << params.dcOffset;
 		stream << YAML::Key << "PulsePolarity" << YAML::Value << params.pulsePolarity;
 		stream << YAML::Key << "DynamicRange" << YAML::Value << params.dynamicRange;
